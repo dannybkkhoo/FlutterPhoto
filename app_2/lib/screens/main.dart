@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/authprovider.dart';
 import '../services/authenticator.dart';
 import 'login_page/root_page.dart';
+import 'login_page/image_page.dart';
 
 void main() => runApp(MyApp());
 

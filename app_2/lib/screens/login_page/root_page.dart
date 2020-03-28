@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'firebase_auth.dart';
 import 'login_page.dart';
 import '../../services/authprovider.dart';
 import '../../services/authenticator.dart';
 import '../home_page/home_page.dart';
+import '../login_page/image_page.dart';
 
 enum AuthStatus {
   notDetermined,
@@ -69,9 +69,12 @@ class _RootPageState extends State<RootPage>{
         );
         break;
       case AuthStatus.SignedIn:
-        return HomePage(
-          onSignedOut: _signedOut,
-        );
+//        return HomePage(
+//          onSignedOut: _signedOut,
+//        );
+      return ImagePage(
+        onSignedOut: _signedOut,
+      );
         break;
       default:
         return _ErrorScreen();
