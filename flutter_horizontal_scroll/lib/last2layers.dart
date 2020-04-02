@@ -48,12 +48,31 @@ class PhotoPreviewFunction extends StatelessWidget{
                                 hintText: "What's on your mind?"
                             ),
                           ),
+                          SizedBox.fromSize(
+                            size: Size(56, 56), // button width and height
+                            child: ClipOval(
+                              child: Material(
+                                color: Colors.red, // button color
+                                child: InkWell(
+                                  splashColor: Colors.white, // splash color
+                                  onTap: () {
+                                    Closed();
+                                  }//=> print('Delete'), // button pressed
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Icon(Icons.delete), // icon
+                                      Text("Delete"), // text
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
                         ],
                       ),
+                ),
 
-
-
-                )
                 /*(
                   title: Text('Description:',style: TextStyle(fontSize: 20),),
                   subtitle: Text('Date: $_datetime', style: TextStyle(fontSize: 20),),
