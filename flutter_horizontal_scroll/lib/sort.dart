@@ -1,15 +1,15 @@
-import 'package:flutter/material.dart';
-void main() => runApp(MaterialApp(
-    home: SortMe()
-));
+ import 'package:flutter/material.dart';
+
 
 class SortMe extends StatefulWidget{
+  List FolderNameList;
+  SortMe(this.FolderNameList);
   @override
   State<StatefulWidget> createState() => SortMeState(); //this part is creating a "State" for the widget
 }
 class SortMeState extends State<SortMe> {
 
-  List foldernames = [
+ /*List foldernames = [
     'Portugal',
     'Romania',
     'Russia',
@@ -75,12 +75,12 @@ class SortMeState extends State<SortMe> {
     'Ukraine',
     'United Kingdom',
     'Vatican City'
-  ];
+  ];*/
   @override
-  bool isSort = false;
+  bool isSort = true;
 
   void sort(List folders) {
-    foldernames.sort((a, b) => isSort ? a.compareTo(b) : b.compareTo(a));
+    widget.FolderNameList.sort((a, b) => isSort ? a.compareTo(b) : b.compareTo(a));
     isSort = !isSort;
 
   }
@@ -89,8 +89,8 @@ class SortMeState extends State<SortMe> {
   @override
   void initState(){
     super.initState();
-    sort(foldernames);
-    SortedFolders = foldernames;
+    sort(widget.FolderNameList);
+    SortedFolders = widget.FolderNameList;
   }
 
 
@@ -103,8 +103,9 @@ class SortMeState extends State<SortMe> {
             icon: Icon(Icons.sort_by_alpha),
             onPressed: () {
               print('sortyo');
+
               setState(() {
-                foldernames = SortedFolders;
+                widget.FolderNameList = SortedFolders;
               });
             },
           )
@@ -115,7 +116,7 @@ class SortMeState extends State<SortMe> {
             width: 200,
             height: 200,
             child: Center(
-              child: Text(foldernames.toString()), //names.toString()
+              child: Text(widget.FolderNameList.toString()), //names.toString()
             ),
           )
       ),

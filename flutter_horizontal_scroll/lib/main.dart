@@ -2,7 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'horizontalcontainers.dart';
+import 'last2layers.dart';
+import 'sort.dart';
 
 void main() => runApp(MaterialApp(
     home: FolderCreator()
@@ -15,9 +16,9 @@ class FolderCreator extends StatefulWidget{
 
 class _FolderState extends State<FolderCreator>{
   List<Widget> folders = new List<Widget>();
-  String a = 'Recentsdsvsgreffcs';
-  String b = 'Favouritefscvdsrssf';
-
+  String a = 'Recentsssgrgeffcs';
+  String b = 'Favouritescvgdrssf';
+  //List FolderNameList = [a,b];
   void addFolder(ShowFolder folder){
     if(folder != null) {
       setState(() {
@@ -39,7 +40,7 @@ class _FolderState extends State<FolderCreator>{
               icon: Icon(Icons.sort_by_alpha),
               onPressed: (){
                 print('sortyo');
-                //SortMe(folderName);
+                //SortMe(FolderNameList);
               },
             )
           ],
@@ -127,7 +128,7 @@ class PhotoThing extends StatelessWidget{
   Widget build(BuildContext context){
     return Container(
       margin: EdgeInsets.symmetric(vertical: 20.0),
-      height: 200,
+      height: 50,
 
       child: ListView(
         scrollDirection: Axis.horizontal,
