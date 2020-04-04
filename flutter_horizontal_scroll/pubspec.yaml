@@ -26,6 +26,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   path_provider: ^0.4.1
   flutter_speed_dial: ^1.2.5
+  image_picker: 0.6.4
 dev_dependencies:
   flutter_test:
     sdk: flutter
