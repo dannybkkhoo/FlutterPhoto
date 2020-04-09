@@ -39,7 +39,39 @@ void main() => runApp(MaterialApp(
         )
         ),
         ));
+class HorizontalScrollWithDescription extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new Scaffold(
+      body: Container(
+        child: Wrap(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 20.0),
+              height: 240,
 
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: <Widget>[
+                  PhotoPreviewFunctionwithDes("assets/Capture1.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
+                  PhotoPreviewFunctionwithDes("assets/Capture2.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
+                  PhotoPreviewFunctionwithDes("assets/Capture3.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
+                  PhotoPreviewFunctionwithDes("assets/Capture1.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
+                  PhotoPreviewFunctionwithDes("assets/Capture2.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
+                  PhotoPreviewFunctionwithDes("assets/Capture3.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
+
+                ],
+              ),
+            ),
+            DescriptionFolder(DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
+
+          ],
+        ),
+      )
+    );
+  }
+}
 class PhotoPreviewFunctionwithDes extends StatelessWidget{
   final _imagePath, _datetime;
 

@@ -48,7 +48,15 @@ flutter:
        - assets/Capture1.PNG
        - assets/Capture2.PNG
        - assets/Capture3.PNG
-
+       - assets/Capture01.PNG
+       - assets/Capture02.PNG
+       - assets/Capture03.PNG
+       - assets/Capture04.PNG
+       - assets/Capture05.PNG
+       - assets/Capture06.PNG
+       - assets/Capture07.PNG
+       - assets/Capture08.PNG
+       - assets/Capture09.PNG
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

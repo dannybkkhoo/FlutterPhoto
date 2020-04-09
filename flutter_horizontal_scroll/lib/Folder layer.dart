@@ -1,61 +1,43 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'last2layers.dart';
-
-//Define "root widget"
-//void main() => runApp(new MyApp());//one-line function
+import 'horizontalscrollwithdescription.dart';
 void main() => runApp(new MyApp());
 //Now use stateful Widget = Widget has properties which can be changed
-class MainPage extends StatefulWidget {
+class MainPageFolder extends StatefulWidget {
   final String title;
   //Custom constructor, add property : title
   @override
-  MainPage({this.title}) : super();
+  MainPageFolder({this.title}) : super();
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return new MainPageState();//Return a state object
+    return new MainPageFolderState();//Return a state object
   }
 }
-class MainPageState extends State<MainPage> {
+class MainPageFolderState extends State<MainPageFolder> {
   //State must have "build" => return Widget
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
-      ),
+        appBar: new AppBar(
+          title: new Text(widget.title),
+        ),
         body:  Container(
-          child:Column(
-            children: <Widget>[
-              SearchPhoto(),
-              GridView.extent(
-                maxCrossAxisExtent: 150.0,
-                mainAxisSpacing: 5.0,
-                crossAxisSpacing: 5.0,
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(5.0),
-                children: _buildGridTiles(3,context),
-              ),
-            ],
-          )
+            child:Column(
+              children: <Widget>[
+                SearchPhoto(),
+                GridView.extent(
+                  maxCrossAxisExtent: 150.0,
+                  mainAxisSpacing: 5.0,
+                  crossAxisSpacing: 5.0,
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(5.0),
+                  children: _buildGridTiles(9,context),
+                ),
+              ],
+            )
         )
 
-      /*body: Column(
-        children: <Widget>[
-          GridView.extent(
-            maxCrossAxisExtent: 150.0,
-            mainAxisSpacing: 5.0,
-            crossAxisSpacing: 5.0,
-            padding: const EdgeInsets.all(5.0),
-            children: _buildGridTiles(3,context),
-          ),
-
-        ],
-      )*/
-      //SearchPhoto(),
 
     );
   }
@@ -65,7 +47,7 @@ List<Widget> _buildGridTiles(numberOfTiles, BuildContext context) {
           (int index) {
         //index = 0, 1, 2,...
         final imageName = index < 9 ?
-        'assets/Capture${index +1}.PNG' : 'assets/Capture${index +1}.PNG';
+        'assets/Capture0${index +1}.PNG' : 'assets/Capture0${index +1}.PNG';
         return new Container(
           child: Wrap(
             children: <Widget>[
@@ -74,7 +56,7 @@ List<Widget> _buildGridTiles(numberOfTiles, BuildContext context) {
                 child: GestureDetector(
                   onTap: (){
                     print("pressed");
-                    Navigator.push(context,MaterialPageRoute(builder: (context) => PhotoThing()));
+                    Navigator.push(context,MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription()));
                   },
                   child: new Image.asset(
                       imageName,
@@ -100,7 +82,7 @@ class MyApp extends StatelessWidget {
     //build function returns a "Widget"
     return new MaterialApp(
         title: "",
-        home: new MainPage(title: "My Gallery")
+        home: new MainPageFolder(title: "My Gallery",)
     );
   }
 }
