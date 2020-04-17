@@ -2,8 +2,8 @@
 
 
 class SortMe extends StatefulWidget{
-  List FolderNameList;
-  SortMe(this.FolderNameList);
+  List folderName;
+  SortMe(this.folderName);
   @override
   State<StatefulWidget> createState() => SortMeState(); //this part is creating a "State" for the widget
 }
@@ -80,7 +80,7 @@ class SortMeState extends State<SortMe> {
   bool isSort = true;
 
   void sort(List folders) {
-    widget.FolderNameList.sort((a, b) => isSort ? a.compareTo(b) : b.compareTo(a));
+    widget.folderName.sort((a, b) => isSort ? a.compareTo(b) : b.compareTo(a));
     isSort = !isSort;
 
   }
@@ -89,8 +89,8 @@ class SortMeState extends State<SortMe> {
   @override
   void initState(){
     super.initState();
-    sort(widget.FolderNameList);
-    SortedFolders = widget.FolderNameList;
+    sort(widget.folderName);
+    SortedFolders = widget.folderName;
   }
 
 
@@ -105,7 +105,7 @@ class SortMeState extends State<SortMe> {
               print('sortyo');
 
               setState(() {
-                widget.FolderNameList = SortedFolders;
+                widget.folderName = SortedFolders;
               });
             },
           )
@@ -116,7 +116,7 @@ class SortMeState extends State<SortMe> {
             width: 200,
             height: 200,
             child: Center(
-              child: Text(widget.FolderNameList.toString()), //names.toString()
+              child: Text(widget.folderName.toString()), //names.toString()
             ),
           )
       ),

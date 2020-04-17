@@ -1,18 +1,20 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterhorizontalscroll/multiplephoto.dart';
 import 'package:intl/intl.dart';
-
-import 'CreateFolder.dart';
+import 'Folder layer.dart';
+import 'lauchurl.dart';
 void main() => runApp(MaterialApp(
-    home:Scaffold(
-            appBar: AppBar(
-                  title: Text('FREAKS!'),
-        centerTitle: true,
-        backgroundColor: Colors.black,
-        ),
-
-        body:
-        Container(
+    home: HorizontalScrollWithDescription()
+        ));
+class HorizontalScrollWithDescription extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new Scaffold(
+        resizeToAvoidBottomInset: true,
+      body: SingleChildScrollView(
+        child: Container(
           child: Wrap(
             children: <Widget>[
               Container(
@@ -20,6 +22,7 @@ void main() => runApp(MaterialApp(
                 height: 240,
 
                 child: ListView(
+
                   scrollDirection: Axis.horizontal,
                   children: <Widget>[
                     PhotoPreviewFunctionwithDes("assets/Capture1.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
@@ -36,37 +39,6 @@ void main() => runApp(MaterialApp(
 
             ],
           ),
-        )
-        ),
-        ));
-class HorizontalScrollWithDescription extends StatelessWidget{
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return new Scaffold(
-      body: Container(
-        child: Wrap(
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.symmetric(vertical: 20.0),
-              height: 240,
-
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: <Widget>[
-                  PhotoPreviewFunctionwithDes("assets/Capture1.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-                  PhotoPreviewFunctionwithDes("assets/Capture2.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-                  PhotoPreviewFunctionwithDes("assets/Capture3.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-                  PhotoPreviewFunctionwithDes("assets/Capture1.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-                  PhotoPreviewFunctionwithDes("assets/Capture2.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-                  PhotoPreviewFunctionwithDes("assets/Capture3.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-
-                ],
-              ),
-            ),
-            DescriptionFolder(DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-
-          ],
         ),
       )
     );
@@ -106,9 +78,12 @@ class PhotoPreviewFunctionwithDes extends StatelessWidget{
   }
 }
 class DescriptionFolder extends StatelessWidget{
-  final _datetime;
 
-  //PhotoPreviewFunctionwithDes();
+  final _datetime;
+  final linkCon = new TextEditingController();
+  var _link;
+
+
   DescriptionFolder(this._datetime);
   @override
   Widget build(BuildContext context) {
@@ -117,6 +92,7 @@ class DescriptionFolder extends StatelessWidget{
       height: 400,
 
       child: new Column(
+
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           new Text('Folder Name:',textAlign: TextAlign.center, style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
@@ -136,28 +112,60 @@ class DescriptionFolder extends StatelessWidget{
           ),
           new Text('Link:',textAlign: TextAlign.center, style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
           new TextField(
+            controller: linkCon,
             decoration: new InputDecoration(
-                hintText: "Where is this place?"
+                hintText: "Put your link here!"
             ),
           ),
-          SizedBox.fromSize(
-            size: Size(56, 56), // button width and height
-            child: ClipOval(
-              child: Material(
-                color: Colors.red, // button color
-                child: InkWell(
-                  splashColor: Colors.white, // splash color
-                  onTap: () => print('Delete'), // button pressed
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(Icons.delete), // icon
-                      Text("Delete"), // text
-                    ],
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              SizedBox.fromSize(
+                size: Size(56, 56), // button width and height
+                child: ClipOval(
+                  child: Material(
+                    color: Colors.blue, // button color
+                    child: InkWell(
+                      splashColor: Colors.white, // splash color
+                      onTap: () {
+                        Navigator.push(context,MaterialPageRoute(builder: (context) => new MainPageFolder(title: "My Gallery",)));
+                      }, // button pressed
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.keyboard_return), // icon
+                          Text("Back"), // text
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+              SizedBox.fromSize(
+                size: Size(56, 56), // button width and height
+                child: ClipOval(
+                  child: Material(
+                    color: Colors.blue, // button color
+                    child: InkWell(
+                      splashColor: Colors.white, // splash color
+                      onTap: () {
+                        _link = linkCon.text;
+                        print('$_link');
+                        Navigator.push(context,MaterialPageRoute(builder: (context) => URLPAGE(_link)));
+                      }, // button pressed
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.launch), // icon
+                          Text("Link"), // text
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
           )
         ],
       ),
@@ -167,7 +175,46 @@ class DescriptionFolder extends StatelessWidget{
 
 
 
+enum DialogAction { yes, abort }
 
-
-
-
+class Dialogs {
+  static Future<DialogAction> yesAbortDialog(
+      BuildContext context,
+      String title,
+      String body,
+      ) async {
+    final action = await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          title: Text(title),
+          content: Text(body),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () => Navigator.of(context).pop(DialogAction.abort),
+              child: const Text('No',
+              style: TextStyle(
+             color: Colors.blue,
+            ),
+             ),
+            ),
+            FlatButton(
+              onPressed: () => Navigator.of(context).pop(DialogAction.yes),
+              child: const Text(
+                'Yes',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    return (action != null) ? action : DialogAction.abort;
+  }
+}
