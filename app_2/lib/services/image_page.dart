@@ -11,7 +11,7 @@ class ImagePage extends StatefulWidget{
 
 class _ImageState extends State<ImagePage>{
   File _image;
-  CloudStorageResult _uploaded;
+  CloudStorageItem _uploaded;
   String _uid;
 
   Future getCameraImage() async {

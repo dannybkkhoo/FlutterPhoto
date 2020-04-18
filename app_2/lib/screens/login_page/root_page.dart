@@ -72,9 +72,9 @@ class _RootPageState extends State<RootPage>{
 //        return HomePage(
 //          onSignedOut: _signedOut,
 //        );
-      return ImagePage(
-        onSignedOut: _signedOut,
-      );
+        return ImagePage(
+          onSignedOut: _signedOut,
+        );
         break;
       default:
         return _ErrorScreen();

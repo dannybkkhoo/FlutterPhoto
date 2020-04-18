@@ -1,9 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import '../../services/cloud_storage_service.dart';
 import '../../services/authprovider.dart';
 import '../../services/authenticator.dart';
+import '../../services/firestore_storage.dart';
+import '../../services/record.dart';
 import 'dart:io';
 
 class ImagePage extends StatefulWidget{
@@ -27,6 +32,12 @@ class _ImagePageState extends State<ImagePage>{
     }
   }
 
+  Future<void> cloudfunc() async {
+    final HttpsCallable getData = CloudFunctions.instance.getHttpsCallable(functionName: "getData");
+    var resp = await getData.call();
+    print(resp);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,9 +55,15 @@ class _ImagePageState extends State<ImagePage>{
         ],
       ),
       floatingActionButton: SpeedDialButton([
+        SpeedButtonProperties(() async => await cloudfunc(),"GetData",Icon(Icons.assignment)),
+        SpeedButtonProperties(() async => FirestoreStorage().updateChild('A', 'Test_1', 'Test_img', 'date', '15/4/2020'),"Update Child",Icon(Icons.event_busy)),
+        SpeedButtonProperties(() async => FirestoreStorage().removeChild('A', 'Test_1', imag.dat()),"Delete Child",Icon(Icons.cancel)),
+        SpeedButtonProperties(() async => FirestoreStorage().addDocument('C', fold),"Create Doc",Icon(Icons.attach_file)),
+        SpeedButtonProperties(() async => FirestoreStorage().addChild('C','Test_1',imag.dat()),"Add Child",Icon(Icons.add_box)),
         SpeedButtonProperties(() async => key.currentState.getCameraImage(),"Camera",Icon(Icons.add_a_photo)),
         SpeedButtonProperties(() async => key.currentState.getGalleryImage(),"Gallery",Icon(Icons.add_photo_alternate)),
-        SpeedButtonProperties(() async => await CloudStorage(key.currentState._image,"123",DateTime.now().toString()).uploadImage(),"Upload",Icon(Icons.arrow_upward))
+        SpeedButtonProperties(() async => await CloudStorage().uploadImage("123",imag, key.currentState._image),"Upload",Icon(Icons.arrow_upward)),
+        SpeedButtonProperties(() async => await key.currentState.URL("123"),"down",Icon(Icons.add)),
       ]),
       body: ImageHolder(key: key),  //key passed to class so that parent can change variable state of that class
     );
@@ -60,8 +77,15 @@ class ImageHolder extends StatefulWidget{
 }
 
 class _ImageHolderState extends State<ImageHolder>{
-  File _image;
+  var _image;//File _image;
   @override
+
+  Future URL(filename) async {
+    var image = await getUrl(filename);
+//    setState(() {
+//      _image = image;
+//    });
+  }
 
   Future<void> getCameraImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -71,7 +95,7 @@ class _ImageHolderState extends State<ImageHolder>{
   }
 
   Future<void> getGalleryImage() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery,imageQuality: 80);
     setState(() {
       _image = image;
     });
