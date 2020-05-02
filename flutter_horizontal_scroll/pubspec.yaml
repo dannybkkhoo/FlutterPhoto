@@ -31,6 +31,7 @@ dependencies:
   rflutter_alert: ^1.0.3
   flutter_webview_plugin: ^0.3.11
   url_launcher: ^5.4.2
+  draggable_scrollbar: ^0.0.4
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -61,6 +62,14 @@ flutter:
        - assets/Capture07.PNG
        - assets/Capture08.PNG
        - assets/Capture09.PNG
+       - assets/Capture10.PNG
+       - assets/Capture11.PNG
+       - assets/Capture12.PNG
+       - assets/Capture13.PNG
+       - assets/Capture14.PNG
+       - assets/Capture15.PNG
+       - assets/Capture16.PNG
+       - assets/Capture17.PNG
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

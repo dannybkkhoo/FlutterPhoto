@@ -31,6 +31,12 @@ class MainPageState extends State<MainPage> {
       _image = image;
     });
   }
+  void open_gallery() async{
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      _image = image;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +68,7 @@ class MainPageState extends State<MainPage> {
       ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
-
+          open_gallery();
           },
           icon: Icon(Icons.add, color: Colors.black,),
           label: Text("Import Photos"),
@@ -75,7 +81,7 @@ class MainPageState extends State<MainPage> {
               SearchPhoto(),
               Container(
                   alignment: Alignment.topLeft,
-                  child: Text('  Number of Photos =',style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic),
+                  child: Text('  Number of Photos = ',style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic),
                   )
 
               ),

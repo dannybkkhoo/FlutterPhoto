@@ -1,9 +1,15 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'horizontalscrollwithdescription.dart';
 import 'main.dart';
-void main() => runApp(new MyApp());
+
+void main() => runApp(MyApp());
 //Now use stateful Widget = Widget has properties which can be changed
 class MainPageFolder extends StatefulWidget {
+  //MainPageFolder({Key key}) : super(key:key);
+
   final String title;
   //Custom constructor, add property : title
   @override
@@ -16,6 +22,69 @@ class MainPageFolder extends StatefulWidget {
 }
 class MainPageFolderState extends State<MainPageFolder> {
   //State must have "build" => return Widget
+  List<Widget> folders = new List<Widget>();
+  List<String> foldernames = new List<String>();
+  int num = 0;
+  void appendfoldernames(onValue){
+    if(onValue != null) {
+      setState(() {
+        //folders.add(folder);
+        foldernames = List.from(foldernames)..add(onValue);
+        print(foldernames);
+        print(foldernames.length);
+      });
+    }
+  }
+  void addFolder(ShowFolder folder){
+    if(folder != null) {
+      setState(() {
+        //folders.add(folder);
+        folders = List.from(folders)..add(folder);
+        print(folders);
+      });
+    }
+  }
+  void deleteFolder(folder){
+    if(folder != null) {
+      setState(() {
+        //folders.add(folder);
+        folders = List.from(folders)..remove(folder);
+        print(folders);
+      });
+    }
+  }
+
+  Future<String> createAlertDialog(BuildContext context){
+    TextEditingController foldernameController = TextEditingController();
+
+    return showDialog(context: context,builder: (context){
+      return AlertDialog(
+        title: Text("Folder Name?"),
+        content: TextField(
+          controller: foldernameController ,
+        ),
+        actions: <Widget>[
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('Cancel'),
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
+          ),
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('Submit'),
+            onPressed: (){
+              Navigator.of(context).pop(foldernameController.text.toString());
+              num++;
+
+            },
+          )
+        ],
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -27,8 +96,10 @@ class MainPageFolderState extends State<MainPageFolder> {
               icon: Icon(Icons.delete),
               onPressed: () {
                 print('sortyo');
-
-
+                //new Directory('/data/user/0/com.dreams.flutterhorizontalscroll/app_flutter/$onValue/').delete(recursive: true);
+                //print('Deleted folder $onValue');
+                //deleteFolder(num.toString());
+                //num--;
               },
             ),
             IconButton(
@@ -50,52 +121,120 @@ class MainPageFolderState extends State<MainPageFolder> {
           ],
         ),
           floatingActionButton: FloatingActionButton.extended(
-            onPressed: () async {
-              //addFolder( await AppUtil.createFolderInAppDocDir(a));
-              //addFolder( await AppUtil.createFolderInAppDocDir(b));
-              //num++;
+            onPressed: ()  async {
+              createAlertDialog(context).then((onValue) async {
+                addFolder( await AppUtil.createFolderInAppDocDir(onValue));
+                appendfoldernames(onValue);
+
+              });
+              //addFolder( await AppUtil.createFolderInAppDocDir(num.toString()));
+
             },
             icon: Icon(Icons.add, color: Colors.black,),
             label: Text("New Folder"),
             foregroundColor: Colors.black,
             backgroundColor: Colors.amberAccent,
           ),
-        body:  Container(
-            child:Column(
-              children: <Widget>[
-                SearchFolder(),
-                Container(
-                    alignment: Alignment.topLeft,
-                   child: Text('  Number of Folders = ',style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic),
-                          )
+        body: SingleChildScrollView(
+          child: Container(
+              child:Column(
+                children: <Widget>[
+                  SearchFolder(),
+                  Container(
 
-                ),
-                CreateBody(context),
-              ],
-            )
+                      alignment: Alignment.topLeft,
+                      child: Text('  Number of Folders = $num ',style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic),
+                      )
+
+                  ),
+
+                  GridView.count(
+                    physics: ScrollPhysics(),
+                    shrinkWrap: true,
+                    crossAxisCount: 3,
+                    children: folders,
+                  ),
+
+                ],
+              )
+          ),
         )
-
 
     );
   }
 }
+class ShowFolder extends StatefulWidget {
+  final String folderName;
+  ShowFolder(this.folderName);
 
-Widget CreateBody(BuildContext context) {
-  return GridView.extent(
-    maxCrossAxisExtent: 150.0,
+  @override
+  _ShowFolderState createState() => _ShowFolderState();
+}
+
+
+class _ShowFolderState extends State<ShowFolder>{
+
+  @override
+
+  Widget build(BuildContext context) {
+    return Container(
+      child: Wrap(
+        children: <Widget>[
+          Container(
+            child: GestureDetector(
+              onTap: (){
+                print("pressed");
+                Navigator.push(context,MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription()));
+              },
+              child: Container(
+                child: new Card(
+                elevation: 10.0,
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      new SizedBox(
+                        height: 5.0,
+                      ),
+                      new Image.asset("assets/Capture01.PNG",
+                          height: 100.0, width: 100.0,fit: BoxFit.cover),
+                      new SizedBox(
+                        height: 5.0,
+                      ),
+                      new Text(widget.folderName, style: TextStyle(fontSize: 15.0),),
+
+                    ],
+                  ),
+                ),
+                ),
+            ),
+          )
+
+        ]
+        )
+    );
+  }
+}
+
+/*Widget CreateBody(BuildContext context) {
+  return GridView.count(
+    crossAxisCount: 3,
+    scrollDirection: Axis.vertical,
+    //maxCrossAxisExtent: 150.0,
     mainAxisSpacing: 5.0,
     crossAxisSpacing: 5.0,
     shrinkWrap: true,
     padding: const EdgeInsets.all(5.0),
-    children: _buildGridTiles(9,context),
+    children: _buildGridTiles(17,context),
   );
 }
+
+
 List<Widget> _buildGridTiles(numberOfTiles, BuildContext context) {
   List<Container> containers = new List<Container>.generate(numberOfTiles,
           (int index) {
         //index = 0, 1, 2,...
         final imageName = index < 9 ?
-        'assets/Capture0${index +1}.PNG' : 'assets/Capture0${index +1}.PNG';
+        'assets/Capture0${index +1}.PNG' : 'assets/Capture${index +1}.PNG';
         return new Container(
           child: Wrap(
             children: <Widget>[
@@ -129,31 +268,19 @@ List<Widget> _buildGridTiles(numberOfTiles, BuildContext context) {
                       Text("Foldername"),
                     ],
                   ),
-                  /*child: new Image.asset(
-                      imageName,
-                      fit: BoxFit.cover
-                  ),*/
                 ),
 
               ),
-              /*Container(
-                padding: EdgeInsets.all(10.0),
-                child: Text(
-                  "Foldername",
-                  maxLines: 1,
-                  softWrap: true,
-                  textAlign: TextAlign.center,
-                ),
-              ),*/
+
             ],
           ),
         );
       });
   return containers;
-}
+}*/
 
 class MyApp extends StatelessWidget {
-  //Stateless = immutable = cannot change object's properties
+  //Stateless = immutable =  cannot change object's properties
   //Every UI components are widgets
   @override
   Widget build(BuildContext context) {
@@ -161,7 +288,7 @@ class MyApp extends StatelessWidget {
     //build function returns a "Widget"
     return new MaterialApp(
         title: "",
-        home: new MainPageFolder(title: "My Gallery",)
+        home: MainPageFolder(title: "My Gallery",)
     );
   }
 }
@@ -387,6 +514,23 @@ class _MultiSelectDialogStateSort<V> extends State<MultiSelectDialogSort<V>> {
       controlAffinity: ListTileControlAffinity.leading,
       onChanged: (checked) => _onItemCheckedChange(item.value, checked),
     );
+  }
+}
+
+class AppUtil{
+  static Future<ShowFolder> createFolderInAppDocDir(String folderName) async {
+    final Directory _appDocDir = await getApplicationDocumentsDirectory();
+    final Directory _appDocDirFolder = Directory('${_appDocDir.path}/$folderName/');
+
+    if(await _appDocDirFolder.exists()){
+      print("Already Created Folder in: $_appDocDirFolder");
+      return null;
+    }
+    else{
+      final Directory _appDocDirNewFolder = await _appDocDirFolder.create(recursive:true);
+      print("Created new folder: $_appDocDirFolder");
+      return ShowFolder(folderName);
+    }
   }
 }
 

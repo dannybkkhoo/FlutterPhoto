@@ -19,13 +19,13 @@ class PhotoPreviewFunction extends StatelessWidget{
   Widget build(BuildContext context) {
     return Container(
         width: 400.0,
-        height: 400.0,
+        height: 300.0,
         child: Card(
             child: Wrap(
               children: <Widget>[
                 Container(
                   width: 400.0,
-                  height: 300.0,
+                  height: 400.0,
                   child: GestureDetector(
                     onTap: (){
                       Navigator.push(context,MaterialPageRoute(builder: (context) => SimplePhotoViewPage(_imagePath,_datetime)));
@@ -58,7 +58,7 @@ class Description extends StatelessWidget{
   Widget build(BuildContext context) {
     return Container(
       width: 400,
-      height: 300,
+      height: 400,
 
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
