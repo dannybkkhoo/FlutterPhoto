@@ -7,13 +7,13 @@ import 'photoview.dart';
 import 'dart:ui' as ui;
 
 
-void main() => runApp(MaterialApp(
+/*void main() => runApp(MaterialApp(
   home: PhotoThing()
-));
+));*/
 class PhotoPreviewFunction extends StatelessWidget{
-  final _imagePath, _datetime ;
+  final _imagePath, _datetime, _photoname ;
 
-  PhotoPreviewFunction(this._imagePath,this._datetime);
+  PhotoPreviewFunction(this._imagePath,this._datetime, this._photoname);
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class PhotoPreviewFunction extends StatelessWidget{
                 ),
                 //Image.asset(_imagePath),
 
-                Description(DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
+                Description(DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),_photoname),
 
                 /*(
                   title: Text('Description:',style: TextStyle(fontSize: 20),),
@@ -49,11 +49,15 @@ class PhotoPreviewFunction extends StatelessWidget{
 
   }
 }
-class Description extends StatelessWidget{
-  final _datetime;
+class Description extends StatefulWidget{
+  final String _datetime, _photoname;
+  Description(this._datetime, this._photoname);
 
-  //PhotoPreviewFunctionwithDes();
-  Description(this._datetime);
+  @override
+  DescriptionState createState() => new DescriptionState();
+}
+class DescriptionState extends State<Description>{
+  static String _Des = 'No Description';
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -63,20 +67,51 @@ class Description extends StatelessWidget{
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          new Text('Photo Name:',textAlign: TextAlign.center, style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
-          new TextField(
+          new Text("Photoname: ${widget._photoname}",textAlign: TextAlign.center, style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+          /*new TextField(
 
             decoration: new InputDecoration(
                 hintText: "Give your photo a name!"
             ),
-          ),
-          new Text('Date: $_datetime', style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold),textAlign: TextAlign.justify),
+          ),*/
+          new Text('Date: ${widget._datetime}', style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold),textAlign: TextAlign.justify),
           new Text('Size:',textAlign: TextAlign.center, style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
-          new Text('Description:', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
-          new TextField(
-            decoration: new InputDecoration(
-                hintText: "What's on your mind?"
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Expanded(
+                child: Text('Description: $_Des', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+              ),
+              SizedBox.fromSize(
+                size: Size(46, 56), // button width and height
+                child: ClipRect(
+                  child: Material(
+                    color: Colors.transparent, // button color
+                    child: InkWell(
+                      splashColor: Colors.white, // splash color
+                      onTap: () {
+                        createAlertDialog(context,"Description").then((onValue) async {
+                          if( onValue != null) {
+                            setState(() {
+                              _Des = onValue;
+                            });
+                          }
+
+                        });
+
+                      }, // button pressed
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.edit), // icon
+                          Text("Edit"), // text
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           new Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,7 +153,9 @@ class Description extends StatelessWidget{
                     child: InkWell(
                       splashColor: Colors.white, // splash color
                       onTap: (){
-                        Navigator.push(context,MaterialPageRoute(builder: (context) => new MainPageFolder(title: "My Gallery",)));
+                        Navigator.of(context)
+                            .popUntil(ModalRoute.withName("/Page1"));
+                        //Navigator.pop(context);
                       }, // button pressed
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -138,12 +175,53 @@ class Description extends StatelessWidget{
 
     );
   }
+  Future<String> createAlertDialog(BuildContext context, title){
+    TextEditingController DescriptionCon = TextEditingController();
+
+    return showDialog(context: context,builder: (context){
+      return AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: DescriptionCon ,
+        ),
+        actions: <Widget>[
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('Cancel'),
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
+          ),
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('Submit'),
+            onPressed: (){
+              Navigator.of(context).pop(DescriptionCon.text.toString());
+
+            },
+          )
+        ],
+      );
+    });
+  }
 }
 class PhotoThing extends StatelessWidget{
+  String photoname;
+  PhotoThing(this.photoname);
   @override
+
   Widget build(BuildContext context){
     return new Scaffold(
       resizeToAvoidBottomInset: true,
+        appBar: new AppBar(
+            title: new Text("Photos"),
+          leading: new IconButton(
+            icon: new Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.symmetric(vertical: 20.0),
@@ -152,12 +230,12 @@ class PhotoThing extends StatelessWidget{
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: <Widget>[
-              PhotoPreviewFunction("assets/Capture1.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-              PhotoPreviewFunction("assets/Capture2.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-              PhotoPreviewFunction("assets/Capture3.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-              PhotoPreviewFunction("assets/Capture1.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-              PhotoPreviewFunction("assets/Capture2.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-              PhotoPreviewFunction("assets/Capture3.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
+              PhotoPreviewFunction("assets/Capture1.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(), photoname),
+              PhotoPreviewFunction("assets/Capture2.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),photoname),
+              PhotoPreviewFunction("assets/Capture3.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),photoname),
+              PhotoPreviewFunction("assets/Capture1.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),photoname),
+              PhotoPreviewFunction("assets/Capture2.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),photoname),
+              PhotoPreviewFunction("assets/Capture3.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),photoname),
             ],
           ),
         ),

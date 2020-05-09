@@ -3,9 +3,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'horizontalscrollwithdescription.dart';
-import 'main.dart';
 
-void main() => runApp(MyApp());
+
+void main() => runApp(MaterialApp(
+
+  initialRoute: '/Page1',
+  routes: <String, WidgetBuilder>{
+    '/Page1': (context) => MainPageFolder(title: "My Gallery",),
+
+  },
+));
 //Now use stateful Widget = Widget has properties which can be changed
 class MainPageFolder extends StatefulWidget {
   //MainPageFolder({Key key}) : super(key:key);
@@ -85,10 +92,12 @@ class MainPageFolderState extends State<MainPageFolder> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return new Scaffold(
+
         appBar: new AppBar(
           title: new Text(widget.title),
           actions: <Widget>[
@@ -184,12 +193,14 @@ class _ShowFolderState extends State<ShowFolder>{
             child: GestureDetector(
               onTap: (){
                 print("pressed");
-                Navigator.push(context,MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription(widget.folderName)));
               },
               child: Container(
                 child: new Card(
                 elevation: 10.0,
                   child: new Column(
+
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       new SizedBox(

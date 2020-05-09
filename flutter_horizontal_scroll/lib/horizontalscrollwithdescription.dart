@@ -4,10 +4,12 @@ import 'package:flutterhorizontalscroll/multiplephoto.dart';
 import 'package:intl/intl.dart';
 import 'Folder layer.dart';
 import 'lauchurl.dart';
-void main() => runApp(MaterialApp(
+/*void main() => runApp(MaterialApp(
     home: HorizontalScrollWithDescription()
-        ));
+        ));*/
 class HorizontalScrollWithDescription extends StatelessWidget{
+  final _foldername;
+  HorizontalScrollWithDescription(this._foldername);
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -35,7 +37,7 @@ class HorizontalScrollWithDescription extends StatelessWidget{
                   ],
                 ),
               ),
-              DescriptionFolder(DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
+              DescriptionFolder(DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(), _foldername),
 
             ],
           ),
@@ -77,15 +79,24 @@ class PhotoPreviewFunctionwithDes extends StatelessWidget{
     );
   }
 }
-class DescriptionFolder extends StatelessWidget{
 
-  final _datetime;
-  final linkCon = new TextEditingController();
-  var _link;
+class DescriptionFolder extends StatefulWidget{
+  final String _datetime, _foldername;
+  DescriptionFolder(this._datetime, this._foldername);
 
-
-  DescriptionFolder(this._datetime);
   @override
+  DescriptionFolderState createState() => new DescriptionFolderState();
+
+
+
+}
+class DescriptionFolderState extends State<DescriptionFolder>{
+
+  final linkCon = new TextEditingController();
+  static String _Des = 'No Description';
+  static String _link = 'No link';
+  @override
+
   Widget build(BuildContext context) {
     return Container(
       width: 400,
@@ -95,16 +106,85 @@ class DescriptionFolder extends StatelessWidget{
 
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          new Text('Folder Name:',textAlign: TextAlign.center, style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
-          new TextField(
+          new Text('Folder Name: ${widget._foldername}',textAlign: TextAlign.center, style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
 
-            decoration: new InputDecoration(
-                hintText: "Give your folder a name!"
-            ),
+          new Text('Date: ${widget._datetime}', style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold),textAlign: TextAlign.justify),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Expanded(
+                child: Text('Description: $_Des', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+              ),
+              SizedBox.fromSize(
+                size: Size(46, 56), // button width and height
+                child: ClipRect(
+                  child: Material(
+                    color: Colors.transparent, // button color
+                    child: InkWell(
+                      splashColor: Colors.white, // splash color
+                      onTap: () {
+                        createAlertDialog(context,"Description").then((onValue) async {
+                          if( onValue != null) {
+                            setState(() {
+                              _Des = onValue;
+                            });
+                          }
+
+                        });
+
+                      }, // button pressed
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.edit), // icon
+                          Text("Edit"), // text
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-          new Text('Date: $_datetime', style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold),textAlign: TextAlign.justify),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Expanded(
+                child: Text('Link: $_link', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+              ),
+              SizedBox.fromSize(
+                size: Size(46, 56), // button width and height
+                child: ClipRect(
+                  child: Material(
+                    color: Colors.transparent, // button color
+                    child: InkWell(
+                      splashColor: Colors.white, // splash color
+                      onTap: () {
+                        createAlertDialog(context, "Link").then((onValue) async {
+                          if( onValue != null) {
+                            setState(() {
+                              _link = onValue;
+                              Navigator.push(context,MaterialPageRoute(builder: (context) => URLPAGE(_link)));
+                            });
+                          }
 
-          new Text('Description:', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+                        });
+
+                      }, // button pressed
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.edit), // icon
+                          Text("Edit"), // text
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          /*new Text('Description:', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
           new TextField(
             decoration: new InputDecoration(
                 hintText: "What's on your mind?"
@@ -116,7 +196,7 @@ class DescriptionFolder extends StatelessWidget{
             decoration: new InputDecoration(
                 hintText: "Put your link here!"
             ),
-          ),
+          ),*/
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -129,7 +209,8 @@ class DescriptionFolder extends StatelessWidget{
                     child: InkWell(
                       splashColor: Colors.white, // splash color
                       onTap: () {
-                        Navigator.push(context,MaterialPageRoute(builder: (context) => new MainPageFolder(title: "My Gallery",)));
+                        Navigator.pop(context);
+                        //Navigator.push(context,MaterialPageRoute(builder: (context) => new MainPageFolder(title: "My Gallery",)));
                       }, // button pressed
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -142,7 +223,8 @@ class DescriptionFolder extends StatelessWidget{
                   ),
                 ),
               ),
-              SizedBox.fromSize(
+
+              /*SizedBox.fromSize(
                 size: Size(56, 56), // button width and height
                 child: ClipOval(
                   child: Material(
@@ -150,7 +232,7 @@ class DescriptionFolder extends StatelessWidget{
                     child: InkWell(
                       splashColor: Colors.white, // splash color
                       onTap: () {
-                        _link = linkCon.text;
+                        //_link = linkCon.text;
                         print('$_link');
                         Navigator.push(context,MaterialPageRoute(builder: (context) => URLPAGE(_link)));
                       }, // button pressed
@@ -164,12 +246,41 @@ class DescriptionFolder extends StatelessWidget{
                     ),
                   ),
                 ),
-              )
+              )*/
             ],
           )
         ],
       ),
     );
+  }
+  Future<String> createAlertDialog(BuildContext context, title){
+    TextEditingController DescriptionCon = TextEditingController();
+
+    return showDialog(context: context,builder: (context){
+      return AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: DescriptionCon ,
+        ),
+        actions: <Widget>[
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('Cancel'),
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
+          ),
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('Submit'),
+            onPressed: (){
+              Navigator.of(context).pop(DescriptionCon.text.toString());
+
+            },
+          )
+        ],
+      );
+    });
   }
 }
 
