@@ -48,7 +48,7 @@ class Auth implements Authenticator {
   @override
   Future<String> getUID() async {
     final FirebaseUser user = await _firebaseAuth.currentUser();
-    return user?.uid;
+    return user?.uid; //if user != null, return uid, else return null
   }
 
   @override

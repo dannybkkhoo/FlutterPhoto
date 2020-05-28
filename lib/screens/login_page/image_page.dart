@@ -12,8 +12,8 @@ import 'package:app2/services/image_storage.dart';
 import 'dart:io';
 
 class ImagePage extends StatefulWidget{
-  const ImagePage({this.onSignedOut});
   final VoidCallback onSignedOut;
+  const ImagePage({this.onSignedOut});
 
   @override
   State<StatefulWidget> createState() => _ImagePageState();
@@ -82,7 +82,7 @@ class _ImagePageState extends State<ImagePage>{
               var data2 = DataProvider.of(context).userData.folder_list;
               data2['b'] = '2';
               data2['c'] = 'Solar';
-              DataProvider.of(context).userData.folders["folders"].add(fold.dat());
+              DataProvider.of(context).userData.folders.add(fold.dat());
               print(DataProvider.of(context).userData.image_list);
               print(DataProvider.of(context).userData.folder_list);
               print(DataProvider.of(context).userData.folders);
