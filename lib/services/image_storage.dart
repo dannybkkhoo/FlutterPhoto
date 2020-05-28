@@ -1,4 +1,5 @@
 import 'package:app2/services/dataprovider.dart';
+import 'package:flutter/services.dart';
 import 'userdata.dart';
 import 'package:flutter/cupertino.dart';
 import 'firestore_storage.dart';
@@ -7,21 +8,12 @@ import 'utils.dart';
 import 'package:flutter/material.dart';
 import 'authprovider.dart';
 import 'authenticator.dart';
-import 'package:intl/intl.dart';
 import 'dart:io';
 
 class ImageStorage{
-  String getDate(){
-    final now = DateTime.now();
-    final formatter = new DateFormat('dd/MM/yyyy');
-    final String date = formatter.format(now);
-    print(date);
-    return date;
-  }
-
   /*Handles the processes for adding a folder*/
   void AddFolder(BuildContext context) async {
-    var userData = DataProvider.of(context).userData; //get user's data
+    UserData userData = DataProvider.of(context).userData; //get user's data
     String name = "", description = "", link = "", errormsg = "";
     bool tapped = false, validated = false;
     return showDialog(
@@ -36,33 +28,38 @@ class ImageStorage{
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
+                        /*Text Field for User to enter Folder Name, will check if folder name already exists*/
                         TextField(
                           autofocus: true,
                           decoration: InputDecoration(
                             labelText: 'Folder Name:', hintText: 'eg. Solar',
                             errorText: (tapped&!validated) ? "$errormsg" : null,
                           ),
+                          inputFormatters: [
+                            new WhitelistingTextInputFormatter(RegExp("[a-zA-Z0-9_]")) //*Allow alphanumeric and underscore only
+                          ],
                           onChanged: (folder_name) {
                             if(userData.folder_list.containsValue(folder_name)){
                               setState((){
                                 tapped = true;
+                                validated = false;
                                 name = folder_name;
                                 errormsg = name + " already exists";
-                                validated = false;
                               });
                             }
                             else{
                               setState((){
                                 tapped = true;
+                                validated = true;
                                 name = folder_name;
                                 errormsg = "";
-                                validated = true;
                               });
                             }
                           },
                         ),
+                        /*Text Field for User to enter Description*/
                         TextField(
-                            autofocus: true,
+                            autofocus: false,
                             decoration: InputDecoration(
                                 labelText: 'Description:', hintText: 'eg. Bali Trip'
                             ),
@@ -72,8 +69,9 @@ class ImageStorage{
                               });
                             }
                         ),
+                        /*Text Field for User to enter Link*/
                         TextField(
-                            autofocus: true,
+                            autofocus: false,
                             decoration: InputDecoration(
                                 labelText: 'Link:', hintText: 'eg. www.bali.com'
                             ),
@@ -87,18 +85,20 @@ class ImageStorage{
                   ),
                 ),
                 actions: <Widget>[
+                  /*Cancel button, if user decides to cancel adding folder*/
                   FlatButton(
                     child: Text('Cancel'),
                     onPressed: () {
                       Navigator.of(context).pop(null);
                     },
                   ),
+                  /*Confirm button, if user confirmed folder name and details*/
                   FlatButton(
                     child: Text('Ok'),
                     onPressed: () async {
-                      if(name!=""){
+                      if(name != ""){
                         final Authenticator auth = AuthProvider.of(context).auth;
-                        var uid = await auth.getUID();
+                        String uid = await auth.getUID();
                         folderRecord folder = folderRecord(
                           folder_id: userData.generateUniqueID(),
                           name: name,
@@ -108,19 +108,19 @@ class ImageStorage{
                           children: [],
                         );
                         userData.folder_list[folder.folder_id] = folder.name;
-                        userData.folders['folders'].add(folder.dat());
+                        userData.folders.add(folder.dat());
+                        userData.version = DateTime.now();
                         print(userData.folder_list);
-                        FirestoreStorage().addSubDocument("UserData",uid, "collection", "main_collection", userData.folders);
-                        String path = await getPath();
-                        print(path + '/' + folder.name);
-                        new Directory(path + '/' + folder.name).create();
+                        userData.writeUserData(uid, userData);
+                        createDirectory(await getPath() + "/" + uid + "/" + folder.name);
+                        userData.writeFirestoreUserData(uid, userData);
                         Navigator.of(context).pop(null);
                       }
-                      else{
+                      else{ //if name of folder is invalid
                         setState((){
                           tapped = true;
-                          errormsg = "Name of folder cannot be empty!";
                           validated = false;
+                          errormsg = "Name of folder cannot be empty!";
                         });
                       }
                     },
@@ -152,15 +152,6 @@ class ImageStorage{
                     child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-//                          Center(
-//                            child: Container(
-//                              width: 300,
-//                              height: 400,
-//                              child: Center(
-//                                  child: _image == null? Text("No images...") : Image.file(_image)
-//                              ),
-//                            ),
-//                          ),
                           ImageHolder(),
                           TextField(
                             autofocus: true,
@@ -223,7 +214,7 @@ class ImageStorage{
                             description: description,
                           );
                           userData.image_list[image.image_id] = image.name;
-                          for(Map folders in userData.folders['folders']){
+                          for(Map folders in userData.folders){
                             if(folders["folder_id"] == current_path){
                               folders["children"].add(image.dat());
                               break;

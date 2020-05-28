@@ -1,22 +1,6 @@
 import "package:cloud_firestore/cloud_firestore.dart";
 
-abstract class Firestore_functions{
-  /*General Firestore functions, can be used in all projects*/
-  Future<List<Map<String,dynamic>>> getCollectionData(String collection);
-  Future<Map<String,dynamic>> getDocumentData(String collection, String document);
-  void addDocument(String collection, Map folder);
-  void updateDocument(String collection, String document, String field, var data );
-  void deleteDocument(String collection, String document);
-  void deleteCollection(String collection);
-  void removeDocumentField(String collection, String document, String field);
-  /*Custom Firestore functions, customized for this FlutterPhoto project*/
-  void addChild(String collection, String document, Map data);
-  void unionChild(String collection, String document, var data);
-  void updateChild(String collection, String document, String imagename, String field, var data);
-  void removeChild(String collection, String document, Map data);
-}
-
-class FirestoreStorage implements Firestore_functions {
+class FirestoreStorage {
   final _databaseReference = Firestore.instance;
   /*For this project, the user id should be put into "String collection"*/
 
@@ -24,26 +8,56 @@ class FirestoreStorage implements Firestore_functions {
   /*-QuerySnapshot returns a List of DocumentSnapshot, each DocumentSnapshot.data is a map*/
   Future<List<Map<String,dynamic>>> getCollectionData(String collection) async {
     List<Map<String,dynamic>> docMapList = [];
-    final result = await _databaseReference.collection(collection).getDocuments();
-    print(result);
-    result.documents.forEach(
-        (document) => docMapList.add(document.data)
-    );
-    print("Collection data => " + docMapList.toString());
-    return docMapList;
+    var result = await _databaseReference.collection(collection).getDocuments();
+    if(result.documents.isNotEmpty){
+      result.documents.forEach((document) => docMapList.add(document.data));
+      print("Collection data => " + docMapList.toString());
+      return docMapList;
+    }
+    else{
+      print("Subcollection does not exist.");
+      return null;
+    }
+  }
+  /*Retrieves all document from a sub collection, and returns a snapshot*/
+  /*-QuerySnapshot returns a List of DocumentSnapshot, each DocumentSnapshot.data is a map*/
+  Future<List<Map<String,dynamic>>> getSubCollectionData(String main_collection, String document, String sub_collection) async {
+    List<Map<String,dynamic>> docMapList = [];
+    var result = await _databaseReference.collection(main_collection).document(document).collection(sub_collection).getDocuments();
+    if(result.documents.isNotEmpty){
+      result.documents.forEach((document) => docMapList.add(document.data));
+      print("Subcollection data => " + docMapList.toString());
+      return docMapList;
+    }
+    else{
+      print("Subcollection does not exist.");
+      return null;
+    }
   }
   /*Retrieves a specified document from a collection and returns a DocumentSnapshot*/
   /*-DocumentSnapshot.data returns the document data as a map*/
   Future<Map<String,dynamic>> getDocumentData(String collection, String document) async {
     final result = await _databaseReference.collection(collection).document(document).get();
-    print("Document data => " + result.data.toString());
-    return result.data;
+    if(result.exists){
+      print("Document data => " + result.data.toString());
+      return result.data;
+    }
+    else{
+      print("Document does not exists");
+      return null;
+    }
   }
   /*Retrieves a specified sub document from a sub collection and returns a DocumentSnapshot*/
   Future<Map<String,dynamic>> getSubDocumentData(String main_collection, String main_document, String sub_collection, String sub_document) async {
     final result = await _databaseReference.collection(main_collection).document(main_document).collection(sub_collection).document(sub_document).get();
-    print("Document data => " + result.data.toString());
-    return result.data;
+    if(result.exists){
+      print("Subdocument data => " + result.data.toString());
+      return result.data;
+    }
+    else{
+      print("Subdocument does not exist/");
+      return null;
+    }
   }
   /*Creates a new document using name of folder and store folder data*/
   /*-This may overwrite document content if there is a same folder name in the same collection*/
@@ -56,7 +70,7 @@ class FirestoreStorage implements Firestore_functions {
   /*Creates a new document using name of folder and store folder data in sub collection*/
   /*-User must specify main collection, main document and sub collection*/
   /*-If the main collection does not exists, the main collection will be directly created*/
-  void addSubDocument(String main_collection, String main_document, String sub_collection, String sub_document, Map folder) async {
+  void addSubDocument(String main_collection, String main_document, String sub_collection, String sub_document, var folder) async {
     _databaseReference.collection(main_collection).document(main_document).collection(sub_collection).document(sub_document)
         .setData(folder).whenComplete(
         () => print("Document " + " created in " + main_collection + "/" + main_document + "/" + sub_collection)

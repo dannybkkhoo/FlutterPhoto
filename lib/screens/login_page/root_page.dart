@@ -1,9 +1,12 @@
-import 'package:app2/services/dataprovider.dart';
 import 'package:flutter/material.dart';
-import 'login_page.dart';
-import '../../services/authprovider.dart';
-import '../../services/authenticator.dart';
-import '../login_page/image_page.dart';
+import 'package:app2/services/authprovider.dart';
+import 'package:app2/services/authenticator.dart';
+import 'package:app2/services/dataprovider.dart';
+import 'package:app2/services/userdata.dart';
+import 'package:app2/screens/login_page/login_page.dart';
+import 'package:app2/screens/login_page/image_page.dart';
+import 'package:app2/screens/home_page/folder_page.dart';
+import 'package:app2/services/utils.dart';
 
 enum AuthStatus {
   notDetermined,
@@ -40,28 +43,12 @@ class _RootPageState extends State<RootPage>{
       authStatus = AuthStatus.notSignedIn;
     });
   }
-  Widget _WaitingScreen() {
-    return Scaffold(
-      body: Container(
-        alignment:  Alignment.center,
-        child: CircularProgressIndicator(),
-      )
-    );
-  }
-  Widget _ErrorScreen() {
-    return Scaffold(
-      body: Container(
-        alignment: Alignment.center,
-        child: Text("Application Error..."),
-      )
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     switch (authStatus) {
       case AuthStatus.notDetermined:
-        return _WaitingScreen();
+        return WaitingScreen(_signedOut);
         break;
       case AuthStatus.notSignedIn:
         return LoginPage(
@@ -70,19 +57,17 @@ class _RootPageState extends State<RootPage>{
         break;
       case AuthStatus.SignedIn:
         return DataProvider(
-          child: ImagePage(
+          child: MainPageFolder(
+            title: "Folder Page",
             onSignedOut: _signedOut,
-          )
+          ),
+//          child: ImagePage(
+//            onSignedOut: _signedOut,
+//          )
         );
-//        return HomePage(
-//          onSignedOut: _signedOut,
-//        );
-//        return ImagePage(
-//          onSignedOut: _signedOut,
-//        );
         break;
       default:
-        return _ErrorScreen();
+        return ErrorScreen(_signedOut);
     }
   }
 }
