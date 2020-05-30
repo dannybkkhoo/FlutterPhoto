@@ -94,6 +94,7 @@ class MainPageFolderState extends State<MainPageFolder> {
 
 
   @override
+
   Widget build(BuildContext context) {
     // TODO: implement build
     return new Scaffold(
@@ -193,8 +194,12 @@ class _ShowFolderState extends State<ShowFolder>{
             child: GestureDetector(
               onTap: (){
                 print("pressed");
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription(widget.folderName)));
+                //Navigator.push(context,
+                   // MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription(widget.folderName)));
+                Navigator.of(context).push(PageRouteBuilder(
+                    opaque: false,
+                    pageBuilder: (BuildContext context, _, __) =>
+                        HorizontalScrollWithDescription(widget.folderName)));
               },
               child: Container(
                 child: new Card(

@@ -1,26 +1,31 @@
  import 'package:flutter/material.dart';
 
-
+ void main() {
+   runApp(MaterialApp(home: SortMe()));
+ }
 class SortMe extends StatefulWidget{
-  List folderName;
-  SortMe(this.folderName);
+  //List folderName;
+  //SortMe(this.folderName);
   @override
   State<StatefulWidget> createState() => SortMeState(); //this part is creating a "State" for the widget
 }
 class SortMeState extends State<SortMe> {
 
- /*List foldernames = [
+ List folderName = [
     'Portugal',
+   'Bosnia and Herzegovina',
     'Romania',
     'Russia',
     'San Marino',
     'Serbia',
     'Slovakia',
+   'Bosnia and Herzegovina',
     'Slovenia',
     'Spain',
     'Sweden',
     'Switzerland',
     'Turkey',
+   'Bosnia and Herzegovina',
     'Ukraine',
     'United Kingdom',
     'Vatican City',
@@ -37,8 +42,10 @@ class SortMeState extends State<SortMe> {
     'Cyprus',
     'Czech Republic',
     'Denmark',
+   'Bosnia and Herzegovina',
     'Estonia',
     'Finland',
+   'Bosnia and Herzegovina',
     'France',
     'Georgia',
     'Germany',
@@ -46,6 +53,8 @@ class SortMeState extends State<SortMe> {
     'Hungary',
     'Iceland',
     'Ireland',
+   'Bosnia and Herzegovina',
+   'Bosnia and Herzegovina',
     'Italy',
     'Kazakhstan',
     'Kosovo',
@@ -54,6 +63,7 @@ class SortMeState extends State<SortMe> {
     'Lithuania',
     'Luxembourg',
     'Macedonia',
+   'Bosnia and Herzegovina',
     'Malta',
     'Moldova',
     'Monaco',
@@ -75,12 +85,12 @@ class SortMeState extends State<SortMe> {
     'Ukraine',
     'United Kingdom',
     'Vatican City'
-  ];*/
+  ];
   @override
   bool isSort = true;
 
   void sort(List folders) {
-    widget.folderName.sort((a, b) => isSort ? a.compareTo(b) : b.compareTo(a));
+    folderName.sort((a, b) => isSort ? a.compareTo(b) : b.compareTo(a));
     isSort = !isSort;
 
   }
@@ -89,8 +99,8 @@ class SortMeState extends State<SortMe> {
   @override
   void initState(){
     super.initState();
-    sort(widget.folderName);
-    SortedFolders = widget.folderName;
+    //sort(folderName);
+    SortedFolders = folderName;
   }
 
 
@@ -103,9 +113,9 @@ class SortMeState extends State<SortMe> {
             icon: Icon(Icons.sort_by_alpha),
             onPressed: () {
               print('sortyo');
-
+              sort(folderName);
               setState(() {
-                widget.folderName = SortedFolders;
+                folderName = SortedFolders;
               });
             },
           )
@@ -113,10 +123,10 @@ class SortMeState extends State<SortMe> {
       ),
       body: Center(
           child: Container(
-            width: 200,
-            height: 200,
+            width: 500,
+            height: 500,
             child: Center(
-              child: Text(widget.folderName.toString()), //names.toString()
+              child: Text(folderName.toString()), //names.toString()
             ),
           )
       ),

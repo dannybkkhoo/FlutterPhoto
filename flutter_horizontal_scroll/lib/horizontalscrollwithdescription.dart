@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterhorizontalscroll/multiplephoto.dart';
 import 'package:intl/intl.dart';
-import 'Folder layer.dart';
 import 'lauchurl.dart';
 /*void main() => runApp(MaterialApp(
     home: HorizontalScrollWithDescription()
@@ -79,6 +78,12 @@ class PhotoPreviewFunctionwithDes extends StatelessWidget{
     );
   }
 }
+class Desdetails {
+   String _Des;
+  String _link;
+
+
+}
 
 class DescriptionFolder extends StatefulWidget{
   final String _datetime, _foldername;
@@ -93,8 +98,10 @@ class DescriptionFolder extends StatefulWidget{
 class DescriptionFolderState extends State<DescriptionFolder>{
 
   final linkCon = new TextEditingController();
-  static String _Des = 'No Description';
-  static String _link = 'No link';
+  //String _Des ;
+  //var _link ;
+  Desdetails detials = new Desdetails();
+  final GlobalKey<DescriptionFolderState> _deskeyvalue = new GlobalKey<DescriptionFolderState>();
   @override
 
   Widget build(BuildContext context) {
@@ -113,7 +120,8 @@ class DescriptionFolderState extends State<DescriptionFolder>{
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(
-                child: Text('Description: $_Des', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+                key: _deskeyvalue,
+                child: Text(detials._Des != null? 'Description: ${detials._Des}':'Description: No Description', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
               ),
               SizedBox.fromSize(
                 size: Size(46, 56), // button width and height
@@ -126,7 +134,7 @@ class DescriptionFolderState extends State<DescriptionFolder>{
                         createAlertDialog(context,"Description").then((onValue) async {
                           if( onValue != null) {
                             setState(() {
-                              _Des = onValue;
+                              detials._Des = onValue;
                             });
                           }
 
@@ -150,7 +158,7 @@ class DescriptionFolderState extends State<DescriptionFolder>{
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(
-                child: Text('Link: $_link', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+                child: Text(detials._link != null? 'Link: ${detials._link}':'Link: No Link', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
               ),
               SizedBox.fromSize(
                 size: Size(46, 56), // button width and height
@@ -163,8 +171,8 @@ class DescriptionFolderState extends State<DescriptionFolder>{
                         createAlertDialog(context, "Link").then((onValue) async {
                           if( onValue != null) {
                             setState(() {
-                              _link = onValue;
-                              Navigator.push(context,MaterialPageRoute(builder: (context) => URLPAGE(_link)));
+                              detials._link = onValue;
+
                             });
                           }
 

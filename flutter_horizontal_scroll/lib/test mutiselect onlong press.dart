@@ -39,12 +39,33 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     List<Widget> _buttons = List();
     if (_selectionMode) {
-      _buttons.add(IconButton(
+      _buttons.add(
+          IconButton(
           icon: Icon(Icons.delete),
           onPressed: () {
-            _selectedIndexList.sort();
+            setState(() {
+              _selectedIndexList.sort();
+              _imageList.remove(_selectedIndexList);
+              _changeSelection(enable: false, index: -1);
+            });
+            //_selectedIndexList.sort();
             print('Delete ${_selectedIndexList.length} items! Index: ${_selectedIndexList.toString()}');
-          }));
+          }),
+
+          );
+      _buttons.add(
+        FlatButton(
+            child:Text('Cancel'),
+            onPressed: () {
+              setState(() {
+                _selectedIndexList.clear();
+                _changeSelection(enable: false, index: -1);
+              });
+             //Navigator.push(context,MaterialPageRoute(builder: (context) => MyApp()));
+
+            }),
+
+      );
     }
 
     return Scaffold(
@@ -98,6 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
   GridTile getGridTile(int index) {
     if (_selectionMode) {
       return GridTile(
+
           header: GridTileBar(
             leading: Icon(
               _selectedIndexList.contains(index) ? Icons.check_circle_outline : Icons.radio_button_unchecked,
@@ -105,10 +127,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           child: GestureDetector(
-            child: Column(
+            child: Wrap(
               children: <Widget>[
                 Container(
-                  decoration: BoxDecoration(border: Border.all(color: Colors.blue[50], width: 30.0)),
+
+                  //decoration: BoxDecoration(border: Border.all(color: Colors.blue[50], width: 30.0)),
                   child: Image.asset(
                     _imageList[index],
                     fit: BoxFit.cover,
@@ -148,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           onTap: (){
             print("pressed");
-            Navigator.push(context,MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription()));
+            Navigator.push(context,MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription('test')));
           },
         ),
       );

@@ -1,7 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutterhorizontalscroll/Folder%20layer.dart';
 import 'package:intl/intl.dart';
 import 'photoview.dart';
 import 'dart:ui' as ui;
@@ -51,13 +49,14 @@ class PhotoPreviewFunction extends StatelessWidget{
 }
 class Description extends StatefulWidget{
   final String _datetime, _photoname;
+  //final customFunction;
   Description(this._datetime, this._photoname);
 
   @override
   DescriptionState createState() => new DescriptionState();
 }
 class DescriptionState extends State<Description>{
-  static String _Des = 'No Description';
+  var _Des;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -80,7 +79,7 @@ class DescriptionState extends State<Description>{
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(
-                child: Text('Description: $_Des', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+                child: Text(_Des != null? 'Description: $_Des':'Description: No Description', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
               ),
               SizedBox.fromSize(
                 size: Size(46, 56), // button width and height
