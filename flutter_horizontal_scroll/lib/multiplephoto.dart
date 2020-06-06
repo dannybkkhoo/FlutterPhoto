@@ -2,13 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'last2layers.dart';
 
-//Define "root widget"
-//void main() => runApp(new MyApp());//one-line function
-//void main() => runApp(new MyApp());
+
+
+void main() => runApp(MyApp());
 //Now use stateful Widget = Widget has properties which can be changed
 class MainPage extends StatefulWidget {
   final String title;
@@ -23,14 +24,44 @@ class MainPage extends StatefulWidget {
 }
 class MainPageState extends State<MainPage> {
   //State must have "build" => return Widget
+  String parentString = 'Photoname';
+
   File _image;
+  List<String> _imageList = List();
+  List<int> _selectedIndexList = List();
+  bool _selectionMode = false;
   List<Widget> photos = new List<Widget>();
   List<String> photonames = new List<String>();
   int num = 0;
-  bool _selectionMode = false;
-  void parentChange(newbool) {
+  @override
+  void initState() {
+    super.initState();
+    _imageList.add("assets/Capture1.PNG");
+    _imageList.add("assets/Capture2.PNG");
+    _imageList.add("assets/Capture3.PNG");
+    _imageList.add("assets/Capture1.PNG");
+    _imageList.add("assets/Capture2.PNG");
+    _imageList.add("assets/Capture3.PNG");
+    _imageList.add("assets/Capture1.PNG");
+    _imageList.add("assets/Capture2.PNG");
+    _imageList.add("assets/Capture3.PNG");
+    _imageList.add("assets/Capture1.PNG");
+    _imageList.add("assets/Capture2.PNG");
+    _imageList.add("assets/Capture3.PNG");
+    _imageList.add("assets/Capture1.PNG");
+    _imageList.add("assets/Capture2.PNG");
+    _imageList.add("assets/Capture3.PNG");
+    _imageList.add("assets/Capture1.PNG");
+    _imageList.add("assets/Capture2.PNG");
+    _imageList.add("assets/Capture3.PNG");
+    _imageList.add("assets/Capture1.PNG");
+    _imageList.add("assets/Capture2.PNG");
+    _imageList.add("assets/Capture3.PNG");
+
+  }
+  void parentChange(newString) {
     setState(() {
-      _selectionMode = newbool;
+      parentString = newString;
     });
   }
   void appendfoldernames(onValue){
@@ -43,25 +74,25 @@ class MainPageState extends State<MainPage> {
       });
     }
   }
-  void addPhotos (ShowPhotos folder){
-    if(folder != null) {
+  void addPhotos (imagepath){
+    if(imagepath != null) {
       setState(() {
         //photos.add(folder);
-        photos = List.from(photos)..add(folder);
-        print(photos);
+        _imageList = List.from(_imageList)..add(imagepath);
+        print(_imageList);
       });
     }
   }
 
 
 
-  void deletePhotos (ShowPhotos folder){
-    if(folder != null) {
+  void deletePhotos (imagepath){
+    if(imagepath != null) {
       setState(() {
-        photos = List.from(photos)..remove(folder);
+        _imageList = List.from(_imageList)..remove(imagepath);
         num--;
         print(num);
-        print(photos);
+        print(_imageList);
       });
     }
   }
@@ -70,12 +101,14 @@ class MainPageState extends State<MainPage> {
     var image = await ImagePicker.pickImage(source: ImageSource.camera);
     setState(() {
       _image = image;
+      _imageList.add(_image.path);
     });
   }
   void open_gallery() async{
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
       _image = image;
+      _imageList.add(_image.path);
     });
   }
 
@@ -87,6 +120,19 @@ class MainPageState extends State<MainPage> {
         IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
+              setState(() {
+                _selectedIndexList.sort();
+                print('Delete ${_selectedIndexList.length} items! Index: ${_selectedIndexList.toString()}');
+                for(var i = 0; i < _selectedIndexList.length; i++){
+                  print("Currently deleting : ${_selectedIndexList[i]}");
+                  _imageList = List.from(_imageList)..removeAt(_selectedIndexList[i]);
+
+                }
+                _changeSelection(enable: false, index: -1);
+                print('Number of items in selected list: ${_selectedIndexList.length} items!');
+                print(_imageList);
+              });
+              //_selectedIndexList.sort();
 
             }),
 
@@ -99,6 +145,7 @@ class MainPageState extends State<MainPage> {
                 //_selectedIndexList.clear();
                 //_changeSelection(enable: false, index: -1);
                 _selectionMode =false;
+                _selectedIndexList.clear();
               });
               //Navigator.push(context,MaterialPageRoute(builder: (context) => MyApp()));
 
@@ -124,6 +171,7 @@ class MainPageState extends State<MainPage> {
           },
         ),);
     }
+
     // TODO: implement build
     return new Scaffold(
       appBar: new AppBar(
@@ -167,11 +215,20 @@ class MainPageState extends State<MainPage> {
                     SearchPhoto(),
                     Container(
                         alignment: Alignment.topLeft,
-                        child: Text('  Number of Photos =  ',style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic),
+                        child: Text( _imageList.length != null ? '  Number of Photos = ${_imageList.length} ': '  Number of Photos = 0',style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic),
                         )
 
                     ),
-                    GridView.count(
+                    _createBody(),
+                    /*GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                      itemBuilder: (_, index) =>  FlutterLogo(),//ShowPhotos("assets/Capture3.PNG",customFunction: parentChange),
+                      itemCount: _imageList.length,
+                      primary: false,
+                      physics: ScrollPhysics(),
+                      shrinkWrap: true,
+                    )*/
+                    /*GridView.count(
                       physics: ScrollPhysics(),
                       shrinkWrap: true,
                       crossAxisCount: 3,
@@ -193,17 +250,144 @@ class MainPageState extends State<MainPage> {
                         ShowPhotos("assets/Capture3.PNG",customFunction: parentChange),
                       ],
                       //children: photos,
-                    ),
+                    ),*/
                   ],
                 )
             )
         )
 
     );
+
+  }
+  Widget _createBody() {
+    return StaggeredGridView.countBuilder(
+      crossAxisCount: 3,
+      mainAxisSpacing: 4.0,
+      crossAxisSpacing: 4.0,
+      physics: ScrollPhysics(),
+      shrinkWrap: true,
+      primary: false,
+      itemCount: _imageList.length,
+      itemBuilder: (BuildContext context, int index) {
+        return getGridTile(index);
+      },
+      staggeredTileBuilder: (int index) => StaggeredTile.count(1, 1),
+      padding: const EdgeInsets.all(4.0),
+    );
+  }
+  GridTile getGridTile(int index) {
+    if(_selectionMode){
+      return GridTile(
+          child: Wrap(
+              children: <Widget>[
+                Stack(
+                  children: <Widget>[
+                    Container(
+                      child: GestureDetector(
+                        onLongPress: () {
+                          setState(() {
+                            _changeSelection(enable: false, index: -1);
+                          });
+                        },
+                        onTap: () {
+                          setState(() {
+                            if (_selectedIndexList.contains(index)) {
+                              _selectedIndexList.remove(index);
+                              print(_selectedIndexList);
+                            } else {
+                              _selectedIndexList.add(index);
+                              print(_selectedIndexList);
+                            }
+                          });
+                        },
+
+                        child: Container(
+                          child: new Card(
+                            elevation: 10.0,
+                            child: new Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: <Widget>[
+                                new Image.asset(_imageList[index],
+                                    height: 90.0, width: 200.0, fit: BoxFit.fill),
+                                //new Image.asset(widget.imagepath,
+                                // height: 100.0, width: 200.0, fit: BoxFit.fill),
+                                photoname(customFunction: parentChange)
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 5,
+                      right: 5,
+                      child: Icon(
+                        _selectedIndexList.contains(index) ? Icons.check_circle_outline : Icons.radio_button_unchecked,
+                        color: _selectedIndexList.contains(index) ? Colors.green : Colors.black,
+                      ),
+                    ),
+                  ],
+                )
+
+              ]
+          )
+      );
+
+    }
+    else{
+      return GridTile(
+          child: Wrap(
+              children: <Widget>[
+                Container(
+                  child: GestureDetector(
+                    onLongPress: () {
+                      setState(() {
+                        _changeSelection(enable: true, index: index);
+                      });
+                      print("long press detected");
+                    },
+                    onTap: () {
+                      print("pressed");
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => PhotoThing(parentString)));
+                    },
+
+                    child: Container(
+                      child: new Card(
+                        elevation: 10.0,
+                        child: new Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: <Widget>[
+                            new Image.asset(_imageList[index],
+                                height: 90.0, width: 200.0, fit: BoxFit.fill),
+                            //photoname(customFunction: parentChange)
+
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+
+                ),
+                photoname(customFunction: parentChange)
+              ]
+          )
+      );
+    }
+  }
+  void _changeSelection({bool enable, int index}) {
+    _selectionMode = enable;
+    _selectedIndexList.add(index);
+    if (index == -1) {
+      _selectedIndexList.clear();
+    }
   }
 }
 
-class PhotoSelectionList {
+
+
+/*class PhotoSelectionList {
   PhotoSelectionList._();
   static int index =0;
   static var _photoselectedIndexList = [];
@@ -217,13 +401,15 @@ class PhotoSelectionList {
   }
 
 
-}
-class ShowPhotos extends StatefulWidget {
+}*/
+
+/*class ShowPhotos extends StatefulWidget {
   //final String Photoname;
   final customFunction;
   final imagepath;
 
   ShowPhotos(this.imagepath,{this.customFunction});
+  //ShowPhotos(index,{this.customFunction});
   @override
   _ShowPhotosState createState() => _ShowPhotosState();
 }
@@ -285,6 +471,8 @@ class _ShowPhotosState extends State<ShowPhotos> {
                              children: <Widget>[
                                new Image.asset(widget.imagepath,
                                    height: 100.0, width: 200.0, fit: BoxFit.fill),
+                               //new Image.asset(widget.imagepath,
+                                  // height: 100.0, width: 200.0, fit: BoxFit.fill),
                                photoname(customFunction: parentChange)
                              ],
                            ),
@@ -352,7 +540,7 @@ class _ShowPhotosState extends State<ShowPhotos> {
      );
    }
   }
-}
+}*/
 
 
 /*List<Widget> _buildGridTiles(numberOfTiles, BuildContext context) {
@@ -426,24 +614,32 @@ class photonameState extends State<photoname>{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return FlatButton(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+      FlatButton(
       color: Colors.grey,
-      textColor: Colors.black,
-      splashColor: Colors.white,
-      padding: EdgeInsets.all(8.0),
-      child: Text(name != null? name:'Photoname'),
-      onPressed: (){
-        createAlertDialog(context, "Photoname").then((onValue) async {
-          if( onValue != null) {
-            widget.customFunction(onValue);
-            setState(() {
-              name = onValue;
-              PhotoSelectionList.PhotoNames.add(onValue);
-            });
-          }
+        textColor: Colors.black,
+        splashColor: Colors.white,
 
-        });
-      },
+        padding: EdgeInsets.all(4.0),
+        child: Text(name != null? name:'Photoname'),
+        onPressed: (){
+          createAlertDialog(context, "Photoname").then((onValue) async {
+            if( onValue != null) {
+              widget.customFunction(onValue);
+              setState(() {
+                name = onValue;
+                print("Name is $name");
+                // PhotoSelectionList.PhotoNames.add(onValue);
+              });
+            }
+
+          });
+        },
+      ),
+      ],
     );
   }
   Future<String> createAlertDialog(BuildContext context, title){
@@ -468,7 +664,7 @@ class photonameState extends State<photoname>{
             child: Text('Submit'),
             onPressed: (){
               Navigator.of(context).pop(DescriptionCon.text.toString());
-
+              print("Submitted : ${DescriptionCon.text.toString()}");
             },
           )
         ],
@@ -477,7 +673,7 @@ class photonameState extends State<photoname>{
   }
 }
 
-/*class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
   //Stateless = immutable = cannot change object's properties
   //Every UI components are widgets
   @override
@@ -486,10 +682,10 @@ class photonameState extends State<photoname>{
     //build function returns a "Widget"
     return new MaterialApp(
         title: "",
-        home: new MainPage(title: "My Gallery")
+        home: new MainPage(title: "Gridview of Images")
     );
   }
-}*/
+}
 class SearchPhoto extends StatelessWidget{
   //final _imagepath;
   SearchPhoto();

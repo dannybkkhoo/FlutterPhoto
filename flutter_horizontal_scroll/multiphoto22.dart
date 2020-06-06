@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:flutterhorizontalscroll/Folder%20layer.dart';
-
-import 'horizontalscrollwithdescription.dart';
+import 'package:flutterhorizontalscroll/horizontalscrollwithdescription.dart';
 
 void main() => runApp(MyApp());
 
@@ -16,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Gridview of Images'),
     );
   }
 }
@@ -40,19 +38,19 @@ class _MyHomePageState extends State<MyHomePage> {
     List<Widget> _buttons = List();
     if (_selectionMode) {
       _buttons.add(
-          IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: () {
-            setState(() {
-              _selectedIndexList.sort();
-              _imageList.remove(_selectedIndexList);
-              _changeSelection(enable: false, index: -1);
-            });
-            //_selectedIndexList.sort();
-            print('Delete ${_selectedIndexList.length} items! Index: ${_selectedIndexList.toString()}');
-          }),
+        IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              setState(() {
+                _selectedIndexList.sort();
+                _imageList.remove(_selectedIndexList);
+                _changeSelection(enable: false, index: -1);
+              });
+              //_selectedIndexList.sort();
+              print('Delete ${_selectedIndexList.length} items! Index: ${_selectedIndexList.toString()}');
+            }),
 
-          );
+      );
       _buttons.add(
         FlatButton(
             child:Text('Cancel'),
@@ -61,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 _selectedIndexList.clear();
                 _changeSelection(enable: false, index: -1);
               });
-             //Navigator.push(context,MaterialPageRoute(builder: (context) => MyApp()));
+              //Navigator.push(context,MaterialPageRoute(builder: (context) => MyApp()));
 
             }),
 
@@ -151,8 +149,10 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {
                 if (_selectedIndexList.contains(index)) {
                   _selectedIndexList.remove(index);
+                  print(_selectedIndexList);
                 } else {
                   _selectedIndexList.add(index);
+                  print(_selectedIndexList);
                 }
               });
             },
@@ -160,29 +160,21 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       return GridTile(
         child: GestureDetector(
-        child: Wrap(
-          children: <Widget>[
-            Container(
-              child: Image.asset(
-                _imageList[index],
-                fit: BoxFit.cover,
-              ),
-              onLongPress: () {
-                setState(() {
-                  _changeSelection(enable: true, index: index);
-                });
-              },
-              onTap: (){
-                print("pressed");
-                Navigator.push(context,MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription('test')));
-              },
-            )
-            Container(
-              child: Text("Foldername"),
-            )
+            child: Wrap(
+              children: <Widget>[
+                Container(
+                  child: Image.asset(
+                    _imageList[index],
+                    fit: BoxFit.cover,
+                  ),
 
-          ],
-        )
+                ),
+                  Container(
+                    child: Text("Foldername"),
+                )
+
+              ],
+            ),
           /*child: Image.asset(
             _imageList[index],
             fit: BoxFit.cover,
@@ -196,6 +188,15 @@ class _MyHomePageState extends State<MyHomePage> {
             print("pressed");
             Navigator.push(context,MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription('test')));
           },*/
+            onLongPress: () {
+              setState(() {
+              _changeSelection(enable: true, index: index);
+              });
+              },
+        onTap: (){
+          print("pressed");
+          Navigator.push(context,MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription('test')));
+        },
         ),
       );
     }

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:path_provider/path_provider.dart';
 import 'horizontalscrollwithdescription.dart';
 import 'Showfolder.dart';
@@ -36,11 +37,7 @@ class MainPageFolderState extends State<MainPageFolder> {
   List<Widget> folders = new List<Widget>();
   List<String> foldernames = new List<String>();
   bool _selectionMode = false;
-  void parentChange(newbool) {
-    setState(() {
-      _selectionMode = newbool;
-    });
-  }
+  List<int> _selectedIndexList = List();
 
   int num = 0;
   void appendfoldernames(onValue){
@@ -53,7 +50,7 @@ class MainPageFolderState extends State<MainPageFolder> {
       });
     }
   }
-  void addFolder(ShowFolder folder){
+  void addFolder(folder){
 
     if(folder != null) {
       setState(() {
@@ -138,7 +135,7 @@ class MainPageFolderState extends State<MainPageFolder> {
                 print('delete button pressed');
                 createAlertDialog(context).then((onValue) async {
                   AppUtil.deletefolderInAppDocDir(onValue);
-                  deleteFolder(ShowFolder(onValue,customFunction: parentChange));
+                  //deleteFolder(ShowFolder(onValue,customFunction: parentChange));
                   SelectionList._selectedIndexList.sort();
                   //SelectionList._changeSelection(index: -1);
                 });
@@ -208,7 +205,7 @@ class MainPageFolderState extends State<MainPageFolder> {
                 }
                 else{
                   appendfoldernames(onValue);
-                  addFolder(ShowFolder(onValue,customFunction: parentChange));
+                  addFolder(onValue);
                 }
 
               }
@@ -228,19 +225,18 @@ class MainPageFolderState extends State<MainPageFolder> {
                 children: <Widget>[
                   SearchFolder(),
                   Container(
-
                       alignment: Alignment.topLeft,
                       child: Text('  Number of Folders = ${folders.length} ',style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic),
                       )
 
                   ),
-
-                  GridView.count(
+                  _createBody(),
+                  /*GridView.count(
                     physics: ScrollPhysics(),
                     shrinkWrap: true,
                     crossAxisCount: 3,
                     children: folders,
-                  ),
+                  ),*/
 
                 ],
               )
@@ -248,6 +244,157 @@ class MainPageFolderState extends State<MainPageFolder> {
         )
 
     );
+  }
+  Widget _createBody() {
+    return StaggeredGridView.countBuilder(
+      crossAxisCount: 3,
+      mainAxisSpacing: 4.0,
+      crossAxisSpacing: 4.0,
+      physics: ScrollPhysics(),
+      shrinkWrap: true,
+      primary: false,
+      itemCount: foldernames.length,
+      itemBuilder: (BuildContext context, int index) {
+        return getGridTile(index);
+      },
+      staggeredTileBuilder: (int index) => StaggeredTile.count(1, 1),
+      padding: const EdgeInsets.all(4.0),
+    );
+  }
+  void _changeSelection({bool enable, int index}) {
+    _selectionMode = enable;
+    _selectedIndexList.add(index);
+    if (index == -1) {
+      _selectedIndexList.clear();
+    }
+  }
+  GridTile getGridTile(int index) {
+    Widget build(BuildContext context) {
+      if (_selectionMode){
+        return Container(
+            child: Wrap(
+                children: <Widget>[
+                  Stack(
+                    children: <Widget>[
+
+                      Container(
+                        child: GestureDetector(
+                          onLongPress: (){
+                            //widget.customFunction(false);
+                            setState(() {
+                              _changeSelection(enable: false, index: -1);
+                              print("Selection list after cancel =${SelectionList._selectedIndexList}");
+                            });
+                            print("long press detected");
+                          },
+                          onTap: (){
+                            print("pressed");
+                            setState(() {
+                              if (_selectedIndexList.contains(index)) {
+                                _selectedIndexList.remove(index);
+                              } else {
+                                _selectedIndexList.add(index);
+                              }
+                              print(SelectionList._selectedIndexList);
+                            });
+                          },
+
+                          child: Container(
+                            child: new Card(
+                              elevation: 10.0,
+                              child: new Column(
+
+                                //crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  new SizedBox(
+                                    height: 5.0,
+                                  ),
+                                  new Image.asset("assets/Capture01.PNG",
+                                      height: 100.0, width: 100.0,fit: BoxFit.cover),
+                                  new SizedBox(
+                                    height: 5.0,
+                                  ),
+                                  new Text(foldernames != null? foldernames[index]: 'Foldername', style: TextStyle(fontSize: 15.0),),
+
+
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+
+
+                      ),
+                      Positioned(
+                        top: 5,
+                        right: 5,
+                        child: Icon(
+                          _selectedIndexList.contains(index) ? Icons.check_circle_outline : Icons.radio_button_unchecked,
+                          color: _selectedIndexList.contains(index) ? Colors.green : Colors.black,
+                        ),
+                      ),
+                    ],
+                  )
+
+                ]
+            )
+        );
+      }
+      else{
+        return Container(
+            child: Wrap(
+                children: <Widget>[
+                  Container(
+                    child: GestureDetector(
+                      onLongPress: (){
+                        //widget.customFunction(true);
+                        setState(() {
+                          _changeSelection(enable: true, index: index);
+                        });
+                        print("long press detected");
+                      },
+                      onTap: (){
+                        print("pressed");
+                        //Navigator.push(context,
+                        // MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription(widget.folderName)));
+                        Navigator.of(context).push(PageRouteBuilder(
+                            opaque: false,
+                            pageBuilder: (BuildContext context, _, __) =>
+                                HorizontalScrollWithDescription(foldernames[index])));
+                      },
+
+                      child: Container(
+                        child: new Card(
+                          elevation: 10.0,
+                          child: new Column(
+
+                            //crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              new SizedBox(
+                                height: 5.0,
+                              ),
+                              new Image.asset("assets/Capture01.PNG",
+                                  height: 100.0, width: 100.0,fit: BoxFit.cover),
+                              new SizedBox(
+                                height: 5.0,
+                              ),
+                              new Text(foldernames[index], style: TextStyle(fontSize: 15.0),),
+
+
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+
+                  ),
+
+                ]
+            )
+        );
+      }
+    }
   }
 }
 class ShowFolder extends StatefulWidget {
