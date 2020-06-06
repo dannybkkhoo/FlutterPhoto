@@ -12,7 +12,7 @@ import 'dart:io';
 
 class ImageStorage{
   /*Handles the processes for adding a folder*/
-  void AddFolder(BuildContext context) async {
+  Future<void> AddFolder(BuildContext context) async {
     UserData userData = DataProvider.of(context).userData; //get user's data
     String name = "", description = "", link = "", errormsg = "";
     bool tapped = false, validated = false;
@@ -102,7 +102,7 @@ class ImageStorage{
                         folderRecord folder = folderRecord(
                           folder_id: userData.generateUniqueID(),
                           name: name,
-                          date: getDate(),
+                          date: getDateTime(),
                           description: description,
                           link: link,
                           children: [],

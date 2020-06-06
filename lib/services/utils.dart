@@ -1,31 +1,39 @@
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:app2/services/cloud_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /*utility functions---------------------------------------------------------------------------------*/
 Future<String> getPath() async {
   var direc = await getApplicationDocumentsDirectory();
   String path = direc.path;
-  //print(path);
   return path;
 }
-
-String getDate(){
-  final now = DateTime.now();
-  final formatter = new DateFormat('dd/MM/yyyy');
-  final String date = formatter.format(now);
-  print(date);
-  return date;
+Future<String> getExtPath() async {
+  var direc = await getExternalStorageDirectory();
+  String path = direc.path;
+  return path;
 }
-
-DateTime getDefaultDate() {
+String getDate(){ //returns a string
+  return new DateFormat('dd/MM/yyyy').format(DateTime.now());
+}
+String getDateTime(){ //returns a string
+  return new DateFormat("dd/MM/yyyy HH:mm:ss").format(DateTime.now());
+}
+DateTime getDefaultDate() { //returns a datetime object
   return new DateFormat("dd/MM/yyyy HH:mm:ss").parse("01/01/2000 00:00:00");
 }
-
+DateTime convertDate(String date){
+  return new DateFormat('dd/MM/yyyy').parse(date);
+}
+DateTime convertDateTime(String datetime){
+  return new DateFormat("dd/MM/yyyy HH:mm:ss").parse(datetime);
+}
 Future<void> createDirectory(String path) async {
   final Directory directory = Directory(path);
   if(await directory.exists()){
@@ -36,7 +44,6 @@ Future<void> createDirectory(String path) async {
     print("$directory created.");
   }
 }
-
 Future<void> deleteDirectory(String path) async {
   final Directory directory = Directory(path);
   if(await directory.exists()){
@@ -47,7 +54,6 @@ Future<void> deleteDirectory(String path) async {
     print("Directory doesn't exist.");
   }
 }
-
 Future<void> deleteFile(String path) async {
   final File file = File(path);
   if(await file.exists()){
@@ -58,8 +64,7 @@ Future<void> deleteFile(String path) async {
     print("File doesn't exist.");
   }
 }
-
-Future<File> createImageFile(String uid, String image_id, String folder_path) async {
+Future<File> createImageIntFile(String uid, String image_id, String folder_path) async {
   final appDocDir = await getPath();                  //all files stored under appDocDirectory/uid
   var directory_path;
   if(folder_path != "") {                             //if folder_path is specified
@@ -70,6 +75,24 @@ Future<File> createImageFile(String uid, String image_id, String folder_path) as
   }
   await createDirectory(directory_path);              //checks if directory exists, if not exists, then create all paths
   return File(directory_path + image_id + ".jpg"); //create file to store image
+}
+Future<void> createImageGarFile(path) async {
+  await GallerySaver.saveImage(path).then((String pat){
+    print(pat);
+  });
+  print("LOL");
+}
+Future<bool> getPermission() async {
+  if(Platform.isAndroid){
+    return await requestPermission(Permission.photos) && await requestPermission(Permission.mediaLibrary);
+  }
+  else{
+    return await requestPermission(Permission.storage) && await requestPermission(Permission.accessMediaLocation);
+  }
+}
+Future<bool> requestPermission(Permission permission) async {
+  final PermissionStatus status = await permission.request();
+  return await permission.isGranted;
 }
 /*end of utility functions--------------------------------------------------------------------------------*/
 

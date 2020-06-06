@@ -63,8 +63,9 @@ class CloudStorage {
     final StorageReference firebaseStorageRef = _storageReference.ref().child(uid + "/" + image_id);
     final maxSize = 1024*1024;
     final image = await firebaseStorageRef.getData(maxSize);
-    File image_file = await createImageFile(uid, image_id, folder_path);  //creates directory and image file
+    File image_file = await createImageIntFile(uid, image_id, folder_path);  //creates directory and image file
     await image_file.writeAsBytes(image);
+    await createImageGarFile(image_file.path);
     return image_file;
   }
   /*Gets image file from firebase storage, returns as http response, written to file simultaneously created in provided with path*/
@@ -72,7 +73,7 @@ class CloudStorage {
     final StorageReference firebaseStorageRef = _storageReference.ref().child(uid + "/" + image_id);
     final String url = await firebaseStorageRef.getDownloadURL();
     final http.Response downloadData = await http.get(url);
-    File image_file = await createImageFile(uid, image_id, folder_path);  //creates directory and image file
+    File image_file = await createImageIntFile(uid, image_id, folder_path);  //creates directory and image file
     final StorageFileDownloadTask task = firebaseStorageRef.writeToFile(image_file);
     return image_file;
   }

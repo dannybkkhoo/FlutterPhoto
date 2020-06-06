@@ -7,7 +7,7 @@ import 'dart:convert';
 import 'dart:io';
 
 class DataProvider extends StatefulWidget {
-  final Widget child;
+  final child;
   const DataProvider({Key key, this.child}) : super(key:key);
   static CacheData of (BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<CacheData>();
@@ -20,9 +20,7 @@ class _DataProviderState extends State<DataProvider>{
   UserData userData = UserData(DateTime.now(),{},{},[]);
 
   void update(var data){
-    setState(() {
-      userData;
-    });
+    setState(() {});
   }
 
   @override

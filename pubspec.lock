@@ -8,13 +8,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
-  after_init:
-    dependency: "direct main"
-    description:
-      name: after_init
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.2"
   analyzer:
     dependency: transitive
     description:
@@ -361,6 +354,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  gallery_saver:
+    dependency: "direct main"
+    description:
+      name: gallery_saver
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   glob:
     dependency: transitive
     description:
@@ -564,6 +564,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0+1"
+  permission_handler:
+    dependency: "direct main"
+    description:
+      name: permission_handler
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.0+hotfix.8"
+  permission_handler_platform_interface:
+    dependency: transitive
+    description:
+      name: permission_handler_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   petitparser:
     dependency: transitive
     description:
@@ -653,6 +667,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  sliver_fill_remaining_box_adapter:
+    dependency: "direct main"
+    description:
+      name: sliver_fill_remaining_box_adapter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
   source_gen:
     dependency: transitive
     description:

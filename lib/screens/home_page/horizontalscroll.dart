@@ -1,16 +1,62 @@
+import 'package:app2/services/dataprovider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:app2/services/userdata.dart';
 //import 'package:flutterhorizontalscroll/multiplephoto.dart';
 import 'package:intl/intl.dart';
-//import 'Folder layer.dart';
-//import 'lauchurl.dart';
+import '../../services/utils.dart';
+import '../../services/authprovider.dart';
+import 'dart:io';
 
-class HorizontalScrollWithDescription extends StatelessWidget{
-  final _foldername;
-  HorizontalScrollWithDescription(this._foldername);
+class HorizontalScrollWithDescription extends StatefulWidget{
+  final _folder_id;
+  HorizontalScrollWithDescription(this._folder_id);
+
+  @override
+  State<StatefulWidget> createState() => new _HorizontalScrollWithDescriptionState();
+}
+
+class _HorizontalScrollWithDescriptionState extends State<HorizontalScrollWithDescription>{
+  String _name, _description, _link;
+  DateTime _date;
+  List _children;
+  List<Widget> _images;
+
+  void _findFolder(String folder_id){
+    UserData user = DataProvider.of(context).userData;
+    for(Map folder in user.folders){
+      if(folder.containsKey("folder_id")){
+        if(folder["folder_id"] == folder_id) {
+          _name = folder["name"];
+          _date = convertDate(folder["date"]);
+          _description = folder["description"];
+          _link = folder["link"];
+          _children = folder["children"];
+        }
+      }
+    }
+  }
+
+  Future<List<Widget>> _generateImagePreview(List children) async {
+    final String uid = await AuthProvider.of(context).auth.getUID();
+    final String folder_path = await getPath() + "/" + uid + "/" + widget._folder_id;
+    print("Generating image previews...");
+    List<Widget> showImagePreview = [];
+    for(Map image in children){  //create directory on local storage if not exists
+      final String file_path = folder_path + "/" + image["image_id"] + ".jpg";
+      showImagePreview.add(ImagePreview(file_path));
+    }
+    print(showImagePreview);
+    return showImagePreview;
+  }
+
+  @override
+  void initState(){
+    _findFolder(widget._folder_id);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return new Scaffold(
         resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
@@ -23,18 +69,11 @@ class HorizontalScrollWithDescription extends StatelessWidget{
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: <Widget>[
-                      PhotoPreviewFunctionwithDes("assets/Capture1.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-                      PhotoPreviewFunctionwithDes("assets/Capture2.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-                      PhotoPreviewFunctionwithDes("assets/Capture3.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-                      PhotoPreviewFunctionwithDes("assets/Capture1.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-                      PhotoPreviewFunctionwithDes("assets/Capture2.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-                      PhotoPreviewFunctionwithDes("assets/Capture3.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()),
-
+                      Text("TESTING")
                     ],
                   ),
                 ),
-                DescriptionFolder(DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(), _foldername),
-
+//                DescriptionFolder(DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(), _folder_id, _folder_id),
               ],
             ),
           ),
@@ -42,43 +81,37 @@ class HorizontalScrollWithDescription extends StatelessWidget{
     );
   }
 }
-class PhotoPreviewFunctionwithDes extends StatelessWidget{
-  final _imagePath, _datetime;
 
-  //PhotoPreviewFunctionwithDes();
-  PhotoPreviewFunctionwithDes(this._imagePath, this._datetime);
+class ImagePreview extends StatelessWidget{
+  final String _imagePath;  //with file extension
+  final onTap;
+  ImagePreview(this._imagePath,{this.onTap});
+
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: 350.0,
-        height: 260.0,
-
-        child: Card(
-            child: Wrap(
-                children: <Widget>[
-                  Container(
-
-                    child: GestureDetector(
-                      onTap: (){
-                        Navigator.push(context,MaterialPageRoute(builder: (context) => MainPage(title: "GridView of Images")));
-                      },
-                      child: Image.asset(_imagePath),
-                    ),
-                  ),
-
-                ]
-            )
+      alignment: Alignment.center,
+      width: 350.0,
+      height: 260.0,
+      child: Card(
+        child: Wrap(
+          children: <Widget>[
+            Container(
+              child: GestureDetector(
+                onTap: () => onTap,
+                child: Image.file(File(_imagePath)),
+              ),
+            ),
+          ]
         )
-
-
-
+      )
     );
   }
 }
 
 class DescriptionFolder extends StatefulWidget{
-  final String _datetime, _foldername;
-  DescriptionFolder(this._datetime, this._foldername);
+  final String _datetime, _foldername, _link;
+  DescriptionFolder(this._datetime, this._foldername, this._link);
 
   @override
   DescriptionFolderState createState() => new DescriptionFolderState();
@@ -86,7 +119,7 @@ class DescriptionFolder extends StatefulWidget{
 class DescriptionFolderState extends State<DescriptionFolder>{
   final linkCon = new TextEditingController();
   static String _Des = 'No Description';
-  static String _link = 'No link';
+  //static String _link = 'No link';
   @override
 
   Widget build(BuildContext context) {
@@ -117,6 +150,10 @@ class DescriptionFolderState extends State<DescriptionFolder>{
                       onTap: () {
                         createAlertDialog(context,"Description").then((onValue) async {
                           if( onValue != null) {
+                            var a = DataProvider.of(context).userData.folders;
+                            a.forEach((folder){
+                              folder['link'] = "a";
+                            });
                             setState(() {
                               _Des = onValue;
                             });
@@ -142,7 +179,7 @@ class DescriptionFolderState extends State<DescriptionFolder>{
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(
-                child: Text('Link: $_link', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+                child: Text('Link: $widget._link', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
               ),
               SizedBox.fromSize(
                 size: Size(46, 56), // button width and height
@@ -155,8 +192,8 @@ class DescriptionFolderState extends State<DescriptionFolder>{
                         createAlertDialog(context, "Link").then((onValue) async {
                           if( onValue != null) {
                             setState(() {
-                              _link = onValue;
-                              Navigator.push(context,MaterialPageRoute(builder: (context) => URLPAGE(_link)));
+                              //widget._link = onValue;
+                              //Navigator.push(context,MaterialPageRoute(builder: (context) => URLPAGE(_link)));
                             });
                           }
 
@@ -275,8 +312,6 @@ class DescriptionFolderState extends State<DescriptionFolder>{
     });
   }
 }
-
-
 
 enum DialogAction { yes, abort }
 
