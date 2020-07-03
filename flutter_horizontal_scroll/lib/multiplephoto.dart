@@ -25,7 +25,7 @@ class MainPage extends StatefulWidget {
 class MainPageState extends State<MainPage> {
   //State must have "build" => return Widget
   String parentString = 'Photoname';
-
+  String name;
   File _image;
   List<String> _imageList = List();
   List<int> _selectedIndexList = List();
@@ -34,7 +34,7 @@ class MainPageState extends State<MainPage> {
   List<String> photonames = new List<String>();
   int num = 0;
   @override
-  void initState() {
+  /*void initState() {
     super.initState();
     _imageList.add("assets/Capture1.PNG");
     _imageList.add("assets/Capture2.PNG");
@@ -58,13 +58,13 @@ class MainPageState extends State<MainPage> {
     _imageList.add("assets/Capture2.PNG");
     _imageList.add("assets/Capture3.PNG");
 
-  }
+  }*/
   void parentChange(newString) {
     setState(() {
       parentString = newString;
     });
   }
-  void appendfoldernames(onValue){
+  void appendphotonames(onValue){
     if(onValue != null) {
       setState(() {
         //photos.add(folder);
@@ -111,7 +111,14 @@ class MainPageState extends State<MainPage> {
       _imageList.add(_image.path);
     });
   }
+  @override
+  bool isSort = true;
 
+  void sort(List folders) {
+    photonames.sort((a, b) => isSort ? a.compareTo(b) : b.compareTo(a));
+    isSort = !isSort;
+
+  }
   @override
   Widget build(BuildContext context) {
     List<Widget> _buttons = List();
@@ -121,9 +128,9 @@ class MainPageState extends State<MainPage> {
             icon: Icon(Icons.delete),
             onPressed: () {
               setState(() {
-                _selectedIndexList.sort();
+                _selectedIndexList.sort((b, a) => a.compareTo(b));
                 print('Delete ${_selectedIndexList.length} items! Index: ${_selectedIndexList.toString()}');
-                for(var i = 0; i < _selectedIndexList.length; i++){
+                for(int i = 0; i < _selectedIndexList.length; i++){
                   print("Currently deleting : ${_selectedIndexList[i]}");
                   _imageList = List.from(_imageList)..removeAt(_selectedIndexList[i]);
 
@@ -167,7 +174,8 @@ class MainPageState extends State<MainPage> {
           icon: Icon(Icons.sort_by_alpha),
           onPressed: () {
             print('sortyo');
-            ShowSortOptions(context);
+            sort(_imageList);
+            //ShowSortOptions(context);
           },
         ),);
     }
@@ -175,7 +183,9 @@ class MainPageState extends State<MainPage> {
     // TODO: implement build
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(widget.title),
+        title: Text(_selectedIndexList.length < 1
+            ? "Gridview of Images"
+            : "${_selectedIndexList.length} item selected"),
         actions: _buttons
         /*<Widget>[
           IconButton(
@@ -259,6 +269,66 @@ class MainPageState extends State<MainPage> {
     );
 
   }
+  Widget _photonames() {
+    // TODO: implement build
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        FlatButton(
+          color: Colors.grey,
+          textColor: Colors.black,
+          splashColor: Colors.white,
+
+          padding: EdgeInsets.all(4.0),
+          child: Text(name != null? name:'Photoname'),
+          onPressed: (){
+            createAlertDialog(context, "Photoname").then((onValue) async {
+              if( onValue != null) {
+                //widget.customFunction(onValue);
+                setState(() {
+                  name = onValue;
+                  print("Name is $name");
+
+                });
+              }
+
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  Future<String> createAlertDialog(BuildContext context, title){
+    TextEditingController DescriptionCon = TextEditingController();
+
+    return showDialog(context: context,builder: (context){
+      return AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: DescriptionCon ,
+        ),
+        actions: <Widget>[
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('Cancel'),
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
+          ),
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('Submit'),
+            onPressed: (){
+              Navigator.of(context).pop(DescriptionCon.text.toString());
+              print("Submitted : ${DescriptionCon.text.toString()}");
+            },
+          )
+        ],
+      );
+    });
+  }
   Widget _createBody() {
     return StaggeredGridView.countBuilder(
       crossAxisCount: 3,
@@ -309,9 +379,10 @@ class MainPageState extends State<MainPage> {
                               children: <Widget>[
                                 new Image.asset(_imageList[index],
                                     height: 90.0, width: 200.0, fit: BoxFit.fill),
+                                _photonames(),
                                 //new Image.asset(widget.imagepath,
                                 // height: 100.0, width: 200.0, fit: BoxFit.fill),
-                                photoname(customFunction: parentChange)
+                                //photoname(customFunction: parentChange)
                               ],
                             ),
                           ),
@@ -349,7 +420,7 @@ class MainPageState extends State<MainPage> {
                     onTap: () {
                       print("pressed");
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => PhotoThing(parentString)));
+                          builder: (context) => PhotoThing(photonames[index])));
                     },
 
                     child: Container(
@@ -361,7 +432,7 @@ class MainPageState extends State<MainPage> {
                             new Image.asset(_imageList[index],
                                 height: 90.0, width: 200.0, fit: BoxFit.fill),
                             //photoname(customFunction: parentChange)
-
+                            _photonames(),
                           ],
                         ),
                       ),
@@ -370,7 +441,7 @@ class MainPageState extends State<MainPage> {
 
 
                 ),
-                photoname(customFunction: parentChange)
+               // photoname(customFunction: parentChange)
               ]
           )
       );
@@ -642,6 +713,7 @@ class photonameState extends State<photoname>{
       ],
     );
   }
+
   Future<String> createAlertDialog(BuildContext context, title){
     TextEditingController DescriptionCon = TextEditingController();
 

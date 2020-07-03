@@ -5,7 +5,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:path_provider/path_provider.dart';
 import 'horizontalscrollwithdescription.dart';
 import 'Showfolder.dart';
-
+import 'dart:math';
 
 void main() => runApp(MaterialApp(
 
@@ -35,7 +35,7 @@ class MainPageFolder extends StatefulWidget {
 class MainPageFolderState extends State<MainPageFolder> {
   //State must have "build" => return Widget
   List<Widget> folders = new List<Widget>();
-  List<String> foldernames = new List<String>();
+  List<String> foldernames = List();
   bool _selectionMode = false;
   List<int> _selectedIndexList = List();
 
@@ -45,12 +45,13 @@ class MainPageFolderState extends State<MainPageFolder> {
       setState(() {
         //folders.add(folder);
         foldernames = List.from(foldernames)..add(onValue);
+        //SortedFolders = List.from(SortedFolders)..add(onValue);
         print(foldernames);
         print(foldernames.length);
       });
     }
   }
-  void addFolder(folder){
+  /*void addFolder(folder){
 
     if(folder != null) {
       setState(() {
@@ -59,7 +60,7 @@ class MainPageFolderState extends State<MainPageFolder> {
         print(folders);
       });
     }
-  }
+  }*/
 
 
 
@@ -107,6 +108,7 @@ class MainPageFolderState extends State<MainPageFolder> {
   }
 
 
+
   @override
   bool isSort = true;
 
@@ -116,13 +118,7 @@ class MainPageFolderState extends State<MainPageFolder> {
 
   }
 
-
-  List SortedFolders;
   @override
-  void initState(){
-    super.initState();
-    SortedFolders = foldernames;
-  }
 
   Widget build(BuildContext context) {
     List<Widget> _buttons = List();
@@ -132,13 +128,19 @@ class MainPageFolderState extends State<MainPageFolder> {
             icon: Icon(Icons.delete),
             onPressed: () {
               setState(() {
-                print('delete button pressed');
-                createAlertDialog(context).then((onValue) async {
-                  AppUtil.deletefolderInAppDocDir(onValue);
-                  //deleteFolder(ShowFolder(onValue,customFunction: parentChange));
-                  SelectionList._selectedIndexList.sort();
-                  //SelectionList._changeSelection(index: -1);
-                });
+                //_selectedIndexList.sort();
+                _selectedIndexList.sort((b, a) => a.compareTo(b));
+                print('Going to delete ${_selectedIndexList.length} items! Item index: ${_selectedIndexList.toString()}');
+                //for(int i = 0; i < _selectedIndexList.length; i++){
+                for(int i = 0; i < _selectedIndexList.length ; i++){
+                  var dirdelete = foldernames.elementAt(_selectedIndexList[i]);
+                  AppUtil.deletefolderInAppDocDir(dirdelete);
+                  foldernames.removeAt(_selectedIndexList[i]);
+
+                }
+                _changeSelection(enable: false, index: -1);
+                print('Number of items in selected list: ${_selectedIndexList.length} items!');
+                print(foldernames);
               });
 
             }),
@@ -151,23 +153,24 @@ class MainPageFolderState extends State<MainPageFolder> {
             print('Sharings');
             ShowFolderOptions(context);
           },
-        ),);
-      /*_buttons.add(
+        ),
+      );
+      _buttons.add(
         FlatButton(
             child:Text('Cancel'),
             onPressed: () {
               setState(() {
-                SelectionList._selectedIndexList.clear();
-                SelectionList._changeSelection(index: -1);
+                //_selectedIndexList.clear();
+                //_changeSelection(enable: false, index: -1);
                 _selectionMode =false;
-
-                print("Selection list after cancel =${SelectionList._selectedIndexList}");
+                _selectedIndexList.clear();
               });
               //Navigator.push(context,MaterialPageRoute(builder: (context) => MyApp()));
 
             }),
 
-      );*/
+      );
+
     }
     else{
       _buttons.add(
@@ -176,20 +179,27 @@ class MainPageFolderState extends State<MainPageFolder> {
         onPressed: () {
           //ShowSortOptions(context);
           sort(foldernames);
-          setState(() {
-            foldernames = SortedFolders;
-          });
-          print('Sorted list = $foldernames');
-          print("From class A: $_selectionMode");
+
         },
       ),);
+      _buttons.add(
+        IconButton(
+          icon: Icon(Icons.settings),
+          onPressed: () {
+            _showChoiceDialog(context);
+            },
+        ),
+      );
 
     }
+
     // TODO: implement build
     return new Scaffold(
 
         appBar: new AppBar(
-          title: new Text(widget.title),
+          title: Text(_selectedIndexList.length < 1
+          ? "My Gallery"
+           : "${_selectedIndexList.length} item selected"),
           actions: _buttons,
         ),
         floatingActionButton: FloatingActionButton.extended(
@@ -199,13 +209,14 @@ class MainPageFolderState extends State<MainPageFolder> {
                 AppUtil.createFolderInAppDocDir(onValue);
 
                 if(foldernames.contains(onValue)){
-                  print('Nope');
+                  print('Nope exist liao');
                   print(foldernames);
                   return null;
                 }
                 else{
                   appendfoldernames(onValue);
-                  addFolder(onValue);
+                  print("Current foldernames has: $foldernames");
+                  //addFolder(onValue);
                 }
 
               }
@@ -226,7 +237,7 @@ class MainPageFolderState extends State<MainPageFolder> {
                   SearchFolder(),
                   Container(
                       alignment: Alignment.topLeft,
-                      child: Text('  Number of Folders = ${folders.length} ',style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic),
+                      child: Text('  Number of Folders = ${foldernames.length} ',style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic),
                       )
 
                   ),
@@ -243,6 +254,68 @@ class MainPageFolderState extends State<MainPageFolder> {
           ),
         )
 
+    );
+  }
+  Future <void> _showChoiceDialog(BuildContext context){
+    return showDialog(context: context,builder: (BuildContext context){
+      return AlertDialog(
+        title: Text('Settings'),
+        contentPadding: EdgeInsets.only(top: 12.0),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              GestureDetector(
+                onTap: (){
+                  print('Logging out');
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    new SizedBox(
+                      width: 10.0,
+                    ),
+                    Icon(Icons.lock_outline),
+                    new SizedBox(
+                      width: 10.0,
+                    ),
+                    Text('Log Out',style: TextStyle(fontSize: 20.0)),
+
+                  ],
+                ),
+
+              ),
+
+              Padding(padding: EdgeInsets.all(8.0),),
+              GestureDetector(
+                onTap: (){
+                  print('detected');
+                  Navigator.of(context).push(PageRouteBuilder(
+                      opaque: false,
+                      pageBuilder: (BuildContext context, _, __) =>
+                          FormScreen()));
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    new SizedBox(
+                      width: 10.0,
+                    ),
+                    Icon(Icons.contact_mail),
+                    new SizedBox(
+                      width: 10.0,
+                    ),
+                    Text('Contact Us',style: TextStyle(fontSize: 20.0)),
+                  ],
+                ),
+              ),
+              Padding(padding: EdgeInsets.all(8.0),),
+            ],
+          ),
+        ),
+      );
+    },
     );
   }
   Widget _createBody() {
@@ -269,9 +342,8 @@ class MainPageFolderState extends State<MainPageFolder> {
     }
   }
   GridTile getGridTile(int index) {
-    Widget build(BuildContext context) {
       if (_selectionMode){
-        return Container(
+        return GridTile(
             child: Wrap(
                 children: <Widget>[
                   Stack(
@@ -283,7 +355,7 @@ class MainPageFolderState extends State<MainPageFolder> {
                             //widget.customFunction(false);
                             setState(() {
                               _changeSelection(enable: false, index: -1);
-                              print("Selection list after cancel =${SelectionList._selectedIndexList}");
+                              print("Selection list after cancel =${_selectedIndexList}");
                             });
                             print("long press detected");
                           },
@@ -295,7 +367,7 @@ class MainPageFolderState extends State<MainPageFolder> {
                               } else {
                                 _selectedIndexList.add(index);
                               }
-                              print(SelectionList._selectedIndexList);
+                              print(_selectedIndexList);
                             });
                           },
 
@@ -310,11 +382,11 @@ class MainPageFolderState extends State<MainPageFolder> {
                                     height: 5.0,
                                   ),
                                   new Image.asset("assets/Capture01.PNG",
-                                      height: 100.0, width: 100.0,fit: BoxFit.cover),
+                                      height: 90.0, width: 100.0,fit: BoxFit.cover),
                                   new SizedBox(
                                     height: 5.0,
                                   ),
-                                  new Text(foldernames != null? foldernames[index]: 'Foldername', style: TextStyle(fontSize: 15.0),),
+                                  new Text(foldernames[index] != null? foldernames[index]: 'Foldername', style: TextStyle(fontSize: 15.0),),
 
 
                                 ],
@@ -341,13 +413,12 @@ class MainPageFolderState extends State<MainPageFolder> {
         );
       }
       else{
-        return Container(
+        return GridTile(
             child: Wrap(
                 children: <Widget>[
                   Container(
                     child: GestureDetector(
                       onLongPress: (){
-                        //widget.customFunction(true);
                         setState(() {
                           _changeSelection(enable: true, index: index);
                         });
@@ -374,7 +445,7 @@ class MainPageFolderState extends State<MainPageFolder> {
                                 height: 5.0,
                               ),
                               new Image.asset("assets/Capture01.PNG",
-                                  height: 100.0, width: 100.0,fit: BoxFit.cover),
+                                  height: 90.0, width: 100.0,fit: BoxFit.cover),
                               new SizedBox(
                                 height: 5.0,
                               ),
@@ -394,10 +465,10 @@ class MainPageFolderState extends State<MainPageFolder> {
             )
         );
       }
-    }
+
   }
 }
-class ShowFolder extends StatefulWidget {
+/*class ShowFolder extends StatefulWidget {
   String folderName;
   final customFunction;
   ShowFolder(this.folderName, {this.customFunction});
@@ -558,7 +629,7 @@ class _ShowFolderState extends State<ShowFolder>{
       );
     }
   }
-}
+}*/
 
 class SearchFolder extends StatelessWidget{
   //final _imagepath;
@@ -750,6 +821,7 @@ class _MultiSelectDialogStateSort<V> extends State<MultiSelectDialogSort<V>> {
 
   @override
   Widget build(BuildContext context) {
+
     return AlertDialog(
       title: Text('Sort By'),
       contentPadding: EdgeInsets.only(top: 12.0),
@@ -812,6 +884,207 @@ class AppUtil{
       print("Folder does not exist ");
       return null;
     }
+  }
+}
+
+class FormScreen extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return FormScreenState();
+  }
+}
+
+class FormScreenState extends State<FormScreen> {
+  String _name;
+  String _email;
+  String _message;
+  String _subject;
+  String _phoneNumber;
+
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  Widget _buildName() {
+    return TextFormField(
+      decoration: InputDecoration(labelText: 'Name'),
+      maxLength:  20,
+      validator: (String value) {
+        if (value.isEmpty) {
+          return 'Name is Required';
+        }
+
+        return null;
+      },
+      onSaved: (String value) {
+        _name = value;
+      },
+    );
+  }
+
+  Widget _buildEmail() {
+    return TextFormField(
+      decoration: InputDecoration(labelText: 'Email'),
+      validator: (String value) {
+        if (value.isEmpty) {
+          return 'Email is Required';
+        }
+
+        if (!RegExp(
+            r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+            .hasMatch(value)) {
+          return 'Please enter a valid email Address';
+        }
+
+        return null;
+      },
+      onSaved: (String value) {
+        _email = value;
+      },
+    );
+  }
+
+  Widget _buildMessage() {
+    return TextFormField(
+      decoration: InputDecoration(labelText: 'Message'),
+      keyboardType: TextInputType.multiline,
+      maxLines: null,
+      validator: (String value) {
+        if (value.isEmpty) {
+          return 'Write us a message';
+        }
+
+        return null;
+      },
+      onSaved: (String value) {
+        _message = value;
+      },
+    );
+  }
+
+  Widget _buildSubject() {
+    return TextFormField(
+      decoration: InputDecoration(labelText: 'Subject'),
+      keyboardType: TextInputType.multiline,
+      maxLines: null,
+      validator: (String value) {
+        if (value.isEmpty) {
+          return 'Subject is Required';
+        }
+
+        return null;
+      },
+      onSaved: (String value) {
+        _subject = value;
+      },
+    );
+  }
+
+  Widget _buildPhoneNumber() {
+    return TextFormField(
+      decoration: InputDecoration(labelText: 'Phone Number'),
+      keyboardType: TextInputType.phone,
+      validator: (String value) {
+        if (value.isEmpty) {
+          return 'Phone number is Required';
+        }
+
+        return null;
+      },
+      onSaved: (String value) {
+        _subject = value;
+      },
+    );
+  }
+  Future <void> _Thankyoudialog(BuildContext context){
+    return showDialog(context: context,builder: (BuildContext context){
+      return AlertDialog(
+          title: Text("Contact Us"),
+          content: Text("Thank you for your feedback, your will be contacted shortly."),
+          actions:[
+            FlatButton(
+              child: Row(
+                children: <Widget>[
+                  Icon(Icons.keyboard_return),
+                  Text('Back')
+                ],
+              ),
+              onPressed: (){
+                Navigator.of(context)
+                    .popUntil(ModalRoute.withName("/Page1"));
+              },
+            ),
+          ]
+      );
+    },
+    );
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Contact Us")),
+      body: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _buildName(),
+                _buildEmail(),
+                _buildPhoneNumber(),
+                _buildSubject(),
+                _buildMessage(),
+
+                SizedBox(height: 100),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    RaisedButton(
+                      child: Text(
+                        'Submit',
+                        style: TextStyle(color: Colors.black, fontSize: 16),
+                      ),
+                      onPressed: () {
+
+                        if (!_formKey.currentState.validate()) {
+                          return;
+                        }
+
+                        _formKey.currentState.save();
+
+                        print(_name);
+                        print(_email);
+                        print(_phoneNumber);
+                        print(_subject);
+                        print(_message);
+                        _Thankyoudialog(context);
+                        //Send to API
+                      },
+                    ),
+                    RaisedButton(
+                      child: Row(
+                        children: <Widget>[
+                          Icon(Icons.keyboard_return),
+                          Text('Back')
+                        ],
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
