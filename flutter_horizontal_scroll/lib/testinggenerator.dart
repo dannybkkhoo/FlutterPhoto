@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'horizontalscrollwithdescription.dart';
 import 'Showfolder.dart';
@@ -36,8 +37,10 @@ class MainPageFolderState extends State<MainPageFolder> {
   //State must have "build" => return Widget
   List<Widget> folders = new List<Widget>();
   List<String> foldernames = List();
+  List<String> folderdates = List();
   bool _selectionMode = false;
   List<int> _selectedIndexList = List();
+  List<String> duplicatefoldernames = List();
 
   int num = 0;
   void appendfoldernames(onValue){
@@ -45,11 +48,19 @@ class MainPageFolderState extends State<MainPageFolder> {
       setState(() {
         //folders.add(folder);
         foldernames = List.from(foldernames)..add(onValue);
-        //SortedFolders = List.from(SortedFolders)..add(onValue);
+        duplicatefoldernames = List.from(duplicatefoldernames)..add(onValue);
         print(foldernames);
         print(foldernames.length);
       });
     }
+  }
+  void appendfolderdates(){
+      setState(() {
+        folderdates = List.from(folderdates)..add(DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString());
+        print(folderdates);
+        print(folderdates.length);
+      });
+
   }
   /*void addFolder(folder){
 
@@ -110,15 +121,24 @@ class MainPageFolderState extends State<MainPageFolder> {
 
 
   @override
-  bool isSort = true;
+  bool isSortfolder = true;
+  bool isSortDate = true;
+  bool Tick = false;
 
-  void sort(List folders) {
-    foldernames.sort((a, b) => isSort ? a.compareTo(b) : b.compareTo(a));
-    isSort = !isSort;
+  void sortdate(List foldersdate) {
+    foldernames.sort((a, b) => isSortDate ? a.compareTo(b) : b.compareTo(a));
+    isSortDate = !isSortDate;
+
+  }
+  void sortfolder(List folders) {
+    foldernames.sort((a, b) => isSortfolder ? a.compareTo(b.toString().toLowerCase()) : b.compareTo(a.toString().toLowerCase()));
+    isSortfolder = !isSortfolder;
 
   }
 
+
   @override
+
 
   Widget build(BuildContext context) {
     List<Widget> _buttons = List();
@@ -128,15 +148,15 @@ class MainPageFolderState extends State<MainPageFolder> {
             icon: Icon(Icons.delete),
             onPressed: () {
               setState(() {
-                //_selectedIndexList.sort();
                 _selectedIndexList.sort((b, a) => a.compareTo(b));
                 print('Going to delete ${_selectedIndexList.length} items! Item index: ${_selectedIndexList.toString()}');
                 //for(int i = 0; i < _selectedIndexList.length; i++){
-                for(int i = 0; i < _selectedIndexList.length ; i++){
+                for(int i = 0; i < _selectedIndexList.length; i++){
                   var dirdelete = foldernames.elementAt(_selectedIndexList[i]);
                   AppUtil.deletefolderInAppDocDir(dirdelete);
                   foldernames.removeAt(_selectedIndexList[i]);
-
+                  duplicatefoldernames.clear();
+                  duplicatefoldernames.addAll(foldernames);
                 }
                 _changeSelection(enable: false, index: -1);
                 print('Number of items in selected list: ${_selectedIndexList.length} items!');
@@ -170,15 +190,30 @@ class MainPageFolderState extends State<MainPageFolder> {
             }),
 
       );
+      /*_buttons.add(
+        FlatButton(
+            child:Text('Cancel'),
+            onPressed: () {
+              setState(() {
+                SelectionList._selectedIndexList.clear();
+                SelectionList._changeSelection(index: -1);
+                _selectionMode =false;
 
+                print("Selection list after cancel =${SelectionList._selectedIndexList}");
+              });
+              //Navigator.push(context,MaterialPageRoute(builder: (context) => MyApp()));
+
+            }),
+
+      );*/
     }
     else{
       _buttons.add(
         IconButton(
           icon: Icon(Icons.sort_by_alpha),
         onPressed: () {
-          //ShowSortOptions(context);
-          sort(foldernames);
+         _showChoiceDialogForSort(context);
+         print('Sorted');
 
         },
       ),);
@@ -214,6 +249,7 @@ class MainPageFolderState extends State<MainPageFolder> {
                   return null;
                 }
                 else{
+                  appendfolderdates();
                   appendfoldernames(onValue);
                   print("Current foldernames has: $foldernames");
                   //addFolder(onValue);
@@ -234,10 +270,10 @@ class MainPageFolderState extends State<MainPageFolder> {
           child: Container(
               child:Column(
                 children: <Widget>[
-                  SearchFolder(),
+                  SearchFolder(context),
                   Container(
                       alignment: Alignment.topLeft,
-                      child: Text('  Number of Folders = ${foldernames.length} ',style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic),
+                      child: Text(Tick != false? 'No folders found':'  Number of Folders = ${foldernames.length} ',style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic),
                       )
 
                   ),
@@ -316,6 +352,137 @@ class MainPageFolderState extends State<MainPageFolder> {
         ),
       );
     },
+    );
+  }
+  Future <void> _showChoiceDialogForSort(BuildContext context){
+    return showDialog(context: context,builder: (BuildContext context){
+      return AlertDialog(
+        title: Text('Sort By'),
+        contentPadding: EdgeInsets.only(top: 12.0),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              GestureDetector(
+                onTap: (){
+                  sortfolder(foldernames);
+                  setState(() {
+                    foldernames = foldernames;
+                  });
+                  print('Sorted by name');
+                  Navigator.pop(context);
+
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    new SizedBox(
+                      width: 10.0,
+                    ),
+
+                    Icon(isSortfolder != true? Icons.arrow_upward : Icons.arrow_downward),
+                    Icon(Icons.sort_by_alpha),
+                    new SizedBox(
+                      width: 10.0,
+                    ),
+                    Text('Name',style: TextStyle(fontSize: 20.0)),
+
+                  ],
+                ),
+
+              ),
+
+              Padding(padding: EdgeInsets.all(8.0),),
+              GestureDetector(
+                onTap: (){
+                  print('Sorted by Date');
+                  sortdate(folderdates);
+                  setState(() {
+                    folderdates = folderdates;
+                  });
+                  Navigator.pop(context);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    new SizedBox(
+                      width: 10.0,
+                    ),
+                    Icon(isSortfolder != true? Icons.arrow_upward : Icons.arrow_downward),
+                    Icon(Icons.date_range),
+                    new SizedBox(
+                      width: 10.0,
+                    ),
+                    Text('Date',style: TextStyle(fontSize: 20.0)),
+                  ],
+                ),
+              ),
+              Padding(padding: EdgeInsets.all(8.0),),
+            ],
+          ),
+        ),
+      );
+    },
+    );
+  }
+
+ void filterSearchResults(String text) {
+   List<String> dummySearchList = List<String>();
+   dummySearchList.addAll(duplicatefoldernames);
+    if(text.isNotEmpty && text.length > 0) {
+      List<String> dummyListData = List<String>();
+      dummySearchList.forEach((item) {
+        if(item.toLowerCase().contains(text.toLowerCase()) || item.contains(text.toLowerCase())) {
+          dummyListData.add(item);
+
+        }
+
+
+      });
+      setState(() {
+        foldernames.clear();
+        foldernames.addAll(dummyListData);
+        if(dummyListData.length > 0){
+          Tick = false;
+        }
+        else{
+          Tick = true;
+        }
+      });
+
+      return;
+    }
+    else {
+      Tick = false;
+      setState(() {
+        foldernames.clear();
+        foldernames.addAll(duplicatefoldernames);
+      });
+    }
+  }
+  Widget SearchFolder(BuildContext context) {
+    return Container(
+
+      margin: EdgeInsets.only(left: 10, right: 10,top: 20),
+      child: TextField(
+        onChanged:(text){
+          filterSearchResults(text);
+          print('Current on change text is $text');
+        },
+        decoration: InputDecoration(
+            hintText: "Search Folder",
+            border: InputBorder.none,
+            fillColor: Colors.grey,
+            icon: Icon(Icons.search)
+        ),
+      ),
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.black),
+          borderRadius: BorderRadius.all(
+            Radius.circular(20),
+          )
+      ),
     );
   }
   Widget _createBody() {
@@ -631,30 +798,7 @@ class _ShowFolderState extends State<ShowFolder>{
   }
 }*/
 
-class SearchFolder extends StatelessWidget{
-  //final _imagepath;
-  SearchFolder();
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: 10, right: 10,top: 20),
-      child: TextField(
-        decoration: InputDecoration(
-            hintText: "Search Folder",
-            border: InputBorder.none,
-            fillColor: Colors.grey,
-            icon: Icon(Icons.search)
-        ),
-      ),
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.all(
-            Radius.circular(20),
-          )
-      ),
-    );
-  }
-}
+
 
 void ShowFolderOptions(BuildContext context) async{
   final items = <MultiSelectDialogItem<int>>[

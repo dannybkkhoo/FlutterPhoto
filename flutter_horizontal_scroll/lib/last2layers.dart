@@ -126,7 +126,7 @@ class DescriptionState extends State<Description>{
                       splashColor: Colors.white, // splash color
                       onTap: ()async {
                         final action =
-                        await Dialogs.yesAbortDialog(context, 'Delete Photo', 'Are you sure to photo?');
+                        await Dialogs.yesAbortDialog(context, 'Delete Photo', 'Are you sure to delete this photo?');
                         if (action == DialogAction.yes) {
                           print("Items Deleted");
                         } else {
