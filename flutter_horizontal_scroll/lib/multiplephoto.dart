@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:io';
-
+import 'package:filesize/filesize.dart';
+import 'package:flutter/services.dart' show ByteData, rootBundle;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -65,134 +66,32 @@ class MainPageState extends State<MainPage> {
     _imageList.add("assets/Capture3.PNG");*/
 
     maps = [
-      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
+      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null},
+      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
+      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
+      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description":null},
+      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
+      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
+      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description":null},
+      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
+      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
+      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description":null},
+      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
+      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
       ];
     duplicatemaps = [
-      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture1.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()},
+      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description":null},
+      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
+      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
+      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description":null},
+      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
+      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
+      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description":null},
+      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
+      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
+      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description":null},
+      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
+      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
     ];
 
   }
@@ -217,20 +116,33 @@ class MainPageState extends State<MainPage> {
   @override
   void open_camera() async{
     var image = await ImagePicker.pickImage(source: ImageSource.camera);
+    var imgsize;
     setState(() {
       _image = image;
+      getImage(_image.path).then((value){
+        imgsize = value;
+        print('Imagesizeatopencamera = $imgsize');
+        maps.add({"imagepath":"${_image.path}", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"${imgsize}", "description":null});
+        duplicatemaps.add({"imagepath":"${_image.path}", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"${imgsize}", "description":null});
+      });
       //_imageList.add(_image.path);
-      maps.add({"imagepath":'${_image.path}', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()});
-      duplicatemaps.add({"imagepath":'${_image.path}', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()});
+
+
     });
   }
   void open_gallery() async{
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var imgsize;
     setState(() {
       _image = image;
+      getImage(_image.path).then((value){
+        imgsize = value;
+        maps.add({"imagepath":'${_image.path}', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"${imgsize}","description":null});
+        duplicatemaps.add({"imagepath":'${_image.path}', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"${imgsize}","description":null});
+        print('Imagesize = $imgsize');
+      });
       //_imageList.add(_image.path);
-      maps.add({"imagepath":'${_image.path}', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()});
-      duplicatemaps.add({"imagepath":'${_image.path}', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString()});
+
     });
   }
   @override
@@ -408,6 +320,16 @@ class MainPageState extends State<MainPage> {
 
     );
 
+  }
+  Future getImage(String imageAssetPath) async {
+    final ByteData assetImageByteData = await rootBundle.load(imageAssetPath);
+    final baseSizeImage = assetImageByteData.buffer.lengthInBytes;
+    final standardize = filesize(baseSizeImage);
+    //final baseSizeImage = assetImageByteData.buffer.asUint8List();
+    print('baseSizeImage = $baseSizeImage');
+    print("assetImagebyetedata = $assetImageByteData");
+    print('standardize = $standardize');
+    return standardize;
   }
   Future <void> _showChoiceDialog(BuildContext context){
     return showDialog(context: context,builder: (BuildContext context){
@@ -786,7 +708,10 @@ class MainPageState extends State<MainPage> {
                     onTap: () {
                       print("pressed");
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => PhotoThing(maps[index]["name"])));
+                           builder: (context) => PhotoPreviewFunction(duplicatemaps)));
+
+
+
                       //builder: (context) => PhotoThing(parentString)));
                     },
                   ),

@@ -34,6 +34,8 @@ dependencies:
   draggable_scrollbar: ^0.0.4
   multi_image_picker: ^4.6.7
   sortedmap: ^0.4.2+1
+  image: ^2.1.12
+  filesize: ^1.0.4
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -232,7 +232,7 @@ class DescriptionFolderState extends State<DescriptionFolder>{
                 ),
               ),
 
-              /*SizedBox.fromSize(
+              SizedBox.fromSize(
                 size: Size(56, 56), // button width and height
                 child: ClipOval(
                   child: Material(
@@ -240,9 +240,9 @@ class DescriptionFolderState extends State<DescriptionFolder>{
                     child: InkWell(
                       splashColor: Colors.white, // splash color
                       onTap: () {
-                        //_link = linkCon.text;
-                        print('$_link');
-                        Navigator.push(context,MaterialPageRoute(builder: (context) => URLPAGE(_link)));
+                       // _link = linkCon.text;
+                       // print('$_link');
+                        Navigator.push(context,MaterialPageRoute(builder: (context) => URLPAGE(detials._link)));
                       }, // button pressed
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -254,7 +254,7 @@ class DescriptionFolderState extends State<DescriptionFolder>{
                     ),
                   ),
                 ),
-              )*/
+              )
             ],
           )
         ],
