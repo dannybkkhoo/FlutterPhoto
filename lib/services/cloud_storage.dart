@@ -1,6 +1,7 @@
 import 'package:app2/services/utils.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/painting.dart';
 import 'dart:io';
 
 class CloudStorage {
@@ -59,21 +60,38 @@ class CloudStorage {
     return data;
   }
   /*Gets the image file from firebase storage, returns as uint8list data, written to file simultaneously created in provided with path*/
-  Future getFile(String uid, String image_id, String folder_path) async {
+  Future<File> getFileToLocal(String uid, String image_id, String folder_path) async {
     final StorageReference firebaseStorageRef = _storageReference.ref().child(uid + "/" + image_id);
     final maxSize = 1024*1024;
     final image = await firebaseStorageRef.getData(maxSize);
-    File image_file = await createImageIntFile(uid, image_id, folder_path);  //creates directory and image file
-    await image_file.writeAsBytes(image);
-    await createImageGarFile(image_file.path);
-    return image_file;
+    File local_image_file = await createImageLocalFile(uid, image_id, folder_path);  //creates directory and image file
+    await local_image_file.writeAsBytes(image);
+    await createImageGarFile(local_image_file.path,"Flutter Photo");
+    print(local_image_file.path);
+    return local_image_file;
+  }
+  Future<File> getFileToGallery(String uid, String image_id, String folder_path) async {
+    final StorageReference firebaseStorageRef = _storageReference.ref().child(uid + "/" + image_id);
+    int maxSize = 1024*1024*5;
+    final image = await firebaseStorageRef.getData(maxSize);
+    //File temp_image_file = File("/storage/emulated/0/Android/data/com.fiftee.app2/files/$image_id");//await createImageTempFile(uid, image_id);  //creates temp image file
+    String uidpart = uid.substring(0,3);             //take first 4 digit of UID
+//    File temp_image_file = File("IMG_$uidpart$image_id.jpg");
+    File temp_image_file = await createImageTempFile(uid, image_id);
+    await temp_image_file.writeAsBytes(image);                        //saves image data into file
+    await createImageGarFile(temp_image_file.path,"Flutter Photo");   //saves image file in gallery
+    File tmb = await createLocalThumbnail(uid, image_id, folder_path, temp_image_file); //create & save thumbnail in appdocdir
+    //temp_image_file.deleteSync(recursive: true);  //delete temp image file
+    //imageCache.clear(); //clear cache, otherwise temp image file will persist
+    //return tmb;
+    return temp_image_file;
   }
   /*Gets image file from firebase storage, returns as http response, written to file simultaneously created in provided with path*/
   Future<File> getFileByURL(String uid, String image_id, String folder_path) async {
     final StorageReference firebaseStorageRef = _storageReference.ref().child(uid + "/" + image_id);
     final String url = await firebaseStorageRef.getDownloadURL();
     final http.Response downloadData = await http.get(url);
-    File image_file = await createImageIntFile(uid, image_id, folder_path);  //creates directory and image file
+    File image_file = await createImageLocalFile(uid, image_id, folder_path);  //creates directory and image file
     final StorageFileDownloadTask task = firebaseStorageRef.writeToFile(image_file);
     return image_file;
   }

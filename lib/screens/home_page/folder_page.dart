@@ -1,4 +1,3 @@
-import 'package:app2/screens/home_page/horizontalscroll.dart';
 import 'package:app2/services/cloud_storage.dart';
 import 'package:app2/services/image_storage.dart';
 import 'package:app2/services/utils.dart';
@@ -15,6 +14,7 @@ const Folder_Page = "/";
 const FolderDescription_Page = "/FolderDescription";
 const File_Page= "/Files";
 const FileDescription_Page = "/FileDescription";
+const Test_Page = "/Test";
 
 enum UserDataStatus{
   loading,
@@ -72,12 +72,33 @@ class MainPageFolderState extends State<MainPageFolder> {
     print("Generating folders...");
     List<Widget> showfolders = [];
     for(Map folder in folders){  //create directory on local storage if not exists, forEach cant be used as it does not await
-      final folder_path = await getPath() + "/" + uid + "/" + folder['folder_id'];
-      showfolders.add(ShowFolder(folder['folder_id'],folder['name'],folder['description'],folder['link'],folder['children']));
+      final folder_path = await getLocalPath() + "/" + uid + "/" + folder['folder_id'];
+      //showfolders.add(ShowFolder(folder['folder_id'],folder['name'],folder['description'],folder['link'],folder[]'children'));
+      //showfolders.add(ShowFolder(folder['folder_id']));
       await createDirectory(folder_path);
-      for(Map file in folder["children"]){ //create file on local storage and download the image files if not exists
-        await CloudStorage().getFile(uid, file['image_id'], folder["folder_id"]);
+      for(Map image in folder["children"]){ //create file on local storage and download the image files if not exists
+        final appDocDir = await getLocalPath();   //all files stored under appDocDirectory/uid
+        final uidpart = uid.substring(0,3);             //take first 4 digit of UID
+        Directory tmbpath = Directory("$appDocDir/$uid/${folder["folder_id"]}/TMB_$uidpart${image["image_id"]}.jpg");
+        Directory imgpath = Directory("/storage/emulated/0/FlutterPhoto/IMG_$uidpart${image["image_id"]}.jpg");
+        bool exist = await File(imgpath.path).exists();
+        bool exist2 = await File(tmbpath.path).exists();
+//        if(exist2){
+//          print("${image["image_id"]} exists");
+//        }
+//        if(!exist){
+//          print("${image["image_id"]} not exists");
+//          await CloudStorage().getFileToGallery(uid, image['image_id'], folder["folder_id"]);
+//          print("Done download");
+//        }
+//        if(!await tmbpath.exists()){
+//          await createLocalThumbnail(uid, image['image_id'],folder['folder_id'], File(imgpath.path));
+//        }
+//        if(!await tmbpath.exists()){
+//          await createLocalThumbnail(uid, image["image_id"], folder_path, File(imgpath.path));
+//        }
       }
+      showfolders.add(ShowFolder(folder['folder_id']));
       yield showfolders;
     }
   }
@@ -224,6 +245,10 @@ class MainPageFolderState extends State<MainPageFolder> {
                 IconButton(
                   icon: Icon(Icons.exit_to_app),
                   onPressed: () => widget.onSignedOut()
+                ),
+                IconButton(
+                  icon: Icon(Icons.access_time),
+                  onPressed: () => Navigator.pushNamed(context, Test_Page),
                 )
               ],
             ),
@@ -237,98 +262,81 @@ class MainPageFolderState extends State<MainPageFolder> {
               foregroundColor: Colors.black,
               backgroundColor: Colors.amberAccent,
             ),
-            body: LayoutBuilder(
-              builder: (context, constraint) {
-                return SafeArea(
-                    child: CustomScrollView(
-                      slivers: <Widget> [
-                        SliverFillRemaining(
-                          hasScrollBody: false,
-                            child: IntrinsicHeight(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: <Widget>[
-                                    RaisedButton(
-                                      child:Text("Download Image"),
-                                      onPressed: () async {
-                                        print("Wait");
-                                        print(await getPath());
-                                        File img = await CloudStorage().getFile("123", "abc", "123");
-                                        print("K Done");
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                RaisedButton(
+                  child:Text("Download Image"),
+                  onPressed: () async {
+                    print("Wait");
+                    print(await getLocalPath());
+                    File img = await CloudStorage().getFileToGallery("123", "abc", "123");
+                    print("K Done");
+                  }
+                ),
+                RaisedButton(
+                  child:Text("getsub"),
+                  onPressed: () => DataProvider.of(context).userData.deleteUserData('123'),
+                ),
+                Expanded(
+                  child: StreamBuilder<List<Widget>>(
+                      stream: _generateFolders(DataProvider.of(context).userData.folders),
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        switch(snapshot.connectionState){
+                          case ConnectionState.waiting: return sizedWaitingScreen();break;
+                          case ConnectionState.active:
+                          //print(snapshot.data);
+                            if(snapshot.hasData && snapshot.data.isNotEmpty) {
+                              print(snapshot.data.runtimeType);
+                              return GridView.builder(
+                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3),
+                                  itemCount: snapshot.data.length,
+                                  padding: EdgeInsets.all(2.0),
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return Container(
+                                        child: snapshot.data[index]
+                                    );
+                                  },
+                                );
+                            }
+                            else {
+                              return Center(
+                                  child: Text("No Folders...",style: TextStyle(fontSize:24.0),)
+                              );
+                            }
+                            break;
+                          case ConnectionState.done:
+                            print("DONE");
+                            if(snapshot.hasData && snapshot.data.isNotEmpty) {
+                              return GridView.count(
+                                physics: ScrollPhysics(),
+                                shrinkWrap: true,
+                                crossAxisCount: 3,
+                                children: snapshot.data,
+                              );
+                            }
+                            else {
+                              return Center(
+                                  child: Text("No Folders...",style: TextStyle(fontSize:24.0),)
+                              );
+                            }
+                            break;
+                          default:
+                            if(snapshot.hasError) {
+                              print(snapshot.error);
+                              return sizedErrorScreen(_refresh,errorText: snapshot.error);
+                            }
+                            else {
+                              print(snapshot.data);
+                              return sizedWaitingScreen(waitingWidget: Text("No Data...", style: TextStyle(fontSize:24.0)));
+                            }
                         }
-                                    ),
-                                    RaisedButton(
-                                      child:Text("getsub"),
-                                      onPressed: () => DataProvider.of(context).userData.deleteUserData('123'),
-                                    ),
-                                    StreamBuilder<List<Widget>>(
-                                        stream: _generateFolders(DataProvider.of(context).userData.folders),
-                                        builder: (BuildContext context, AsyncSnapshot snapshot) {
-                                          switch(snapshot.connectionState){
-                                            case ConnectionState.waiting: return sizedWaitingScreen();break;
-                                            case ConnectionState.active:
-                                              print(snapshot.data);
-                                              if(snapshot.hasData && snapshot.data.isNotEmpty) {
-                                                return GridView.builder(
-                                                  physics: ScrollPhysics(),
-                                                  shrinkWrap: true,
-                                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-                                                  itemCount: snapshot.data.length,
-                                                  padding: EdgeInsets.all(2.0),
-                                                  itemBuilder: (BuildContext context,int index){
-                                                    return Container(
-                                                      child:snapshot.data[index]
-                                                    );
-                                                  }
-                                                );
-                                              }
-                                              else {
-                                                return Expanded(
-                                                    child: Center(
-                                                        child: Text("No Folders...",style: TextStyle(fontSize:24.0),)
-                                                    )
-                                                );
-                                              }
-                                              break;
-                                            case ConnectionState.done:
-                                              print("DONE");
-                                              if(snapshot.hasData && snapshot.data.isNotEmpty) {
-                                                return GridView.count(
-                                                  physics: ScrollPhysics(),
-                                                  shrinkWrap: true,
-                                                  crossAxisCount: 3,
-                                                  children: snapshot.data,
-                                                );
-                                              }
-                                              else {
-                                                return Expanded(
-                                                    child: Center(
-                                                        child: Text("No Folders...",style: TextStyle(fontSize:24.0),)
-                                                    )
-                                                );
-                                              }
-                                              break;
-                                            default:
-                                              if(snapshot.hasError) {
-                                                print(snapshot.error);
-                                                return sizedErrorScreen(_refresh,errorText: snapshot.error);
-                                              }
-                                              else {
-                                                print(snapshot.data);
-                                                return sizedWaitingScreen(waitingWidget: Text("No Data...", style: TextStyle(fontSize:24.0)));
-                                              }
-                                          }
-                                        }
-                                    ),
-                                  ],
-                                )
-                            )
-                        )
-                      ]
-                    )
-                );
-              }
-            )
+                      }
+                  ),
+                )
+              ],
+          )
         ); break;
       default:
         //Shows an error page, only allowing user to log out and go back to login page due to unknown error
@@ -336,70 +344,168 @@ class MainPageFolderState extends State<MainPageFolder> {
     }
   }
 }
+
+//Can dispose this
+//enum ShowFolderStatus{
+//  loading,
+//  loaded,
+//}
+
 class ShowFolder extends StatefulWidget {
-  final String folder_id, name, description, link;
-  List children;
-  ShowFolder(this.folder_id,this.name,this.description,this.link,this.children);
+  final String folder_id;
+  ShowFolder(this.folder_id);
 
   @override
   _ShowFolderState createState() => _ShowFolderState();
 }
 class _ShowFolderState extends State<ShowFolder>{
+  String _uid, _name , _date , _description='', _link='';
+  List _children = [];
+//  ShowFolderStatus status = ShowFolderStatus.loading; //can dispose
   Future<Widget> FolderThumbnail(List children) async { //finds the image on local device and display
+    var uid = await AuthProvider.of(context).auth.getUID();
     if(children.isNotEmpty){
-      final file_path = await getPath() + "/" + await AuthProvider.of(context).auth.getUID() + "/" + widget.folder_id;
+      final file_path = await getLocalPath() + "/" + uid + "/" + widget.folder_id;
       final image_filename = children[0]['image_id'];
+      uid = uid.substring(0,3);
       return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
             padding:EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
-            child: Image.file(File("$file_path/$image_filename.jpg"),height: 100.0, width: 100.0,fit: BoxFit.cover),
+            child: Image.file(File("$file_path/TMB_$uid$image_filename.jpg"),height: 100.0, width: 100.0,fit: BoxFit.cover),
           ),
-          Text(widget.name, style: TextStyle(fontSize: 15.0),)
+          Text(_name, style: TextStyle(fontSize: 15.0),)
         ],
       );
     }
     else{
-      return NoImage(widget.name);
+      return NoImage(_name);
     }
   }
+
+  Future<Map> onLoad() async {
+      _uid = await AuthProvider.of(context).auth.getUID();
+      Map folder = await getFolderData(_uid, widget.folder_id, context);
+//      setState(() {
+//        _name = folder["name"];
+//        _date = folder["date"];
+//        _description = folder["description"];
+//        _link = folder["link"];
+//        _children = folder["children"];
+//        status = ShowFolderStatus.loaded;
+//      });
+      return folder;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+//    WidgetsBinding.instance.addPostFrameCallback((_){
+//      _onLoad();
+//    });
+  }
+
+  void pa(){
+    print("HELLO");
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      child: Wrap(
-        children: <Widget>[
-          Container(
-            child: GestureDetector(
-              onTap: (){
-                print("pressed");
-                Navigator.pushNamed(context, FolderDescription_Page,arguments:{'foldername':"abc"});
+    return new FutureBuilder<Map>(
+      future: onLoad(),
+      builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
+        switch(snapshot.connectionState){
+          case ConnectionState.waiting:
+          case ConnectionState.active:
+            return WaitingScreen(pa);break;
+          case ConnectionState.done:
+            _name = snapshot.data["name"];
+            _date = snapshot.data["date"];
+            _description = snapshot.data["description"];
+            _link = snapshot.data["link"];
+            _children = snapshot.data["children"];
+            return Container(
+                alignment: Alignment.center,
+                child: Wrap(
+                    children: <Widget>[
+                      Container(
+                        child: GestureDetector(
+                          onTap: (){
+                            print("pressed");
+                            Navigator.pushNamed(context, FolderDescription_Page,arguments:{'folder_id':widget.folder_id});
 //                    Navigator.push(context,
 //                        MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription(widget.folder_id)));
-              },
-              child: Container(
-                child: new Card(
-                  elevation: 10.0,
-                  child: FutureBuilder<Widget>(
-                    future: FolderThumbnail(widget.children),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      switch(snapshot.connectionState){
-                        case ConnectionState.done:
-                          if(snapshot.hasData){
-                            return snapshot.data;
-                          };break;
-                        default:
-                          return NoImage(widget.name);
-                      }
-                    }
-                  )
-                ),
-              ),
-            ),
-          )
-        ]
-      )
+                          },
+                          child: Container(
+                            child: new Card(
+                                elevation: 10.0,
+                                child: FutureBuilder<Widget>(
+                                    future: FolderThumbnail(_children),
+                                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                                      switch(snapshot.connectionState){
+                                        case ConnectionState.done:
+                                          if(snapshot.hasData){
+                                            return snapshot.data;
+                                          };break;
+                                        default:
+                                          return NoImage(_name);
+                                      }
+                                    }
+                                )
+                            ),
+                          ),
+                        ),
+                      )
+                    ]
+                )
+            );break;
+          default:
+            return sizedErrorScreen(null,errorText: snapshot.error);
+        }
+      },
     );
+
+
+//    switch(status){
+//      case ShowFolderStatus.loading:
+//        return WaitingScreen(null,showText: "");break;
+//      case ShowFolderStatus.loaded:
+//        return Container(
+//            alignment: Alignment.center,
+//            child: Wrap(
+//                children: <Widget>[
+//                  Container(
+//                    child: GestureDetector(
+//                      onTap: (){
+//                        print("pressed");
+//                        Navigator.pushNamed(context, FolderDescription_Page,arguments:{'folder_id':"123"});
+////                    Navigator.push(context,
+////                        MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription(widget.folder_id)));
+//                      },
+//                      child: Container(
+//                        child: new Card(
+//                            elevation: 10.0,
+//                            child: FutureBuilder<Widget>(
+//                                future: FolderThumbnail(_children),
+//                                builder: (BuildContext context, AsyncSnapshot snapshot) {
+//                                  switch(snapshot.connectionState){
+//                                    case ConnectionState.done:
+//                                      if(snapshot.hasData){
+//                                        return snapshot.data;
+//                                      };break;
+//                                    default:
+//                                      return NoImage(_name);
+//                                  }
+//                                }
+//                            )
+//                        ),
+//                      ),
+//                    ),
+//                  )
+//                ]
+//            )
+//        );
+//    }
   }
 }

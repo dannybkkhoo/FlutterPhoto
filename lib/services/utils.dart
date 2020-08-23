@@ -8,6 +8,9 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:app2/services/cloud_storage.dart';
+import 'package:app2/services/dataprovider.dart';
+import 'package:app2/services/userdata.dart';
+import 'package:app2/services/authprovider.dart';
 
 import 'package:storage_path/storage_path.dart';
 import 'package:flutter/services.dart';
@@ -21,10 +24,21 @@ class TestPage extends StatefulWidget{
 }
 
 class _TestPageState extends State<TestPage>{
-  var images;
+  File images;
+  GlobalKey<ImageHolderState> key2 = GlobalKey();
+  Future<void> test() async {
+    final String uid = await AuthProvider.of(context).auth.getUID();
+    //var img = await CloudStorage().getFileToGallery(uid,"3046MV","5fjxfN");
+//    var img = await CloudStorage().getFileByURL(uid,"288430","W73DJT");
+    await key2.currentState.getImageFromFirebase(uid,"3046MV","5fjxfN");
+//    print(img);
+//    setState(() {
+//      images = img;
+//    });
+//    return img;
+  }
 
-  Future test() async {
-    var img = await CloudStorage().getFileToGallery("testing","IU_Polices.jpg","test");
+  void test2(img){
     setState(() {
       images = img;
     });
@@ -36,19 +50,11 @@ class _TestPageState extends State<TestPage>{
       body: Center(
         child: Column(
           children: <Widget>[
+            ImageHolder(image:images,key: key2),
             RaisedButton(
-              onPressed: () => createImageGarFile("test/abc","Flutter Photo"),
+              onPressed: () async => key2.currentState.getImageFromFirebase("AHas6bEF3IMoz9FJ7FSxOeqwfM43","3046MV","5fjxfN"),
               child: Text("Press me"),
             )  ,
-            RaisedButton(
-              onPressed: () async => await test(),
-              child: Text("Press me too"),
-            ),
-            RaisedButton(
-              onPressed: () => getImagesPath(),
-              child:Text("Pressss")
-            ),
-            ImageHolder(image:images)
           ],
         )
       )
@@ -132,6 +138,19 @@ Future<File> createImageLocalFile(String uid, String image_id, String folder_pat
 Future<void> createImageGarFile(String path, String albumName) async {
   await GallerySaver.saveImage(path, albumName: albumName); //path is the path to the image file
 }
+Future<File> createImageGarFile2(String uid, String image_id, String folder_path) async {
+  final appDocDir = await getLocalPath();                  //all files stored under appDocDirectory/uid
+  var directory_path;
+  if(folder_path != "") {                             //if folder_path is specified
+    directory_path = "$appDocDir/Pictures/FlutterPhoto/$uid/$folder_path/";
+  }
+  else{
+    directory_path = "$appDocDir/Pictures/FlutterPhoto/$uid/";              //if no folder_path is specified, recommended to specify
+  }
+  await createDirectory(directory_path);              //checks if directory exists, if not exists, then create all paths
+  uid = uid.substring(0,3); //take first 4 digit of UID
+  return File(directory_path + "IMG_"+ image_id + ".jpg");    //create file to store image
+}
 Future<File> createImageTempFile(String uid, String image_id) async {
   //Temporarily save in Temp file, to delete, just call file.delete()
   final tempDir = await getTempPath();
@@ -141,7 +160,7 @@ Future<File> createImageTempFile(String uid, String image_id) async {
 }
 Future<File> createLocalThumbnail(String uid, String image_id, String folder_path, File image) async {
   final appDocDir = await getLocalPath();   //all files stored under appDocDirectory/uid
-  var directory_path;
+  String directory_path;
   if(folder_path != "") {                             //if folder_path is specified
     directory_path = "$appDocDir/$uid/$folder_path/";
   }
@@ -149,8 +168,8 @@ Future<File> createLocalThumbnail(String uid, String image_id, String folder_pat
     directory_path = "$appDocDir/$uid/";              //if no folder_path is specified, recommended to specify
   }
   await createDirectory(directory_path);
-  uid = uid.substring(0,3);             //take first 4 digit of UID
-  File save = File(directory_path + "TMB_" + uid + image_id + ".jpg");  //create file for thumbnail
+  String uidpart = uid.substring(0,3);             //take first 4 digit of UID
+  File save = File("$directory_path/TMB_$uidpart$image_id.jpg");  //create file for thumbnail
   var img = IO.decodeImage(image.readAsBytesSync());
   var thumbnail = IO.copyResize(img, width: 50, height: 50); //resize as thumbnail
   save.writeAsBytesSync(IO.encodePng(thumbnail));
@@ -184,6 +203,23 @@ Future<String> getImagesPath() async {
   }
   return imagespath;
 }
+Future<Map> getFolderData(String uid, String folder_id, BuildContext context) async {
+  Map data;
+  bool found = false;
+  UserData userData = await DataProvider.of(context).userData.loadLatestUserData(uid); //find user data from local
+  userData.folders.forEach((folder) async {  //find the data for specified folder, update with latest data
+    if(folder['folder_id'] == folder_id){
+      data = folder;
+      found = true;
+    }
+  });
+  if(found)
+    return data;
+  else {
+    print("Folder not found!");
+    return null;
+  }
+}
 /*end of utility functions--------------------------------------------------------------------------------*/
 
 /*screens widget functions--------------------------------------------------------------------------------*/
@@ -209,12 +245,10 @@ Widget WaitingScreen(Function cancelAction, {Widget waitingWidget = const Circul
   );
 }
 Widget sizedWaitingScreen({Widget waitingWidget = const CircularProgressIndicator()}) {
-  return Expanded(
-    child: Scaffold(
-        body: Align(
-          alignment:  Alignment.center,
-          child: waitingWidget,
-        )
+  return Scaffold(
+      body: Align(
+        alignment:  Alignment.center,
+        child: waitingWidget,
       )
   );
 }
@@ -240,25 +274,23 @@ Widget ErrorScreen(Function backAction,{String errorText = ""}) {
   );
 }
 Widget sizedErrorScreen(Function retryAction,{String errorText = ""}) {
-  return Expanded(
-    child: Scaffold(
-          body: Align(
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                errorText != ""? paddedText(errorText,fontsize: 24.0):paddedText("Application Error...",fontsize: 24.0),
-                Container(
-                  padding: EdgeInsets.fromLTRB(20, 5, 5, 20),
-                  child: RaisedButton(
-                    child: Text('Back',style: TextStyle(fontSize: 24.0),textAlign: TextAlign.center,),
-                    onPressed: retryAction,
-                  ),
-                )
-              ],
-            ),
-          )
+  return Scaffold(
+      body: Align(
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            errorText != ""? paddedText(errorText,fontsize: 24.0):paddedText("Application Error...",fontsize: 24.0),
+            Container(
+              padding: EdgeInsets.fromLTRB(20, 5, 5, 20),
+              child: RaisedButton(
+                child: Text('Back',style: TextStyle(fontSize: 24.0),textAlign: TextAlign.center,),
+                onPressed: retryAction,
+              ),
+            )
+          ],
+        ),
       )
   );
 }
@@ -334,16 +366,18 @@ class SpeedButtonProperties {
 
 /*ImageHolder Class----------------------------------------------------------------------------------------------*/
 class ImageHolder extends StatefulWidget{
-  var image;
-  ImageHolder({Key key, this.image}) : super(key:key);  //acccess the _image of _ImageHolderState, allow parent to access methods.
+  var image = null;
+  Function imageExists;
+  VoidCallback imageNotExists;
+  ImageHolder({Key key, this.image, this.imageExists, this.imageNotExists}) : super(key:key);  //acccess the _image of _ImageHolderState, allow parent to access methods.
   @override
   State<StatefulWidget> createState() => ImageHolderState();
 }
 class ImageHolderState extends State<ImageHolder>{
-  var _image;//File _image;
+  var _image = null;//File _image;
   @override
-
-  File gg(){
+  void initState() {
+    super.initState();
     _image = widget.image;
   }
 
@@ -352,43 +386,85 @@ class ImageHolderState extends State<ImageHolder>{
       _image = null;
     });
   }
-
   File returnImage() {
     return _image;
   }
-
-  void getImageFromFirebase(String uid,String image_id, String folder_path) async {
+  Future<void> getImageFromFirebase(String uid,String image_id, String folder_path) async {
     var image = await CloudStorage().getFileToGallery(uid,image_id,folder_path);
+    final appDocDir = await getLocalPath();   //all files stored under appDocDirectory/uid
+    final uidpart = uid.substring(0,3);             //take first 4 digit of UID
+    Directory tmbpath = Directory("$appDocDir/$uid/$folder_path/TMB_$uidpart$image_id.jpg");
     setState(() {
-      _image = image;
+      //_image = image;
+      _image = File(tmbpath.path);
     });
   }
-
-  Future<void> getCameraImage() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+  Future<File> getCameraImage() async {
+    var image = await ImagePicker().getImage(source: ImageSource.camera);
     setState(() {
-      _image = image;
+      _image = File(image.path);
     });
+    widget.imageExists(File(image.path));
+    return File(image.path);
   }
-
-  Future<void> getGalleryImage() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+  Future<File> getGalleryImage() async {
+    var image = await ImagePicker().getImage(source: ImageSource.gallery);
     setState(() {
-      _image = image;
+      _image = File(image.path);
+    });
+    widget.imageExists(File(image.path));
+    return File(image.path);
+  }
+  Future removeImage(BuildContext context){
+    return showDialog(context: context,builder: (context){
+      return AlertDialog(
+        content: Container(
+          height: 50.0,
+          width: 100.0,
+          child: Center(
+            child: Text("Remove Image?")
+          ),
+        ),
+        actions: <Widget>[
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('Yes'),
+            onPressed: (){
+              setState(() {
+                _image = null;
+              });
+              widget.imageNotExists;
+            },
+          ),
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('No'),
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        width: 300,
-        height: 400,
-        child: Center(
-            child: widget.image == null? Text("No images...") : Image.file(widget.image)
+      child: GestureDetector(
+        onTap: () => _image == null? getGalleryImage(): removeImage(context),
+        child: Container(
+          width: 300,
+          height: 400,
+          child: Center(
+            //child: widget.image == null? Text("No images...") : Image.file(widget.image)
+              child: _image == null? Text("Tap to add image...") : Image.file(_image)
+          ),
         ),
-      ),
+      )
     );
   }
+
+
 }
 /*End of ImageHolder Class--------------------------------------------------------------------------------------*/

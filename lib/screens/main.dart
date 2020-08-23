@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
         auth: Auth(),
         child: DataProvider(
           child:MaterialApp(
+            debugShowCheckedModeBanner: false,
             title: 'FlutterPhoto',
             theme: ThemeData(
               primarySwatch: Colors.blue,

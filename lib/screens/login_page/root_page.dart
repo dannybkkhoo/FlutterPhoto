@@ -9,11 +9,13 @@ import 'package:app2/screens/login_page/image_page.dart';
 import 'package:app2/screens/home_page/folder_page.dart';
 import 'package:app2/services/utils.dart';
 import 'package:app2/screens/home_page/horizontalscroll.dart';
+import 'package:app2/screens/home_page/multiplephoto.dart';
 
 const Folder_Page = "/";
 const FolderDescription_Page = "/FolderDescription";
 const File_Page= "/Files";
 const FileDescription_Page = "/FileDescription";
+const Test_Page = "/Test";
 
 enum AuthStatus {
   notDetermined,
@@ -91,12 +93,14 @@ class _RootPageState extends State<RootPage>{
         case Folder_Page:
           screen = MainPageFolder(title: "Home Page", onSignedOut: _signedOut,);break;
         case FolderDescription_Page:
-          screen = HorizontalScrollWithDescription(arguments['foldername']);break;
+          screen = DescriptionFolder(arguments['folder_id']);break;
         case File_Page:
-
+          screen = MainPage(arguments['folder_id']);break;
+        case Test_Page:
+          screen = TestPage();break;
         default:
         //screen = RootPage();
-          screen = HorizontalScrollWithDescription("111");
+          screen = HorizontalScroll("111");
       }
       return MaterialPageRoute(builder: (BuildContext context) => screen);
     };

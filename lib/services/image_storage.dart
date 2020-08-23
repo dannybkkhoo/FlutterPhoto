@@ -96,7 +96,7 @@ class ImageStorage{
                   FlatButton(
                     child: Text('Ok'),
                     onPressed: () async {
-                      if(name != ""){
+                      if(name != "" && validated){
                         final Authenticator auth = AuthProvider.of(context).auth;
                         String uid = await auth.getUID();
                         folderRecord folder = folderRecord(
@@ -112,7 +112,7 @@ class ImageStorage{
                         userData.version = DateTime.now();
                         print(userData.folder_list);
                         userData.writeUserData(uid, userData);
-                        createDirectory(await getPath() + "/" + uid + "/" + folder.name);
+                        createDirectory(await getLocalPath() + "/" + uid + "/" + folder.folder_id);
                         userData.writeFirestoreUserData(uid, userData);
                         Navigator.of(context).pop(null);
                       }
@@ -133,13 +133,20 @@ class ImageStorage{
     );
   }
 
-  void AddImage(BuildContext context) async {
-    GlobalKey<ImageHolderState> addkey = GlobalKey();
+  Future<void> AddImage(BuildContext context, String folder_id) async {
     var userData = DataProvider.of(context).userData; //get user's data
-    String current_path = "folder_id";
+    File _image = null;
+    String filepath, image_id;
     String name = "", description = "", errormsg = "";
-    var _image;
     bool tapped = false, validated = false;
+
+    void _imageExists(File image){
+      _image = image;
+    }
+    void _imageNotExists(){
+      _image = null;
+    }
+    final imageholder = ImageHolder(imageExists: _imageExists,imageNotExists: _imageNotExists);
     return showDialog(
         context: context,
         barrierDismissible: false,
@@ -152,9 +159,9 @@ class ImageStorage{
                     child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                          ImageHolder(),
+                          imageholder,  //no image at first
                           TextField(
-                            autofocus: true,
+                            autofocus: false,
                             decoration: InputDecoration(
                               labelText: 'Image Name:', hintText: 'eg. Solar',
                               errorText: (tapped&!validated) ? "$errormsg" : null,
@@ -180,7 +187,7 @@ class ImageStorage{
                             },
                           ),
                           TextField(
-                              autofocus: true,
+                              autofocus: false,
                               decoration: InputDecoration(
                                   labelText: 'Description:', hintText: 'eg. Bali Trip'
                               ),
@@ -196,33 +203,46 @@ class ImageStorage{
                   actions: <Widget>[
                     FlatButton(
                       child: Text('Cancel'),
-                      onPressed: () {
+                      onPressed: () async {
+                        String need = await getLocalPath();
+                        print(need);
                         Navigator.of(context).pop(null);
                       },
                     ),
                     FlatButton(
                       child: Text('Ok'),
                       onPressed: () async {
-                        if(name!="" && _image!=null){
+                        if(name!="" && _image != null && validated){
                           final Authenticator auth = AuthProvider.of(context).auth;
                           var uid = await auth.getUID();
+                          image_id = userData.generateUniqueID();
+                          String uidpart = uid.substring(0,3);
+                          String temp = await getTempPath();
+                          File temp_image_file = File("$temp/IMG_$uidpart$image_id.jpg");
+                          await _image.copy(temp_image_file.path);
+                          await createImageGarFile(temp_image_file.path, "Flutter Photo");
+                          //await createImageGarFile(temp_image_file.path,"Flutter Photo");
+                          temp_image_file.deleteSync(recursive: true);
                           imageRecord image = imageRecord(
-                            image_id: userData.generateUniqueID(),
+                            image_id: image_id,
                             name: name,
                             date: getDate(),
-                            filepath: current_path,
+                            filepath: folder_id,
                             description: description,
                           );
                           userData.image_list[image.image_id] = image.name;
-                          for(Map folders in userData.folders){
-                            if(folders["folder_id"] == current_path){
-                              folders["children"].add(image.dat());
+                          for(Map folder in userData.folders){
+                            if(folder["folder_id"] == folder_id){
+                              folder["children"].add(image.dat());
                               break;
                             }
                           }
                           print(userData.image_list);
                           print(userData.folders);
-                          FirestoreStorage().addSubDocument("UserData",uid, "collection", "main_collection", userData.folders);
+                          await userData.writeUserData(uid, userData);
+                          await userData.writeFirestoreUserData(uid, userData);
+                          createLocalThumbnail(uid, image_id, folder_id, _image);
+                          CloudStorage().uploadImage(uid, image_id, _image);
                           Navigator.of(context).pop(null);
                         }
                         else{

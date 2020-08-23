@@ -91,7 +91,7 @@ class _ImagePageState extends State<ImagePage>{
           RaisedButton(
             child: Text("Add Image"),
             onPressed: () {
-              ImageStorage().AddImage(context);
+              ImageStorage().AddImage(context,"111111");
             },
           ),
           RaisedButton(

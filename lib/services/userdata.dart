@@ -141,10 +141,10 @@ class UserData {
         }
       });
     }
-    print(version);
-    print(folder_list);
-    print(image_list);
-    print(folders);
+    //print(version);
+    //print(folder_list);
+    //print(image_list);
+    //print(folders);
     UserData userData = UserData(version,folder_list,image_list,folders);
     return userData;
   }
@@ -165,7 +165,7 @@ class UserData {
 
   Future<UserData> getLocalUserData(String uid) async {
     //Check if user folder exists in local directory
-    final file_path = await getPath() + "/" + uid;
+    final file_path = await getLocalPath() + "/" + uid;
     final userdata_path = file_path + "/" + "userdata.json";
     final Directory user_directory = Directory(file_path);
     try {
@@ -196,17 +196,17 @@ class UserData {
   }
 
   Future<UserData> readUserData(String uid) async {
-    final String file_path = await getPath() + "/" + uid;
+    final String file_path = await getLocalPath() + "/" + uid;
     final String userdata_path = file_path + "/" + "userdata.json";
     final File userdata_file = File(userdata_path);
     Map rawdata = json.decode(userdata_file.readAsStringSync());
     UserData userData = UserData(DateTime.parse(rawdata['version']),rawdata['folder_list'],rawdata['image_list'],rawdata['folders']);
-    print(rawdata);
+    //print(rawdata);
     return userData;
   }
 
   Future<void> writeUserData(String uid, UserData userData) async {
-    final String file_path = await getPath() + "/" + uid;
+    final String file_path = await getLocalPath() + "/" + uid;
     final String userdata_path = file_path + "/" + "userdata.json";
     await createDirectory(file_path); //check if user folder exists, if not, create files
     final File userdata_file = File(userdata_path);
@@ -215,19 +215,19 @@ class UserData {
   }
 
   Future<void> deleteUserData(String uid) async {
-    final String file_path = await getPath() + "/" + uid;
+    final String file_path = await getLocalPath() + "/" + uid;
     final String userdata_path = file_path + "/" + "userdata.json";
     await deleteFile(userdata_path);
     print("User data deleted");
   }
 
   Future<void> deleteUserFile(String uid) async {
-    final String file_path = await getPath() + "/" + uid;
+    final String file_path = await getLocalPath() + "/" + uid;
     await deleteDirectory(file_path);
   }
 
   Future<void> createUserData(String uid) async {
-    final String file_path = await getPath() + "/" + uid;
+    final String file_path = await getLocalPath() + "/" + uid;
     final String userdata_path = file_path + "/" + "userdata.json";
     final File userdata_file = File(userdata_path);
     final UserData userData = UserData(getDefaultDate(),{},{},[]);  //null version
@@ -236,7 +236,7 @@ class UserData {
   }
 
   Future<void> createUserFile(String uid) async {
-    final String file_path = await getPath() + "/" + uid;
+    final String file_path = await getLocalPath() + "/" + uid;
     await createDirectory(file_path);
     createUserData(uid);
   }
@@ -297,7 +297,7 @@ var fold = folderRecord(
     name: "main_collection",
     date: "11/4/2020",
     description: "Testing folder",
-    link: "www.testing.com"
+    link: "www.testing.com",
 );
 
 var imag = imageRecord(
