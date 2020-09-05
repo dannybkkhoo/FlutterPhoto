@@ -221,7 +221,6 @@ class ImageStorage{
                           File temp_image_file = File("$temp/IMG_$uidpart$image_id.jpg");
                           await _image.copy(temp_image_file.path);
                           await createImageGarFile(temp_image_file.path, "Flutter Photo");
-                          //await createImageGarFile(temp_image_file.path,"Flutter Photo");
                           temp_image_file.deleteSync(recursive: true);
                           imageRecord image = imageRecord(
                             image_id: image_id,
@@ -237,6 +236,7 @@ class ImageStorage{
                               break;
                             }
                           }
+                          userData.version = DateTime.now();
                           print(userData.image_list);
                           print(userData.folders);
                           await userData.writeUserData(uid, userData);

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:app2/screens/home_page/folder_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:gallery_saver/gallery_saver.dart';
@@ -11,18 +12,248 @@ import 'package:app2/services/cloud_storage.dart';
 import 'package:app2/services/dataprovider.dart';
 import 'package:app2/services/userdata.dart';
 import 'package:app2/services/authprovider.dart';
+import 'dart:developer';
 
 import 'package:storage_path/storage_path.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:convert';
 
+/*Foldr Page----------------------------------------------------------------------------------------*/
+class Foldr extends StatefulWidget {
+  final String folder_id;
+  Foldr(this.folder_id);
+
+  @override
+  _FoldrState createState() => _FoldrState();
+}
+class _FoldrState extends State<Foldr>{
+  String _uid, _name, appDocDir, uidpart;
+  List _children = [];
+  Future<Map> onLoad() async {
+    _uid = await AuthProvider.of(context).auth.getUID();
+    Map folder = await getFolderData(_uid, widget.folder_id, context);
+    log(folder.toString());
+    return folder;
+  }
+  Stream<int> _downloadImages(List image_datas) async* {
+    appDocDir = await getLocalPath();
+    uidpart = _uid.substring(0,3);
+    final length = image_datas.length;
+    int index = 1;
+    if(length != 0){
+      print("Downloading images...");
+      for(Map image in image_datas){
+        print("[$index/$length] image id:${image["image_id"]}, image name:${image["name"]}");
+        File img = File("/storage/emulated/0/Flutter Photo/IMG_$uidpart${image["image_id"]}.jpg");
+        Directory imgpath = Directory("/storage/emulated/0/Flutter Photo/IMG_$uidpart${image["image_id"]}.jpg");
+        File tmb = File("$appDocDir/$_uid/${widget.folder_id}/TMB_$uidpart${image["image_id"]}.jpg");
+        if(await img.exists()){
+          print("${image["name"]} exists.");
+        }
+        else {
+          print("${image["name"]} does not exists.");
+          await CloudStorage().getFileToGallery(_uid, image['image_id'], widget.folder_id);
+          print("${image["name"]} successfully downloaded.");
+        }
+        if(await tmb.exists()){
+          print("${image["name"]} thumbnail exists.");
+        }
+        else{
+          print("${image["name"]} thumbnail does not exists.");
+          await createLocalThumbnail(_uid,image['image_id'], widget.folder_id, img);
+          print("${image["name"]} thumbnail successfully downloaded.");
+        }
+        index+=1;
+        yield index;
+      }
+    }
+    else{
+      print("No images in file.");
+      yield null;
+    }
+  }
+  void pa(){
+    print("HELLO");
+  }
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new FutureBuilder<Map>(
+      future: onLoad(),
+      builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
+        switch(snapshot.connectionState){
+          case ConnectionState.waiting:
+          case ConnectionState.active:
+            return WaitingScreen(pa);break;
+          case ConnectionState.done:
+            _name = snapshot.data["name"];
+            _children = snapshot.data["children"];
+            print(_children);
+            return StreamBuilder<int>(
+              stream: _downloadImages(_children),
+              builder: (BuildContext context, AsyncSnapshot snapshot){
+                switch(snapshot.connectionState){
+                  case ConnectionState.waiting:
+                    return sizedWaitingScreen();break;
+                  case ConnectionState.active:
+                    if(snapshot.data != null){
+                      String image_id = _children[0]["image_id"];
+                      return Container(
+                          alignment: Alignment.center,
+                          child: Wrap(
+                              children: <Widget>[
+                                Container(
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      Navigator.pushNamed(context, File_Page,arguments:{'folder_id':widget.folder_id});
+                                    },
+                                    child: Container(
+                                      child: new Card(
+                                          elevation: 10.0,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: <Widget>[
+                                              Container(
+                                                padding:EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
+                                                child: Image.file(File("$appDocDir/$_uid/${widget.folder_id}/TMB_$uidpart$image_id.jpg"),height: 100.0, width: 100.0,fit: BoxFit.cover),
+                                              ),
+                                              Text(_name, style: TextStyle(fontSize: 15.0),)
+                                            ],
+                                          )
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ]
+                          )
+                      );
+                    }
+                    else {
+                      return Container(
+                          alignment: Alignment.center,
+                          child: Wrap(
+                              children: <Widget>[
+                                Container(
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      Navigator.pushNamed(context, File_Page,arguments:{'folder_id':widget.folder_id});
+                                    },
+                                    child: Container(
+                                      child: new Card(
+                                          elevation: 10.0,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: <Widget>[
+                                              Container(
+                                                height:100.0,
+                                                width:100.0,
+                                                padding:EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
+                                                child: Center(child: Text("No images..."))
+                                              ),
+                                              Text(_name, style: TextStyle(fontSize: 15.0),)
+                                            ],
+                                          )
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ]
+                          )
+                      );
+                    }
+                    break;
+                  case ConnectionState.done:
+                    if(snapshot.data != null){
+                      String image_id = _children[0]["image_id"];
+                      return Container(
+                          alignment: Alignment.center,
+                          child: Wrap(
+                              children: <Widget>[
+                                Container(
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      Navigator.pushNamed(context, File_Page,arguments:{'folder_id':widget.folder_id});
+                                      //Navigator.pushNamed(context, FolderDescription_Page,arguments:{'folder_id':widget.folder_id});
+                                    },
+                                    child: Container(
+                                      child: new Card(
+                                          elevation: 10.0,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: <Widget>[
+                                              Container(
+                                                padding:EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
+                                                child: Image.file(File("$appDocDir/$_uid/${widget.folder_id}/TMB_$uidpart$image_id.jpg"),height: 100.0, width: 100.0,fit: BoxFit.cover),
+                                              ),
+                                              Text(_name, style: TextStyle(fontSize: 15.0),)
+                                            ],
+                                          )
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ]
+                          )
+                      );
+                    }
+                    else {
+                      return Container(
+                          alignment: Alignment.center,
+                          child: Wrap(
+                              children: <Widget>[
+                                Container(
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      Navigator.pushNamed(context, File_Page,arguments:{'folder_id':widget.folder_id});
+                                    },
+                                    child: Container(
+                                      child: new Card(
+                                          elevation: 10.0,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: <Widget>[
+                                              Container(
+                                                  height:100.0,
+                                                  width:100.0,
+                                                  padding:EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
+                                                  child: Center(child: Text("No images..."))
+                                              ),
+                                              Text(_name, style: TextStyle(fontSize: 15.0),)
+                                            ],
+                                          )
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ]
+                          )
+                      );
+                    }
+                    break;
+                  default:
+                    return NoImage(_name);
+                }
+              }
+            );
+          default:
+            return sizedErrorScreen(null,errorText: snapshot.error);
+        }
+      },
+    );
+  }
+}
+/*End of Foldr Page---------------------------------------------------------------------------------*/
+
 /*Test Page-----------------------------------------------------------------------------------------*/
 class TestPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() => _TestPageState();
 }
-
 class _TestPageState extends State<TestPage>{
   File images;
   GlobalKey<ImageHolderState> key2 = GlobalKey();
@@ -61,6 +292,17 @@ class _TestPageState extends State<TestPage>{
     );
   }
 }
+/*End of Test Page----------------------------------------------------------------------------------*/
+
+/*Constants-----------------------------------------------------------------------------------------*/
+const Test_Page = "/Test";
+const Folder_Page = "/";
+const FolderDescription_Page = "/FolderDescription";
+const File_Page= "/Files";
+const Photo_Page = "/Photos";
+const Photo_Preview = "/PhotoPreview";
+/*End of Constants----------------------------------------------------------------------------------*/
+
 /*utility functions---------------------------------------------------------------------------------*/
 Future<String> getLocalPath() async {
   var direc = await getApplicationDocumentsDirectory();
@@ -207,16 +449,37 @@ Future<Map> getFolderData(String uid, String folder_id, BuildContext context) as
   Map data;
   bool found = false;
   UserData userData = await DataProvider.of(context).userData.loadLatestUserData(uid); //find user data from local
-  userData.folders.forEach((folder) async {  //find the data for specified folder, update with latest data
+  for(Map folder in userData.folders){
     if(folder['folder_id'] == folder_id){
       data = folder;
       found = true;
     }
-  });
+  }
   if(found)
     return data;
   else {
     print("Folder not found!");
+    return null;
+  }
+}
+Future<Map> getImageData(String uid, String folder_id, String image_id, BuildContext context) async {
+  Map data;
+  bool found = false;
+  UserData userData = await DataProvider.of(context).userData.loadLatestUserData(uid); //find user data from local
+  for(Map folder in userData.folders){
+    if(folder['folder_id'] == folder_id){
+      for(Map image in folder['children']){
+        if(image['image_id'] == image_id){
+          data = folder;
+          found = true;
+        }
+      }
+    }
+  }
+  if(found)
+    return data;
+  else {
+    print("Image not found!");
     return null;
   }
 }
@@ -394,9 +657,11 @@ class ImageHolderState extends State<ImageHolder>{
     final appDocDir = await getLocalPath();   //all files stored under appDocDirectory/uid
     final uidpart = uid.substring(0,3);             //take first 4 digit of UID
     Directory tmbpath = Directory("$appDocDir/$uid/$folder_path/TMB_$uidpart$image_id.jpg");
+    Directory imgpath = Directory("/storage/emulated/0/Flutter Photo/IMG_$uidpart$image_id.jpg");
     setState(() {
       //_image = image;
-      _image = File(tmbpath.path);
+      //_image = File(tmbpath.path);
+      _image = File(imgpath.path);
     });
   }
   Future<File> getCameraImage() async {

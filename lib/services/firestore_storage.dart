@@ -26,7 +26,7 @@ class FirestoreStorage {
     var result = await _databaseReference.collection(main_collection).document(document).collection(sub_collection).getDocuments();
     if(result.documents.isNotEmpty){
       result.documents.forEach((document) => docMapList.add(document.data));
-      print("Subcollection data => " + docMapList.toString());
+      //print("Subcollection data => " + docMapList.toString());
       return docMapList;
     }
     else{

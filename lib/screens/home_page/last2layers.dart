@@ -1,19 +1,86 @@
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutterhorizontalscroll/Folder%20layer.dart';
-import 'package:intl/intl.dart';
 import 'photoview.dart';
+import 'package:intl/intl.dart';
+import 'package:app2/services/utils.dart';
+import 'package:app2/services/authprovider.dart';
+import 'dart:io';
 import 'dart:ui' as ui;
 
+class PhotoThing extends StatefulWidget{
+  final String folder_id;
+  PhotoThing(this.folder_id);
 
-/*void main() => runApp(MaterialApp(
-  home: PhotoThing()
-));*/
-class PhotoPreviewFunction extends StatelessWidget{
-  final _imagePath, _datetime, _photoname ;
+  @override
+  _PhotoThingState createState() => _PhotoThingState();
+}
+class _PhotoThingState extends State<PhotoThing>{
+  String _uid;
+  String appDocDir, uidpart, folder_name;
+  Stream<List<Widget>> _generateImageList(String folder_id) async* {
+    _uid = await AuthProvider.of(context).auth.getUID();
+    appDocDir = await getLocalPath();
+    uidpart = _uid.substring(0,3);
+    Map folder = await getFolderData(_uid, widget.folder_id, context);
+    folder_name = folder["name"];
+    List images = folder["children"];
+    List<Widget> preview = [];
+    for(Map image in images){
+      File img = File("/storage/emulated/0/Flutter Photo/IMG_$uidpart${image["image_id"]}.jpg");
+      //File tmb = File("$appDocDir/$_uid/${widget.folder_id}/TMB_$uidpart${image["image_id"]}.jpg");
+      preview.add(PhotoPreview(img.path,image["date"],image["name"]));
+      yield preview;
+    }
+  }
 
-  PhotoPreviewFunction(this._imagePath,this._datetime, this._photoname);
+  @override
+  Widget build(BuildContext context){
+    return StreamBuilder<List<Widget>>(
+      stream: _generateImageList(widget.folder_id),
+      builder: (BuildContext context, AsyncSnapshot snapshot){
+        switch(snapshot.connectionState){
+          case ConnectionState.waiting:
+            return WaitingScreen(()=>print("Hello"));break;
+          case ConnectionState.active:
+          case ConnectionState.done:
+            print(snapshot.data);
+            return Scaffold(
+              resizeToAvoidBottomInset: true,
+              appBar: new AppBar(
+                title: new Text("TEST"),
+                leading: new IconButton(
+                  icon: new Icon(Icons.arrow_back),
+                  onPressed: () {
+                    //Navigator.pop(context);
+                    Navigator.pushNamed(context, File_Page,arguments:{'folder_id':widget.folder_id});
+                  },
+                ),
+              ),
+              body: SingleChildScrollView(
+                child: Container(
+                  margin: EdgeInsets.symmetric(vertical: 20.0),
+                  height: 800,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: snapshot.data
+                  ),
+                ),
+              ),
+          );break;
+          default:
+            return ErrorScreen(() => Navigator.pop(null));
+        }
+      }
+    );
+  }
+}
+
+class PhotoPreview extends StatelessWidget{
+  final _imagePath, _date, _photoname ;
+
+  PhotoPreview(this._imagePath,this._date, this._photoname);
 
   @override
   Widget build(BuildContext context) {
@@ -28,20 +95,12 @@ class PhotoPreviewFunction extends StatelessWidget{
                   height: 400.0,
                   child: GestureDetector(
                     onTap: (){
-                      Navigator.push(context,MaterialPageRoute(builder: (context) => SimplePhotoViewPage(_imagePath,_datetime)));
+                      Navigator.push(context,MaterialPageRoute(builder: (context) => SimplePhotoViewPage(_imagePath,_date)));
                     },
-                    child: Image.asset(_imagePath),
+                    child: Image.file(File(_imagePath)),
                   ),
                 ),
-                //Image.asset(_imagePath),
-
-                Description(DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),_photoname),
-
-                /*(
-                  title: Text('Description:',style: TextStyle(fontSize: 20),),
-                  subtitle: Text('Date: $_datetime', style: TextStyle(fontSize: 20),),
-                )*/
-
+                Description(_date,_photoname),
               ],
             )
         )
@@ -49,6 +108,7 @@ class PhotoPreviewFunction extends StatelessWidget{
 
   }
 }
+
 class Description extends StatefulWidget{
   final String _datetime, _photoname;
   Description(this._datetime, this._photoname);
@@ -205,47 +265,8 @@ class DescriptionState extends State<Description>{
     });
   }
 }
-class PhotoThing extends StatelessWidget{
-  String photoname;
-  PhotoThing(this.photoname);
-  @override
-
-  Widget build(BuildContext context){
-    return new Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: new AppBar(
-        title: new Text("Photos"),
-        leading: new IconButton(
-          icon: new Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          margin: EdgeInsets.symmetric(vertical: 20.0),
-          height: 800,
-
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: <Widget>[
-              PhotoPreviewFunction("assets/Capture1.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(), photoname),
-              PhotoPreviewFunction("assets/Capture2.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),photoname),
-              PhotoPreviewFunction("assets/Capture3.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),photoname),
-              PhotoPreviewFunction("assets/Capture1.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),photoname),
-              PhotoPreviewFunction("assets/Capture2.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),photoname),
-              PhotoPreviewFunction("assets/Capture3.PNG", DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),photoname),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 enum DialogAction { yes, abort }
-
 class Dialogs {
   static Future<DialogAction> yesAbortDialog(
       BuildContext context,

@@ -1,20 +1,13 @@
-import 'package:app2/services/cloud_storage.dart';
-import 'package:app2/services/image_storage.dart';
-import 'package:app2/services/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:app2/services/dataprovider.dart';
-import 'package:app2/services/userdata.dart';
-import 'package:app2/services/authprovider.dart';
-import 'package:sliver_fill_remaining_box_adapter/sliver_fill_remaining_box_adapter.dart';
 import 'dart:async';
 import 'dart:io';
-
-const Folder_Page = "/";
-const FolderDescription_Page = "/FolderDescription";
-const File_Page= "/Files";
-const FileDescription_Page = "/FileDescription";
-const Test_Page = "/Test";
+import '../../services/authprovider.dart';
+import '../../services/cloud_storage.dart';
+import '../../services/dataprovider.dart';
+import '../../services/image_storage.dart';
+import '../../services/userdata.dart';
+import '../../services/utils.dart';
 
 enum UserDataStatus{
   loading,
@@ -28,45 +21,20 @@ class MainPageFolder extends StatefulWidget {
   MainPageFolder({this.title, this.onSignedOut}) : super();
 
   @override
-  State<StatefulWidget> createState() => new MainPageFolderState();
+  State<StatefulWidget> createState() => MainPageFolderState();
 }
-
 class MainPageFolderState extends State<MainPageFolder> {
   UserDataStatus _status = UserDataStatus.error;
   String _statusText = "";
-  List<Widget> _folders = new List<Widget>();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_){
-      _onLoad();
+      //_onLoad();
     });
   }
-  void deleteFolder(ShowFolder folder){
-    if(folder != null) {
-      setState(() {
-        _folders = List.from(_folders)..remove(folder);
-        print(_folders);
-      });
-    }
-  }
 
-//  Future<List<Widget>> _generateFolders(List folders) async {
-//    final String uid = await AuthProvider.of(context).auth.getUID();
-//    print("Generating folders...");
-//    List<Widget> showfolders = [];
-//    for(Map folder in folders){  //create directory on local storage if not exists, forEach cant be used as it does not await
-//      final folder_path = await getPath() + "/" + uid + "/" + folder['folder_id'];
-//      showfolders.add(ShowFolder(folder['folder_id'],folder['name'],folder['description'],folder['link'],folder['children']));
-//      await createDirectory(folder_path);
-//      for(Map file in folder["children"]){ //create file on local storage and download the image files if not exists
-//        await CloudStorage().getFile(uid, file['image_id'], folder_path);
-//      }
-//    }
-//    print(folders);
-//    return showfolders;
-//  }
   Stream<List<Widget>> _generateFolders(List folders) async* {
     final String uid = await AuthProvider.of(context).auth.getUID();
     print("Generating folders...");
@@ -76,29 +44,30 @@ class MainPageFolderState extends State<MainPageFolder> {
       //showfolders.add(ShowFolder(folder['folder_id'],folder['name'],folder['description'],folder['link'],folder[]'children'));
       //showfolders.add(ShowFolder(folder['folder_id']));
       await createDirectory(folder_path);
-      for(Map image in folder["children"]){ //create file on local storage and download the image files if not exists
-        final appDocDir = await getLocalPath();   //all files stored under appDocDirectory/uid
-        final uidpart = uid.substring(0,3);             //take first 4 digit of UID
-        Directory tmbpath = Directory("$appDocDir/$uid/${folder["folder_id"]}/TMB_$uidpart${image["image_id"]}.jpg");
-        Directory imgpath = Directory("/storage/emulated/0/FlutterPhoto/IMG_$uidpart${image["image_id"]}.jpg");
-        bool exist = await File(imgpath.path).exists();
-        bool exist2 = await File(tmbpath.path).exists();
-//        if(exist2){
-//          print("${image["image_id"]} exists");
-//        }
-//        if(!exist){
-//          print("${image["image_id"]} not exists");
-//          await CloudStorage().getFileToGallery(uid, image['image_id'], folder["folder_id"]);
-//          print("Done download");
-//        }
-//        if(!await tmbpath.exists()){
-//          await createLocalThumbnail(uid, image['image_id'],folder['folder_id'], File(imgpath.path));
-//        }
-//        if(!await tmbpath.exists()){
-//          await createLocalThumbnail(uid, image["image_id"], folder_path, File(imgpath.path));
-//        }
-      }
-      showfolders.add(ShowFolder(folder['folder_id']));
+//       for(Map image in folder["children"]){ //create file on local storage and download the image files if not exists
+//         //final appDocDir = await getLocalPath();   //all files stored under appDocDirectory/uid
+//         //final uidpart = uid.substring(0,3);             //take first 4 digit of UID
+//         //Directory tmbpath = Directory("$appDocDir/$uid/${folder["folder_id"]}/TMB_$uidpart${image["image_id"]}.jpg");
+//         //Directory imgpath = Directory("/storage/emulated/0/FlutterPhoto/IMG_$uidpart${image["image_id"]}.jpg");
+//         //bool exist = await File(imgpath.path).exists();
+//         //bool exist2 = await File(tmbpath.path).exists();
+// //        if(exist2){
+// //          print("${image["image_id"]} exists");
+// //        }
+// //        if(!exist){
+// //          print("${image["image_id"]} not exists");
+// //          await CloudStorage().getFileToGallery(uid, image['image_id'], folder["folder_id"]);
+// //          print("Done download");
+// //        }
+// //        if(!await tmbpath.exists()){
+// //          await createLocalThumbnail(uid, image['image_id'],folder['folder_id'], File(imgpath.path));
+// //        }
+// //        if(!await tmbpath.exists()){
+// //          await createLocalThumbnail(uid, image["image_id"], folder_path, File(imgpath.path));
+// //        }
+//       }
+      //showfolders.add(ShowFolder(folder['folder_id']));
+      showfolders.add(Foldr(folder['folder_id']));
       yield showfolders;
     }
   }
@@ -216,8 +185,8 @@ class MainPageFolderState extends State<MainPageFolder> {
       case UserDataStatus.loaded:
         return Scaffold(
             resizeToAvoidBottomInset: false,
-            appBar: new AppBar(
-              title: new Text(widget.title),
+            appBar: AppBar(
+              title: Text(widget.title),
               actions: <Widget>[
                 IconButton(
                   icon: Icon(Icons.delete),
@@ -237,19 +206,12 @@ class MainPageFolderState extends State<MainPageFolder> {
                   onPressed: () {
                     print('Sharings');
 //                ShowFolderOptions(context);
-                  setState(() {
-                    _status = UserDataStatus.error;
-                  });
                   },
                 ),
                 IconButton(
                   icon: Icon(Icons.exit_to_app),
                   onPressed: () => widget.onSignedOut()
                 ),
-                IconButton(
-                  icon: Icon(Icons.access_time),
-                  onPressed: () => Navigator.pushNamed(context, Test_Page),
-                )
               ],
             ),
             floatingActionButton: FloatingActionButton.extended(
@@ -345,12 +307,6 @@ class MainPageFolderState extends State<MainPageFolder> {
   }
 }
 
-//Can dispose this
-//enum ShowFolderStatus{
-//  loading,
-//  loaded,
-//}
-
 class ShowFolder extends StatefulWidget {
   final String folder_id;
   ShowFolder(this.folder_id);
@@ -359,9 +315,8 @@ class ShowFolder extends StatefulWidget {
   _ShowFolderState createState() => _ShowFolderState();
 }
 class _ShowFolderState extends State<ShowFolder>{
-  String _uid, _name , _date , _description='', _link='';
+  String _uid, _name;
   List _children = [];
-//  ShowFolderStatus status = ShowFolderStatus.loading; //can dispose
   Future<Widget> FolderThumbnail(List children) async { //finds the image on local device and display
     var uid = await AuthProvider.of(context).auth.getUID();
     if(children.isNotEmpty){
@@ -383,29 +338,16 @@ class _ShowFolderState extends State<ShowFolder>{
       return NoImage(_name);
     }
   }
-
   Future<Map> onLoad() async {
       _uid = await AuthProvider.of(context).auth.getUID();
       Map folder = await getFolderData(_uid, widget.folder_id, context);
-//      setState(() {
-//        _name = folder["name"];
-//        _date = folder["date"];
-//        _description = folder["description"];
-//        _link = folder["link"];
-//        _children = folder["children"];
-//        status = ShowFolderStatus.loaded;
-//      });
       return folder;
   }
 
   @override
   void initState() {
     super.initState();
-//    WidgetsBinding.instance.addPostFrameCallback((_){
-//      _onLoad();
-//    });
   }
-
   void pa(){
     print("HELLO");
   }
@@ -421,9 +363,6 @@ class _ShowFolderState extends State<ShowFolder>{
             return WaitingScreen(pa);break;
           case ConnectionState.done:
             _name = snapshot.data["name"];
-            _date = snapshot.data["date"];
-            _description = snapshot.data["description"];
-            _link = snapshot.data["link"];
             _children = snapshot.data["children"];
             return Container(
                 alignment: Alignment.center,
@@ -432,10 +371,7 @@ class _ShowFolderState extends State<ShowFolder>{
                       Container(
                         child: GestureDetector(
                           onTap: (){
-                            print("pressed");
-                            Navigator.pushNamed(context, FolderDescription_Page,arguments:{'folder_id':widget.folder_id});
-//                    Navigator.push(context,
-//                        MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription(widget.folder_id)));
+                            Navigator.pushNamed(context,File_Page,arguments: {'folder_id':widget.folder_id});
                           },
                           child: Container(
                             child: new Card(
@@ -465,47 +401,5 @@ class _ShowFolderState extends State<ShowFolder>{
         }
       },
     );
-
-
-//    switch(status){
-//      case ShowFolderStatus.loading:
-//        return WaitingScreen(null,showText: "");break;
-//      case ShowFolderStatus.loaded:
-//        return Container(
-//            alignment: Alignment.center,
-//            child: Wrap(
-//                children: <Widget>[
-//                  Container(
-//                    child: GestureDetector(
-//                      onTap: (){
-//                        print("pressed");
-//                        Navigator.pushNamed(context, FolderDescription_Page,arguments:{'folder_id':"123"});
-////                    Navigator.push(context,
-////                        MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription(widget.folder_id)));
-//                      },
-//                      child: Container(
-//                        child: new Card(
-//                            elevation: 10.0,
-//                            child: FutureBuilder<Widget>(
-//                                future: FolderThumbnail(_children),
-//                                builder: (BuildContext context, AsyncSnapshot snapshot) {
-//                                  switch(snapshot.connectionState){
-//                                    case ConnectionState.done:
-//                                      if(snapshot.hasData){
-//                                        return snapshot.data;
-//                                      };break;
-//                                    default:
-//                                      return NoImage(_name);
-//                                  }
-//                                }
-//                            )
-//                        ),
-//                      ),
-//                    ),
-//                  )
-//                ]
-//            )
-//        );
-//    }
   }
 }

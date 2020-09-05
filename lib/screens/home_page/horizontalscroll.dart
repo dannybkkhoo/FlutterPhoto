@@ -3,13 +3,11 @@ import 'package:app2/services/dataprovider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/services/userdata.dart';
-//import 'package:flutterhorizontalscroll/multiplephoto.dart';
 import 'package:intl/intl.dart';
 import '../../services/utils.dart';
 import '../../services/authprovider.dart';
+import 'package:app2/screens/home_page/multiplephoto.dart';
 import 'dart:io';
-
-const File_Page= "/Files";
 
 enum DescriptionFolderStatus{
   changed,
@@ -32,14 +30,6 @@ class DescriptionFolderState extends State<DescriptionFolder>{
   String _link = "No Link";
   String _description = 'No Description';
   List _children = [];
-
-  @override
-//  void initState() {
-//    super.initState();
-//    WidgetsBinding.instance.addPostFrameCallback((_){
-//      _onLoad();
-//    });
-//  }
 
   Future<Map> onLoad() async {
     _uid = await AuthProvider.of(context).auth.getUID();
@@ -282,7 +272,7 @@ class _HorizontalScrollState extends State<HorizontalScroll>{
   }
 
   void onTap(){
-    Navigator.pushNamed(context, File_Page,arguments: {'folder_id':widget.folder_id});
+    Navigator.pushNamed(context,File_Page,arguments: {'folder_id':widget.folder_id});
   }
 
   Future<List<Widget>> _generateImagePreview(List children) async {
