@@ -39,6 +39,7 @@ dependencies:
   gallery_saver: ^2.0.1
   image: ^2.1.14
   permission_handler: ^5.0.0
+  percent_indicator: ^2.1.5
   google_sign_in: ^4.0.4
   flutter_facebook_login: ^1.2.0
   firebase_core: ^0.4.4+2

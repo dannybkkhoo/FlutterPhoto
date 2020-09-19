@@ -1,19 +1,17 @@
-import 'package:app2/services/cloud_storage.dart';
-import 'package:app2/services/dataprovider.dart';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:app2/services/userdata.dart';
-import 'package:intl/intl.dart';
+import '../layer_5/multiplephoto.dart';
+import '../../services/local_storage/userdata.dart';
 import '../../services/utils.dart';
-import '../../services/authprovider.dart';
-import 'package:app2/screens/home_page/multiplephoto.dart';
-import 'dart:io';
+import '../../services/authentication/authprovider.dart';
+import '../../services/cloud_storage/cloud_storage.dart';
+import '../../services/local_storage/dataprovider.dart';
 
 enum DescriptionFolderStatus{
   changed,
   unchanged,
 }
-
 class DescriptionFolder extends StatefulWidget{
   final String folder_id;
   DescriptionFolder(this.folder_id);
@@ -40,19 +38,14 @@ class DescriptionFolderState extends State<DescriptionFolder>{
   void _update() async {
     UserData userData;
     Directory oldPath;
-    //userData = await DataProvider.of(context).userData.loadLatestUserData(_uid); //find user data from local
     userData = await DataProvider.of(context).userData; //find user data from local
     List folders = userData.folders;
     for(var i=0;i<folders.length;i++) {
       if(folders[i]['folder_id'] == widget.folder_id){
-//        oldPath = Directory(await getLocalPath() + "/" + _uid + "/" + folders[i]['name']);
-//        await createDirectory(await getLocalPath() + "/" + _uid + "/" + _name);
-//        oldPath.renameSync(await getLocalPath() + "/" + _uid + "/" + _name);
         folders[i]['name'] = _name; //replace old folder name with updated one
         folders[i]['date'] = getDateTime(); //update the date modified
         folders[i]['description'] = _description;
         folders[i]['link'] = _link;
-        //folders = folders;
       }
     }
     userData.folder_list[widget.folder_id] = _name;  //update folder name in user data

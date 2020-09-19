@@ -1,14 +1,11 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:app2/services/dataprovider.dart';
-import 'package:app2/services/userdata.dart';
-import 'package:app2/services/authprovider.dart';
-import 'package:app2/services/utils.dart';
-import 'package:app2/services/image_storage.dart';
+import '../../services/local_storage/dataprovider.dart';
+import '../../services/local_storage/userdata.dart';
+import '../../services/authentication/authprovider.dart';
 import '../../services/utils.dart';
-//import 'last2layers.dart';
+import '../../services/cloud_storage/image_storage.dart';
 
 class MainPage extends StatefulWidget {
   final String folder_id;
@@ -18,23 +15,26 @@ class MainPage extends StatefulWidget {
   State<StatefulWidget> createState() => new MainPageState();//Return a state object
 }
 class MainPageState extends State<MainPage> {
-  String _name;
+  String _name, _uid;
   List _children;
-  String _uid;
   static String _photoname = 'Photoname';
-  @override
+  Future _receivedData;
+  ImageStorage imageStorage = ImageStorage();
 
-  Future<Map> onLoad() async {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _receivedData = _loadFolderData();
+  }
+
+  Future<Map> _loadFolderData() async {
     _uid = await AuthProvider.of(context).auth.getUID();
-    Map folder = await getFolderData(_uid, widget.folder_id, context);
+    Map folder = getFolderData(_uid, widget.folder_id, context);
     return folder;
   }
   void _refresh() async {
     print("Refreshing screen...");
     setState(() {});
-  }
-  void pa(){
-    print("HELLO");
   }
   Future<String> createAlertDialog(BuildContext context, title){
     TextEditingController DescriptionCon = TextEditingController();
@@ -76,12 +76,12 @@ class MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder <Map>(
-      future: onLoad(),
+      future: _loadFolderData(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         switch(snapshot.connectionState){
           case ConnectionState.waiting:
           case ConnectionState.active:
-            return WaitingScreen(pa);break;
+            return WaitingScreen(()=>print("Loading..."));break;
           case ConnectionState.done:
             _name = snapshot.data["name"];
             _children = snapshot.data["children"];
@@ -93,7 +93,7 @@ class MainPageState extends State<MainPage> {
                     title: new Text(_name),
                     leading: new IconButton(
                       icon: Icon (Icons.arrow_back),
-                      onPressed: () => Navigator.pushNamed(context,Folder_Page),
+                      onPressed: () => Navigator.popAndPushNamed(context,Folder_Page),
                     ),
                     actions: <Widget>[
                       IconButton(
@@ -119,9 +119,8 @@ class MainPageState extends State<MainPage> {
                   ),
                   floatingActionButton: FloatingActionButton.extended(
                     onPressed: () async {
-                      await ImageStorage().AddImage(context,widget.folder_id);
+                      await imageStorage.AddImage(context,widget.folder_id);
                       setState(() {});
-                      //open_gallery();
                     },
                     icon: Icon(Icons.add, color: Colors.black,),
                     label: Text("Import Photos"),
@@ -131,14 +130,6 @@ class MainPageState extends State<MainPage> {
                   body:  Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-//                    SearchPhoto(),
-//                    Container(
-//                        alignment: Alignment.topLeft,
-//                        child: Text('  Number of Photos = ',style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic),
-//                        )
-//
-//                    ),
-//                            _children.isNotEmpty?
                       Expanded(
                         child: StreamBuilder<List<Widget>>(
                             stream: _buildGridTiles(_children),
@@ -200,7 +191,7 @@ class MainPageState extends State<MainPage> {
               )
             );break;
           default:
-            return ErrorScreen(pa);
+            return ErrorScreen(()=>print("Error!"));
         }
       }
     );
@@ -216,17 +207,24 @@ class ShowImage extends StatefulWidget {
 }
 class _ShowImageState extends State<ShowImage>{
   String _uid, _name;
-  Future<File> onLoad() async {
+  Future _receivedData;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _receivedData = _loadImageData();
+  }
+
+  Future<File> _loadImageData() async {
     _uid = await AuthProvider.of(context).auth.getUID();
-    var userData = DataProvider.of(context).userData; //get user's data
+    final userData = DataProvider.of(context).userData; //get user's data
     _name = userData.image_list[widget.image_id];
-    String uidpart = _uid.substring(0,3);
+    final uidpart = _uid.substring(0,3);
     final file_path = await getLocalPath() + "/" + _uid + "/" + widget.folder_id;
     return File("$file_path/TMB_$uidpart${widget.image_id}.jpg");
   }
   void _update() async {
     UserData userData;
-    Directory oldPath;
     userData = await DataProvider.of(context).userData; //find user data from local
     List folders = userData.folders;
     for(var folder in folders){
@@ -236,8 +234,6 @@ class _ShowImageState extends State<ShowImage>{
           if(image['image_id'] == widget.image_id){
             image['name'] = _name;
             image['date'] = getDateTime();
-            //image['filepath'] = _filepath;
-            //image['description'] = _description;
             break;
           }
         }
@@ -277,9 +273,6 @@ class _ShowImageState extends State<ShowImage>{
       );
     });
   }
-  void pa(){
-    print("HELLO");
-  }
   @override
   void initState() {
     super.initState();
@@ -288,12 +281,12 @@ class _ShowImageState extends State<ShowImage>{
   @override
   Widget build(BuildContext context) {
     return new FutureBuilder<File>(
-      future: onLoad(),
+      future: _receivedData,
       builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
         switch(snapshot.connectionState){
           case ConnectionState.waiting:
           case ConnectionState.active:
-            return WaitingScreen(pa);break;
+            return WaitingScreen(()=>print("Loading..."));break;
           case ConnectionState.done:
             return Container(
                 child: Wrap(
@@ -301,7 +294,7 @@ class _ShowImageState extends State<ShowImage>{
                       Container(
                         child: GestureDetector(
                           onTap: (){
-                            Navigator.pushNamed(context, Photo_Page,arguments: {'folder_id':widget.folder_id});
+                            Navigator.popAndPushNamed(context, Photo_Page,arguments: {'folder_id':widget.folder_id});
                           },
                           child: Container(
                             child: new Card(
@@ -309,7 +302,7 @@ class _ShowImageState extends State<ShowImage>{
                               child: new Column(
                                 mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
-                                  new Image.file(snapshot.data,height: 100.0, width: 100.0,fit: BoxFit.cover),
+                                  new Image.file(snapshot.data,height: 100.0, width: 100.0,fit: BoxFit.contain),
                                   new FlatButton(
                                     color: Colors.grey,
                                     textColor: Colors.black,
@@ -320,7 +313,7 @@ class _ShowImageState extends State<ShowImage>{
                                       createAlertDialog(context, "Change Photo Name?").then((onValue) async {
                                         if(onValue != null) {
                                           _name = onValue;
-                                          await _update();
+                                          _update();
                                           setState(() {
                                             _name = onValue;
                                           });
@@ -348,7 +341,6 @@ class _ShowImageState extends State<ShowImage>{
 
 
 class SearchPhoto extends StatelessWidget{
-  //final _imagepath;
   SearchPhoto();
   @override
   Widget build(BuildContext context) {

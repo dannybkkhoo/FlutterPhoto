@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'photoview.dart';
 import 'package:intl/intl.dart';
-import 'package:app2/services/utils.dart';
-import 'package:app2/services/authprovider.dart';
+import '../../services/utils.dart';
+import '../../services/authentication/authprovider.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -53,8 +53,7 @@ class _PhotoThingState extends State<PhotoThing>{
                 leading: new IconButton(
                   icon: new Icon(Icons.arrow_back),
                   onPressed: () {
-                    //Navigator.pop(context);
-                    Navigator.pushNamed(context, File_Page,arguments:{'folder_id':widget.folder_id});
+                    Navigator.popAndPushNamed(context, File_Page,arguments:{'folder_id':widget.folder_id});
                   },
                 ),
               ),

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart';
-import '../home_page/folder_page.dart';
-import '../home_page/horizontalscroll.dart';
-import '../home_page/last2layers.dart';
-import '../home_page/multiplephoto.dart';
-import '../../services/authprovider.dart';
-import '../../services/authenticator.dart';
-import '../../services/dataprovider.dart';
+import '../layer_2/login_page.dart';
+import '../layer_3/loading_page.dart';
+import '../layer_4/folder_page.dart';
+import '../layer_5/multiplephoto.dart';
+import '../layer_6/last2layers.dart';
+import '../unused/horizontalscroll.dart';
 import '../../services/utils.dart';
+import '../../services/authentication/authprovider.dart';
+import '../../services/authentication/authenticator.dart';
+import '../../services/local_storage/dataprovider.dart';
 
 enum AuthStatus {
   notDetermined,
@@ -73,6 +74,9 @@ class _RootPageState extends State<RootPage>{
       final Map<String, dynamic> arguments = settings.arguments;
       Widget screen;
       switch(settings.name){
+        case Loading_Page:
+          screen = LoadingPage();break;
+          //screen = MainPageFolder(title: "Home Page", onSignedOut: _signedOut);break;
         case Folder_Page:
           screen = MainPageFolder(title: "Home Page", onSignedOut: _signedOut);break;
         case FolderDescription_Page:

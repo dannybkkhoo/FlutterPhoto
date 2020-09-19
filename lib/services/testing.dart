@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
+
 void main() => runApp(MaterialApp());
+
 class SimplePhotoViewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -25,8 +27,8 @@ class SimplePhotoViewPage extends StatelessWidget {
             height: 20.0,
             child: CircularProgressIndicator(
               value: event == null
-                ? 0
-                : event.cumulativeBytesLoaded / event.expectedTotalBytes,
+                  ? 0
+                  : event.cumulativeBytesLoaded / event.expectedTotalBytes,
             ),
           ),
         ),

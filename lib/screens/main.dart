@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'login_page/root_page.dart';
-import '../services/authenticator.dart';
-import '../services/authprovider.dart';
-import '../services/dataprovider.dart';
+import 'layer_1/root_page.dart';
+import '../services/authentication/authenticator.dart';
+import '../services/authentication/authprovider.dart';
+import '../services/local_storage/dataprovider.dart';
 
 void main() => runApp(MyApp());
 

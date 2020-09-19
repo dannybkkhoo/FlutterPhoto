@@ -1,11 +1,11 @@
+import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:random_string/random_string.dart';
-import 'package:app2/services/utils.dart';
-import 'package:app2/services/firestore_storage.dart';
-import 'dart:io';
 import 'package:json_annotation/json_annotation.dart';
-import 'dart:convert';
+import '../utils.dart';
+import '../cloud_storage//firestore_storage.dart';
 part 'userdata.g.dart';
 
 /*This class holds temporary data locally to be passed on to any widget throughout the app*/

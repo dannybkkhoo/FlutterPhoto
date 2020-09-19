@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../services/authenticator.dart';
-import '../../services/authprovider.dart';
+import '../../services/authentication/authenticator.dart';
+import '../../services/authentication/authprovider.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback onSignedIn;

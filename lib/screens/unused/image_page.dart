@@ -1,15 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/services/utils.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:app2/services/cloud_storage.dart';
-import 'package:app2/services/authprovider.dart';
-import 'package:app2/services/authenticator.dart';
-import 'package:app2/services/firestore_storage.dart';
-import 'package:app2/services/userdata.dart';
-import 'package:app2/services/dataprovider.dart';
-import 'package:app2/services/image_storage.dart';
-import 'dart:io';
+import '../../services/authentication/authprovider.dart';
+import '../../services/authentication/authenticator.dart';
+import '../../services/cloud_storage/cloud_storage.dart';
+import '../../services/cloud_storage/firestore_storage.dart';
+import '../../services/cloud_storage/image_storage.dart';
+import '../../services/local_storage/dataprovider.dart';
+import '../../services/local_storage/userdata.dart';
 
 class ImagePage extends StatefulWidget{
   final VoidCallback onSignedOut;

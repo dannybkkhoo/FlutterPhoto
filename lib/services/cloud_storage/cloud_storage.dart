@@ -1,8 +1,7 @@
-import 'package:app2/services/utils.dart';
+import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/painting.dart';
-import 'dart:io';
+import '../utils.dart';
 
 class CloudStorage {
   final _storageReference = FirebaseStorage.instance;

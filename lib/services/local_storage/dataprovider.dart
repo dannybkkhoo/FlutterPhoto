@@ -1,10 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:app2/services/utils.dart';
-import "userdata.dart";
-import 'package:path_provider/path_provider.dart';
-import 'firestore_storage.dart';
-import 'dart:convert';
-import 'dart:io';
+import 'userdata.dart';
 
 class DataProvider extends StatefulWidget {
   final child;
