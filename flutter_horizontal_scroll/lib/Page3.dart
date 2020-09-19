@@ -8,17 +8,20 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
-import 'last2layers.dart';
+import 'package:flutterhorizontalscroll/Page4.dart';
+import 'package:flutterhorizontalscroll/Page2a.dart';
 
 
 
-void main() => runApp(MyApp());
+//void main() => runApp(MyApp());
 //Now use stateful Widget = Widget has properties which can be changed
 class MainPage extends StatefulWidget {
-  final String title;
+
+  List <Map> foldernamesmap = List();
+  int index ;
   //Custom constructor, add property : title
   @override
-  MainPage({this.title}) : super();
+  MainPage(this.foldernamesmap, this.index) : super();
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -27,19 +30,19 @@ class MainPage extends StatefulWidget {
 }
 class MainPageState extends State<MainPage> {
   //State must have "build" => return Widget
-  String parentString = 'Photoname';
-  String name;
-  String imagepath;
+
+
   File _image;
   //List<String> _imageList = List();
   List<int> _selectedIndexList = List();
   bool _selectionMode = false;
-  List<Widget> photos = new List<Widget>();
-  List<String> photonames = new List<String>();
-  List<String> sort_imageList = List();
+  bool _checker =false;
+  //List<Widget> photos = new List<Widget>();
+  //List<String> photonames = new List<String>();
   List<Map> maps = List();
   List<Map> duplicatemaps = List();
-  int num = 0;
+  List<Map> combineMap = List();
+  //int num = 0;
   @override
   void initState() {
     super.initState();
@@ -66,41 +69,36 @@ class MainPageState extends State<MainPage> {
     _imageList.add("assets/Capture3.PNG");*/
 
     maps = [
-      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
-      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description":null},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
-      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description":null},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
-      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description":null},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+
       ];
     duplicatemaps = [
-      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description":null},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
-      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description":null},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
-      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description":null},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
-      {"imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description":null},
-      {"imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
-      {"imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
     ];
 
   }
-  void parentChange(newString) {
+ /* void parentChange(newString) {
     setState(() {
       parentString = newString;
     });
-  }
-  void appendphotonames(onValue){
+  }*/
+  /*void appendphotonames(onValue){
     if(onValue != null) {
       setState(() {
         //photos.add(folder);
@@ -109,7 +107,7 @@ class MainPageState extends State<MainPage> {
         print(photonames.length);
       });
     }
-  }
+  }*/
 
 
 
@@ -120,10 +118,11 @@ class MainPageState extends State<MainPage> {
     setState(() {
       _image = image;
       getImage(_image.path).then((value){
+        print('imge_path =${_image.path}');
         imgsize = value;
         print('Imagesizeatopencamera = $imgsize');
-        maps.add({"imagepath":"${_image.path}", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"${imgsize}", "description":null});
-        duplicatemaps.add({"imagepath":"${_image.path}", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"${imgsize}", "description":null});
+        maps.add({"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":"${_image.path}", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"${imgsize}", "description":null,});
+        duplicatemaps.add({"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":"${_image.path}", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"${imgsize}", "description":null,});
       });
       //_imageList.add(_image.path);
 
@@ -137,9 +136,11 @@ class MainPageState extends State<MainPage> {
       _image = image;
       getImage(_image.path).then((value){
         imgsize = value;
-        maps.add({"imagepath":'${_image.path}', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"${imgsize}","description":null});
-        duplicatemaps.add({"imagepath":'${_image.path}', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"${imgsize}","description":null});
-        print('Imagesize = $imgsize');
+        maps.add({"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'${_image.path}', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"${imgsize}","description":null,});
+        duplicatemaps.add({"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'${_image.path}', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"${imgsize}","description":null,});
+        //print('Imagesize = $imgsize');
+        //print('mapseheheh = $maps');
+        //print('duplimapseheheh = $duplicatemaps');
       });
       //_imageList.add(_image.path);
 
@@ -150,8 +151,9 @@ class MainPageState extends State<MainPage> {
   bool isSortdate = true;
   bool Tick = false;
 
-  void sort(List map) {
+  void sort(List map, duplicatemaps) {
     maps.sort((a, b) => isSort ? a['name'].toString().toLowerCase().compareTo(b['name'].toString().toLowerCase()) : b['name'].toString().toLowerCase().compareTo(a['name'].toString().toLowerCase()));
+    duplicatemaps.sort((a, b) => isSort ? a['name'].toString().toLowerCase().compareTo(b['name'].toString().toLowerCase()) : b['name'].toString().toLowerCase().compareTo(a['name'].toString().toLowerCase()));
     isSort = !isSort;
     /*List temp = [];
     List tempphoto = [];
@@ -166,8 +168,9 @@ class MainPageState extends State<MainPage> {
     print("list for temp = $temp");
     print("list for tempphoto = $tempphoto");*/
   }
-  void sortdate(List map) {
+  void sortdate(List map, duplicatemaps) {
     maps.sort((a, b) => isSortdate ? a['date'].compareTo(b['date']) : b['date'].compareTo(a['date']));
+    duplicatemaps.sort((a, b) => isSortdate ? a['date'].compareTo(b['date']) : b['date'].compareTo(a['date']));
     isSortdate = !isSortdate;
 
   }
@@ -233,6 +236,23 @@ class MainPageState extends State<MainPage> {
     // TODO: implement build
     return new Scaffold(
         appBar: new AppBar(
+            automaticallyImplyLeading: false,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                setState(() {
+                  combineMap.clear();
+                  combineMap.addAll(widget.foldernamesmap);
+                  if(maps.length>0){
+                    combineMap.addAll(maps);
+                  }
+                });
+
+                //print("combine maps = $combineMap");
+                Navigator.pop(context,combineMap);
+              },
+
+        ),
             title: Text(_selectedIndexList.length < 1
                 ? "Gridview of Images"
                 : "${_selectedIndexList.length} item selected"),
@@ -272,6 +292,7 @@ class MainPageState extends State<MainPage> {
             child: Container(
                 child:Column(
                   children: <Widget>[
+                    DescriptionFolder(context,widget.foldernamesmap[widget.index]),
                     SearchPhoto(context),
                     Container(
                         alignment: Alignment.topLeft,
@@ -281,6 +302,7 @@ class MainPageState extends State<MainPage> {
                         )
 
                     ),
+
                     _createBody(),
                     /*GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
@@ -465,24 +487,46 @@ class MainPageState extends State<MainPage> {
           child: Text(maps[index]["name"]),
           onPressed: (){
             createAlertDialog(context, "Photoname").then((onValue) async {
-              if( onValue != null) {
+              if( onValue != null && onValue.isNotEmpty) {
                 //widget.customFunction(onValue);
                 print("old value = ${maps[index]["name"]}");
                 print("maps [0]= ${maps[0]}");
                 print("maps length = ${maps.length}");
-                setState(() {
-                  maps[index]["name"]= onValue;
-                  duplicatemaps[index]["name"]= onValue;
-                  print("updated value =${maps[index]["name"]}");
-                  //addPhotos(_imageList);
-                  //appendphotonames(name);
-                  /*var imag = imageRecord(
+                for (int j = 0; j < maps.length; j++){
+                  if(maps[j]["name"] == onValue){
+                    print('This Photoname exsits');
+                    NameExistdialog(context,"Photoname Exist","Please try another photoname");
+                    setState(() {
+                      _checker = true;
+                    });
+                  }
+                }
+                if(!_checker){
+                  setState(() {
+                    maps[index]["name"]= onValue;
+                    duplicatemaps[index]["name"]= onValue;
+                    print("updated value =${maps[index]["name"]}");
+
+                    //addPhotos(_imageList);
+                    //appendphotonames(name);
+                    /*var imag = imageRecord(
                     image_path: "$_imageList",
                     name: "$name",
                   );*/
-                  //print("image data = ${imag.dat()}");
-                  print('Map = $maps');
-                });
+                    //print("image data = ${imag.dat()}");
+                    print('Map = $maps');
+                  });
+                }
+                else{
+                  setState(() {
+                    _checker = false;
+                  });
+                }
+
+              }
+              if(onValue?.isEmpty?? false){
+                NameExistdialog(context,'Photoname not given', 'Please enter a photoname to create new folder');
+                return;
               }
 
             });
@@ -491,7 +535,28 @@ class MainPageState extends State<MainPage> {
       ],
     );
   }
-
+  Future <void> NameExistdialog(BuildContext context, title,content){
+    return showDialog(context: context,builder: (BuildContext context){
+      return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions:[
+            FlatButton(
+              child: Row(
+                children: <Widget>[
+                  Icon(Icons.keyboard_return),
+                  Text('Back')
+                ],
+              ),
+              onPressed: (){
+                Navigator.pop(context);
+              },
+            ),
+          ]
+      );
+    },
+    );
+  }
   Future<String> createAlertDialog(BuildContext context, title){
     TextEditingController DescriptionCon = TextEditingController();
 
@@ -531,9 +596,10 @@ class MainPageState extends State<MainPage> {
             children: <Widget>[
               GestureDetector(
                 onTap: (){
-                  sort(maps);
+                  sort(maps, duplicatemaps);
                   setState(() {
                     maps = maps;
+                    duplicatemaps = duplicatemaps;
                   });
                   print('Sorted by name');
                   Navigator.pop(context);
@@ -563,9 +629,10 @@ class MainPageState extends State<MainPage> {
               GestureDetector(
                 onTap: (){
                   print('Sorted by Date');
-                  sortdate(maps);
+                  sortdate(maps, duplicatemaps);
                   setState(() {
                     maps = maps;
+                    duplicatemaps= duplicatemaps;
                   });
                   Navigator.pop(context);
                 },
@@ -707,8 +774,18 @@ class MainPageState extends State<MainPage> {
                     ),
                     onTap: () {
                       print("pressed");
-                      Navigator.push(context, MaterialPageRoute(
-                           builder: (context) => PhotoPreviewFunction(duplicatemaps)));
+                      Navigator.push(context,
+                        new MaterialPageRoute(builder: (context) =>PhotoPreviewFunction(maps,index)),
+                      )
+                          .then((value) {
+                        setState(() {
+                          maps = value;
+                          print('Recieved maps = $maps');
+                          print('Recoeved map length = ${maps.length}');
+                        });
+                      });
+                      //Navigator.push(context, MaterialPageRoute(
+                           //builder: (context) => PhotoPreviewFunction(maps)));
 
 
 
@@ -731,6 +808,297 @@ class MainPageState extends State<MainPage> {
     if (index == -1) {
       _selectedIndexList.clear();
     }
+  }
+
+  Widget DescriptionFolder(BuildContext context, foldernamesmap) {
+
+    return Container(
+      width: 400,
+      //height: 250,
+
+      child: new Column(
+
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Expanded(
+                child: new Text('Folder Name: ${foldernamesmap["foldername"]}',textAlign: TextAlign.left, style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+              ),
+              SizedBox.fromSize(
+                size: Size(46, 56), // button width and height
+                child: ClipRect(
+                  child: Material(
+                    color: Colors.transparent, // button color
+                    child: InkWell(
+                      splashColor: Colors.white, // splash color
+                      onTap: () {
+                        createAlertDialog(context,"Folder Name").then((onValue) async {
+                          if( onValue != null) {
+                            setState(() {
+                              foldernamesmap["foldername"] = onValue;
+                            });
+                          }
+
+                        });
+
+                      }, // button pressed
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.edit), // icon
+                          Text("Edit"), // text
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+            Text('Date: ${foldernamesmap["folderdate"]}', style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold),textAlign: TextAlign.left),
+            ]),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Expanded(
+                child: Text(foldernamesmap["folderdescription"] != null? 'Description: ${foldernamesmap["folderdescription"]}':'Description: No Description', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+              ),
+              SizedBox.fromSize(
+                size: Size(46, 56), // button width and height
+                child: ClipRect(
+                  child: Material(
+                    color: Colors.transparent, // button color
+                    child: InkWell(
+                      splashColor: Colors.white, // splash color
+                      onTap: () {
+                        createAlertDialog(context,"Description").then((onValue) async {
+                          if( onValue != null) {
+                            setState(() {
+                              foldernamesmap["folderdescription"] = onValue;
+                            });
+                          }
+
+                        });
+
+                      }, // button pressed
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.edit), // icon
+                          Text("Edit"), // text
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Expanded(
+                child: Text(foldernamesmap["folderlink"] != null? 'Link: ${foldernamesmap["folderlink"]}':'Link: No Link', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+              ),
+              SizedBox.fromSize(
+                size: Size(46, 56), // button width and height
+                child: ClipRect(
+                  child: Material(
+                    color: Colors.transparent, // button color
+                    child: InkWell(
+                      splashColor: Colors.white, // splash color
+                      onTap: () {
+                        folderAlertDialog(context, "Link").then((onValue) async {
+                          if( onValue != null && onValue.isNotEmpty) {
+
+                            setState(() {
+                              foldernamesmap["folderlink"] = onValue;
+
+                            });
+                          }
+                          else{
+                            setState(() {
+                              foldernamesmap["folderlink"] = "No Link";
+
+                            });
+                          }
+
+                        });
+
+                      }, // button pressed
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.edit), // icon
+                          Text("Edit"), // text
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox.fromSize(
+                size: Size(46, 56), // button width and height
+                child: ClipRect(
+                  child: Material(
+                    color: Colors.transparent, // button color
+                    child: InkWell(
+                      splashColor: Colors.white, // splash color
+                      onTap: () {
+                        if(foldernamesmap["folderlink"] !=null ) {
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => URLPAGE(foldernamesmap["folderlink"])));
+                        }
+                        else{
+                          _Nolinkdialog(context);
+                        }
+
+                      }, // button pressed
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.launch), // icon
+                          Text("Link"), // text
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          /*new Text('Description:', textAlign: TextAlign.left,style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+          new TextField(
+            decoration: new InputDecoration(
+                hintText: "What's on your mind?"
+            ),
+          ),
+          new Text('Link:',textAlign: TextAlign.center, style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+          new TextField(
+            controller: linkCon,
+            decoration: new InputDecoration(
+                hintText: "Put your link here!"
+            ),
+          ),*/
+
+          /*Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              SizedBox.fromSize(
+                size: Size(56, 56), // button width and height
+                child: ClipOval(
+                  child: Material(
+                    color: Colors.blue, // button color
+                    child: InkWell(
+                      splashColor: Colors.white, // splash color
+                      onTap: () {
+                        Navigator.pop(context);
+                        //Navigator.push(context,MaterialPageRoute(builder: (context) => new MainPageFolder(title: "My Gallery",)));
+                      }, // button pressed
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.keyboard_return), // icon
+                          Text("Back"), // text
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox.fromSize(
+                size: Size(56, 56), // button width and height
+                child: ClipOval(
+                  child: Material(
+                    color: Colors.blue, // button color
+                    child: InkWell(
+                      splashColor: Colors.white, // splash color
+                      onTap: () {
+                        // _link = linkCon.text;
+                        // print('$_link');
+                        if(_link !=null) {
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => URLPAGE(_link)));
+                        }
+                        else{
+                          _Nolinkdialog(context);
+                        }
+                      }, // button pressed
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.launch), // icon
+                          Text("Link"), // text
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          )*/
+        ],
+      ),
+    );
+  }
+  Future <void> _Nolinkdialog(BuildContext context){
+    return showDialog(context: context,builder: (BuildContext context){
+      return AlertDialog(
+          title: Text("No Link Available"),
+          content: Text("Please fill in the link"),
+          actions:[
+            FlatButton(
+              child: Row(
+                children: <Widget>[
+                  Icon(Icons.keyboard_return),
+                  Text('Back')
+                ],
+              ),
+              onPressed: (){
+                Navigator.pop(context);
+              },
+            ),
+          ]
+      );
+    },
+    );
+  }
+  Future<String> folderAlertDialog(BuildContext context, title){
+    TextEditingController DescriptionCon = TextEditingController();
+
+    return showDialog(context: context,builder: (context){
+      return AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: DescriptionCon ,
+        ),
+        actions: <Widget>[
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('Cancel'),
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
+          ),
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('Submit'),
+            onPressed: (){
+              Navigator.of(context).pop(DescriptionCon.text.toString());
+
+            },
+          )
+        ],
+      );
+    });
   }
 }
 
@@ -1033,7 +1401,7 @@ class photonameState extends State<photoname>{
   }
 }*/
 
-class MyApp extends StatelessWidget {
+/*class MyApp extends StatelessWidget {
   //Stateless = immutable = cannot change object's properties
   //Every UI components are widgets
   @override
@@ -1045,7 +1413,7 @@ class MyApp extends StatelessWidget {
         home: new MainPage(title: "Gridview of Images")
     );
   }
-}
+}*/
 
 void ShowSortOptions(BuildContext context) async{
   final items = <MultiSelectDialogSortItem<int>>[
@@ -1154,7 +1522,7 @@ class imageRecord {
 
   });
 
-  Map<String,dynamic> dat() {
+  Map<String, dynamic> dat() {
     return {
       "image_path": image_path,
       "name": name,

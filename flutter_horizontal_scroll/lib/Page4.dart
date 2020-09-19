@@ -1,14 +1,7 @@
-import 'dart:io';
-import 'dart:math';
-import 'dart:typed_data';
-import 'package:filesize/filesize.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'photoview.dart';
-import 'dart:ui' as ui;
-import 'package:image/image.dart' as image;
+import 'package:flutterhorizontalscroll/Page5.dart';
+
 
 
 /*void main() => runApp(MaterialApp(
@@ -54,8 +47,8 @@ import 'package:image/image.dart' as image;
 }*/
 class PhotoPreviewFunction extends StatefulWidget{
   List<Map> maps = List();
-
-  PhotoPreviewFunction(this.maps);
+   int index;
+  PhotoPreviewFunction(this.maps, this.index);
 
   @override
   PhotoPreviewFunctionState createState() => new PhotoPreviewFunctionState();
@@ -70,6 +63,8 @@ class PhotoPreviewFunctionState extends State<PhotoPreviewFunction>{
              leading: new IconButton(
                  icon: new Icon(Icons.arrow_back),
                  onPressed: () {
+                   print("returning maps = ${widget.maps}");
+                   print("return length = ${widget.maps.length}");
                  Navigator.pop(context,widget.maps);
                  },
        ),
@@ -118,15 +113,60 @@ class PhotoPreviewFunctionState extends State<PhotoPreviewFunction>{
                   child: new Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      new Text("Photoname: ${singlemaps["name"]}",textAlign: TextAlign.center, style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          new Text("Photoname: ${singlemaps["name"]}",textAlign: TextAlign.center, style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+                          SizedBox.fromSize(
+                            size: Size(46, 56), // button width and height
+                            child: ClipRect(
+                              child: Material(
+                                color: Colors.transparent, // button color
+                                child: InkWell(
+                                  splashColor: Colors.white, // splash color
+                                  onTap: () {
+                                    createAlertDialog(context,"Photoname?").then((onValue) async {
+                                      if( onValue != null) {
+                                        setState(() {
+                                          singlemaps["name"] = onValue;
+                                        });
+                                      }
+
+                                    });
+
+                                  }, // button pressed
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Icon(Icons.edit), // icon
+                                      Text("Edit"), // text
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
                       /*new TextField(
 
                 decoration: new InputDecoration(
                     hintText: "Give your photo a name!"
                 ),
               ),*/
-                      new Text('Date: ${singlemaps["date"]}', style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold),textAlign: TextAlign.justify),
-                      new Text('Size: ${singlemaps["imagesize"]}',textAlign: TextAlign.center, style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          new Text('Date: ${singlemaps["date"]}', style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold),textAlign: TextAlign.justify),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          new Text('Size: ${singlemaps["imagesize"]}',textAlign: TextAlign.center, style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
+                        ],
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
@@ -184,7 +224,7 @@ class PhotoPreviewFunctionState extends State<PhotoPreviewFunction>{
                                         print('Current delete index = $index');
                                         widget.maps = List.from(widget.maps)..removeAt(index);
                                         print('mapsdelete length = ${widget.maps.length}');
-                                        print('Mapsnow =$widget.maps');
+                                        print('Mapsnow =${widget.maps}');
 
 
 

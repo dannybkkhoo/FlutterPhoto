@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -7,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'horizontalscrollwithdescription.dart';
 import 'Showfolder.dart';
 import 'dart:math';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 
 void main() => runApp(MaterialApp(
 
@@ -1067,7 +1069,34 @@ class FormScreenState extends State<FormScreen> {
   String _phoneNumber;
 
 
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  Future<void> send() async {
+    final Email email = Email(
+      body: '\nName: $_name'+'\nEmail: $_email'+'\nPhone Number: $_phoneNumber' +'\n\n$_message',
+      subject: _subject,
+      recipients: ['shufen06099@gmail.com'],
+      //attachmentPaths: attachments,
+      //isHTML: isHTML,
+    );
+
+    String platformResponse;
+
+    try {
+      await FlutterEmailSender.send(email);
+      platformResponse = 'success';
+    } catch (error) {
+      platformResponse = error.toString();
+    }
+
+    if (!mounted) return;
+
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text(platformResponse),
+    ));
+    _Thankyoudialog(context);
+  }
 
   Widget _buildName() {
     return TextFormField(
@@ -1156,7 +1185,7 @@ class FormScreenState extends State<FormScreen> {
         return null;
       },
       onSaved: (String value) {
-        _subject = value;
+        _phoneNumber = value;
       },
     );
   }
@@ -1184,11 +1213,10 @@ class FormScreenState extends State<FormScreen> {
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(title: Text("Contact Us")),
       body: SingleChildScrollView(
         child: Container(
@@ -1214,7 +1242,7 @@ class FormScreenState extends State<FormScreen> {
                         'Submit',
                         style: TextStyle(color: Colors.black, fontSize: 16),
                       ),
-                      onPressed: () {
+                      onPressed: ()  {
 
                         if (!_formKey.currentState.validate()) {
                           return;
@@ -1227,7 +1255,8 @@ class FormScreenState extends State<FormScreen> {
                         print(_phoneNumber);
                         print(_subject);
                         print(_message);
-                        _Thankyoudialog(context);
+                        send();
+
                         //Send to API
                       },
                     ),

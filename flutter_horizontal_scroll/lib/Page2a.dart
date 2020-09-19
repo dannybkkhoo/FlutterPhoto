@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutterhorizontalscroll/deletebutoon.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class URLPAGE extends StatefulWidget{

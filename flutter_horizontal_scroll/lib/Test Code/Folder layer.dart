@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -7,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'horizontalscrollwithdescription.dart';
 import 'Showfolder.dart';
 import 'dart:math';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 
 void main() => runApp(MaterialApp(
 
@@ -55,11 +57,11 @@ class MainPageFolderState extends State<MainPageFolder> {
     }
   }
   void appendfolderdates(){
-      setState(() {
-        folderdates = List.from(folderdates)..add(DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString());
-        print(folderdates);
-        print(folderdates.length);
-      });
+    setState(() {
+      folderdates = List.from(folderdates)..add(DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString());
+      print(folderdates);
+      print(folderdates.length);
+    });
 
   }
   /*void addFolder(folder){
@@ -78,9 +80,9 @@ class MainPageFolderState extends State<MainPageFolder> {
   void deleteFolder(ShowFolder folder){
     if(folder != null) {
       setState(() {
-       folders = List.from(folders)..remove(folder);
-       num--;
-       print(num);
+        folders = List.from(folders)..remove(folder);
+        num--;
+        print(num);
         print(folders);
       });
     }
@@ -211,18 +213,18 @@ class MainPageFolderState extends State<MainPageFolder> {
       _buttons.add(
         IconButton(
           icon: Icon(Icons.sort_by_alpha),
-        onPressed: () {
-         _showChoiceDialogForSort(context);
-         print('Sorted');
+          onPressed: () {
+            _showChoiceDialogForSort(context);
+            print('Sorted');
 
-        },
-      ),);
+          },
+        ),);
       _buttons.add(
         IconButton(
           icon: Icon(Icons.settings),
           onPressed: () {
             _showChoiceDialog(context);
-            },
+          },
         ),
       );
 
@@ -233,8 +235,8 @@ class MainPageFolderState extends State<MainPageFolder> {
 
         appBar: new AppBar(
           title: Text(_selectedIndexList.length < 1
-          ? "My Gallery"
-           : "${_selectedIndexList.length} item selected"),
+              ? "My Gallery"
+              : "${_selectedIndexList.length} item selected"),
           actions: _buttons,
         ),
         floatingActionButton: FloatingActionButton.extended(
@@ -347,6 +349,27 @@ class MainPageFolderState extends State<MainPageFolder> {
                 ),
               ),
               Padding(padding: EdgeInsets.all(8.0),),
+              GestureDetector(
+                onTap: (){
+                  print('PDF detected');
+
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    new SizedBox(
+                      width: 10.0,
+                    ),
+                    Icon(Icons.picture_as_pdf),
+                    new SizedBox(
+                      width: 10.0,
+                    ),
+                    Text('Generate PDF',style: TextStyle(fontSize: 20.0)),
+                  ],
+                ),
+              ),
+              Padding(padding: EdgeInsets.all(8.0),),
             ],
           ),
         ),
@@ -427,9 +450,9 @@ class MainPageFolderState extends State<MainPageFolder> {
     );
   }
 
- void filterSearchResults(String text) {
-   List<String> dummySearchList = List<String>();
-   dummySearchList.addAll(duplicatefoldernames);
+  void filterSearchResults(String text) {
+    List<String> dummySearchList = List<String>();
+    dummySearchList.addAll(duplicatefoldernames);
     if(text.isNotEmpty && text.length > 0) {
       List<String> dummyListData = List<String>();
       dummySearchList.forEach((item) {
@@ -509,129 +532,129 @@ class MainPageFolderState extends State<MainPageFolder> {
     }
   }
   GridTile getGridTile(int index) {
-      if (_selectionMode){
-        return GridTile(
-            child: Wrap(
-                children: <Widget>[
-                  Stack(
-                    children: <Widget>[
+    if (_selectionMode){
+      return GridTile(
+          child: Wrap(
+              children: <Widget>[
+                Stack(
+                  children: <Widget>[
 
-                      Container(
-                        child: GestureDetector(
-                          onLongPress: (){
-                            //widget.customFunction(false);
-                            setState(() {
-                              _changeSelection(enable: false, index: -1);
-                              print("Selection list after cancel =${_selectedIndexList}");
-                            });
-                            print("long press detected");
-                          },
-                          onTap: (){
-                            print("pressed");
-                            setState(() {
-                              if (_selectedIndexList.contains(index)) {
-                                _selectedIndexList.remove(index);
-                              } else {
-                                _selectedIndexList.add(index);
-                              }
-                              print(_selectedIndexList);
-                            });
-                          },
+                    Container(
+                      child: GestureDetector(
+                        onLongPress: (){
+                          //widget.customFunction(false);
+                          setState(() {
+                            _changeSelection(enable: false, index: -1);
+                            print("Selection list after cancel =${_selectedIndexList}");
+                          });
+                          print("long press detected");
+                        },
+                        onTap: (){
+                          print("pressed");
+                          setState(() {
+                            if (_selectedIndexList.contains(index)) {
+                              _selectedIndexList.remove(index);
+                            } else {
+                              _selectedIndexList.add(index);
+                            }
+                            print(_selectedIndexList);
+                          });
+                        },
 
-                          child: Container(
-                            child: new Card(
-                              elevation: 10.0,
-                              child: new Column(
+                        child: Container(
+                          child: new Card(
+                            elevation: 10.0,
+                            child: new Column(
 
-                                //crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  new SizedBox(
-                                    height: 5.0,
-                                  ),
-                                  new Image.asset("assets/Capture01.PNG",
-                                      height: 90.0, width: 100.0,fit: BoxFit.cover),
-                                  new SizedBox(
-                                    height: 5.0,
-                                  ),
-                                  new Text(foldernames[index] != null? foldernames[index]: 'Foldername', style: TextStyle(fontSize: 15.0),),
+                              //crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                new SizedBox(
+                                  height: 5.0,
+                                ),
+                                new Image.asset("assets/Capture01.PNG",
+                                    height: 90.0, width: 100.0,fit: BoxFit.cover),
+                                new SizedBox(
+                                  height: 5.0,
+                                ),
+                                new Text(foldernames[index] != null? foldernames[index]: 'Foldername', style: TextStyle(fontSize: 15.0),),
 
 
-                                ],
-                              ),
+                              ],
                             ),
                           ),
                         ),
-
-
                       ),
-                      Positioned(
-                        top: 5,
-                        right: 5,
-                        child: Icon(
-                          _selectedIndexList.contains(index) ? Icons.check_circle_outline : Icons.radio_button_unchecked,
-                          color: _selectedIndexList.contains(index) ? Colors.green : Colors.black,
-                        ),
+
+
+                    ),
+                    Positioned(
+                      top: 5,
+                      right: 5,
+                      child: Icon(
+                        _selectedIndexList.contains(index) ? Icons.check_circle_outline : Icons.radio_button_unchecked,
+                        color: _selectedIndexList.contains(index) ? Colors.green : Colors.black,
                       ),
-                    ],
-                  )
+                    ),
+                  ],
+                )
 
-                ]
-            )
-        );
-      }
-      else{
-        return GridTile(
-            child: Wrap(
-                children: <Widget>[
-                  Container(
-                    child: GestureDetector(
-                      onLongPress: (){
-                        setState(() {
-                          _changeSelection(enable: true, index: index);
-                        });
-                        print("long press detected");
-                      },
-                      onTap: (){
-                        print("pressed");
-                        //Navigator.push(context,
-                        // MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription(widget.folderName)));
-                        Navigator.of(context).push(PageRouteBuilder(
-                            opaque: false,
-                            pageBuilder: (BuildContext context, _, __) =>
-                                HorizontalScrollWithDescription(foldernames[index])));
-                      },
+              ]
+          )
+      );
+    }
+    else{
+      return GridTile(
+          child: Wrap(
+              children: <Widget>[
+                Container(
+                  child: GestureDetector(
+                    onLongPress: (){
+                      setState(() {
+                        _changeSelection(enable: true, index: index);
+                      });
+                      print("long press detected");
+                    },
+                    onTap: (){
+                      print("pressed");
+                      //Navigator.push(context,
+                      // MaterialPageRoute(builder: (context) => HorizontalScrollWithDescription(widget.folderName)));
+                      Navigator.of(context).push(PageRouteBuilder(
+                          opaque: false,
+                          pageBuilder: (BuildContext context, _, __) =>
+                              HorizontalScrollWithDescription(foldernames[index])));
+                    },
 
-                      child: Container(
-                        child: new Card(
-                          elevation: 10.0,
-                          child: new Column(
+                    child: Container(
+                      child: new Card(
+                        elevation: 10.0,
+                        child: new Column(
 
-                            //crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              new SizedBox(
-                                height: 5.0,
-                              ),
-                              new Image.asset("assets/Capture01.PNG",
-                                  height: 90.0, width: 100.0,fit: BoxFit.cover),
-                              new SizedBox(
-                                height: 5.0,
-                              ),
-                              new Text(foldernames[index], style: TextStyle(fontSize: 15.0),),
+                          //crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            new SizedBox(
+                              height: 5.0,
+                            ),
+                            new Image.asset("assets/Capture01.PNG",
+                                height: 90.0, width: 100.0,fit: BoxFit.cover),
+                            new SizedBox(
+                              height: 5.0,
+                            ),
+                            new Text(foldernames[index], style: TextStyle(fontSize: 15.0),),
 
 
-                            ],
-                          ),
+                          ],
                         ),
                       ),
                     ),
-
-
                   ),
 
-                ]
-            )
-        );
-      }
+
+                ),
+
+              ]
+          )
+      );
+    }
 
   }
 }
@@ -1046,7 +1069,34 @@ class FormScreenState extends State<FormScreen> {
   String _phoneNumber;
 
 
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  Future<void> send() async {
+    final Email email = Email(
+      body: '\nName: $_name'+'\nEmail: $_email'+'\nPhone Number: $_phoneNumber' +'\n\n$_message',
+      subject: _subject,
+      recipients: ['shufen06099@gmail.com'],
+      //attachmentPaths: attachments,
+      //isHTML: isHTML,
+    );
+
+    String platformResponse;
+
+    try {
+      await FlutterEmailSender.send(email);
+      platformResponse = 'success';
+    } catch (error) {
+      platformResponse = error.toString();
+    }
+
+    if (!mounted) return;
+
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text(platformResponse),
+    ));
+    _Thankyoudialog(context);
+  }
 
   Widget _buildName() {
     return TextFormField(
@@ -1135,7 +1185,7 @@ class FormScreenState extends State<FormScreen> {
         return null;
       },
       onSaved: (String value) {
-        _subject = value;
+        _phoneNumber = value;
       },
     );
   }
@@ -1163,11 +1213,10 @@ class FormScreenState extends State<FormScreen> {
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(title: Text("Contact Us")),
       body: SingleChildScrollView(
         child: Container(
@@ -1193,7 +1242,7 @@ class FormScreenState extends State<FormScreen> {
                         'Submit',
                         style: TextStyle(color: Colors.black, fontSize: 16),
                       ),
-                      onPressed: () {
+                      onPressed: ()  {
 
                         if (!_formKey.currentState.validate()) {
                           return;
@@ -1206,7 +1255,8 @@ class FormScreenState extends State<FormScreen> {
                         print(_phoneNumber);
                         print(_subject);
                         print(_message);
-                        _Thankyoudialog(context);
+                        send();
+
                         //Send to API
                       },
                     ),

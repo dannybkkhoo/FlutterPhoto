@@ -36,6 +36,12 @@ dependencies:
   sortedmap: ^0.4.2+1
   image: ^2.1.12
   filesize: ^1.0.4
+  flutter_email_sender: ^3.0.1
+  pdf: ^1.11.0
+  flutter_full_pdf_viewer: ^1.0.6
+  printing: ^3.6.0
+  flutter_pdfview: ^1.0.3+3
+  downloads_path_provider: ^0.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

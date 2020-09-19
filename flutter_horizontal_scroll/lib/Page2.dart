@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterhorizontalscroll/multiplephoto.dart';
 import 'package:intl/intl.dart';
-import 'lauchurl.dart';
+import 'package:flutterhorizontalscroll/Page2a.dart';
+import 'package:flutterhorizontalscroll/Page3.dart';
 /*void main() => runApp(MaterialApp(
     home: HorizontalScrollWithDescription()
         ));*/
@@ -242,7 +242,13 @@ class DescriptionFolderState extends State<DescriptionFolder>{
                       onTap: () {
                        // _link = linkCon.text;
                        // print('$_link');
-                        Navigator.push(context,MaterialPageRoute(builder: (context) => URLPAGE(detials._link)));
+                        if(detials._link !=null) {
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => URLPAGE(detials._link)));
+                        }
+                        else{
+                          _Nolinkdialog(context);
+                        }
                       }, // button pressed
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -259,6 +265,28 @@ class DescriptionFolderState extends State<DescriptionFolder>{
           )
         ],
       ),
+    );
+  }
+  Future <void> _Nolinkdialog(BuildContext context){
+    return showDialog(context: context,builder: (BuildContext context){
+      return AlertDialog(
+          title: Text("No Link Available"),
+          content: Text("Please fill in the link"),
+          actions:[
+            FlatButton(
+              child: Row(
+                children: <Widget>[
+                  Icon(Icons.keyboard_return),
+                  Text('Back')
+                ],
+              ),
+              onPressed: (){
+                Navigator.pop(context);
+              },
+            ),
+          ]
+      );
+    },
     );
   }
   Future<String> createAlertDialog(BuildContext context, title){
