@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:io';
+import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/services.dart' show ByteData, rootBundle;
 import 'package:flutter/cupertino.dart';
@@ -42,6 +43,8 @@ class MainPageState extends State<MainPage> {
   List<Map> maps = List();
   List<Map> duplicatemaps = List();
   List<Map> combineMap = List();
+  ScrollController _controller = ScrollController();
+
   //int num = 0;
   @override
   void initState() {
@@ -78,6 +81,24 @@ class MainPageState extends State<MainPage> {
       {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
       {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
       {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
 
       ];
     duplicatemaps = [
@@ -86,6 +107,24 @@ class MainPageState extends State<MainPage> {
       {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
       {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
       {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
+      {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
       {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture3.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"27.53 KB", "description":null,},
       {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath": "assets/Capture1.PNG", "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"1.16 MB", "description": null,},
       {"Foldername": "${widget.foldernamesmap[widget.index]["foldername"]}","imagepath":'assets/Capture2.PNG', "name" : 'Photoname',"date" : DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"imagesize":"203.68 KB", "description":null,},
@@ -150,6 +189,7 @@ class MainPageState extends State<MainPage> {
   bool isSort = true;
   bool isSortdate = true;
   bool Tick = false;
+  bool isSearching =false;
 
   void sort(List map, duplicatemaps) {
     maps.sort((a, b) => isSort ? a['name'].toString().toLowerCase().compareTo(b['name'].toString().toLowerCase()) : b['name'].toString().toLowerCase().compareTo(a['name'].toString().toLowerCase()));
@@ -216,48 +256,97 @@ class MainPageState extends State<MainPage> {
       );
     }
     else{
-      _buttons.add(
-        IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () {
-            _showChoiceDialog(context);
-          },
-        ),);
+      if(isSearching){
+        _buttons.add(
+          IconButton(
+            icon: Icon(Icons.cancel),
+            onPressed: () {
+              setState(() {
+                this.isSearching = false;
+                maps.clear();
+                maps.addAll(duplicatemaps);
 
-      _buttons.add(
-        IconButton(
-          icon: Icon(Icons.sort_by_alpha),
-          onPressed: () {
-            _showChoiceDialogForSort(context);
-          },
-        ),);
+              });
+
+            },
+          ),);
+      }
+      else{
+
+        _buttons.add(
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              _showChoiceDialog(context);
+            },
+          ),);
+        _buttons.add(
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              setState(() {
+                this.isSearching = true;
+              });
+
+            },
+          ),);
+        _buttons.add(
+          IconButton(
+            icon: Icon(Icons.sort_by_alpha),
+            onPressed: () {
+              _showChoiceDialogForSort(context);
+            },
+          ),);
+
+      }
     }
 
     // TODO: implement build
-    return new Scaffold(
-        appBar: new AppBar(
-            automaticallyImplyLeading: false,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                setState(() {
-                  combineMap.clear();
-                  combineMap.addAll(widget.foldernamesmap);
-                  if(maps.length>0){
-                    combineMap.addAll(maps);
-                  }
-                });
+    return DefaultTabController(
+      length: 2,
+      child: new Scaffold(
+          appBar: new AppBar(
+              automaticallyImplyLeading: false,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  setState(() {
+                    combineMap.clear();
+                    combineMap.addAll(widget.foldernamesmap);
+                    if(maps.length>0){
+                      combineMap.addAll(maps);
+                    }
+                  });
 
-                //print("combine maps = $combineMap");
-                Navigator.pop(context,combineMap);
-              },
+                  //print("combine maps = $combineMap");
+                  Navigator.pop(context,combineMap);
+                },
 
-        ),
-            title: Text(_selectedIndexList.length < 1
-                ? "Gridview of Images"
-                : "${_selectedIndexList.length} item selected"),
-            actions: _buttons
-          /*<Widget>[
+              ),
+              title: !isSearching?  Text(_selectedIndexList.length < 1
+                  ? "Gridview of Images"
+                  : "${_selectedIndexList.length} item selected")
+                  :TextField(
+                onChanged: (text) {
+                  filterSearchResults(text);
+                  print('Current on change text is $text');
+                },
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                    icon: Icon(
+                      Icons.search,
+                      color: Colors.white,
+                    ),
+                    hintText: "Search Folder",
+                    hintStyle: TextStyle(color: Colors.white)),
+
+              ),
+              bottom: TabBar(tabs: [
+                Tab(child: Text('Photos', style: TextStyle(fontSize: 20),)),
+                Tab(child: Text('Folder Info', style: TextStyle(fontSize: 20),)),
+              ]),
+              actions: _buttons
+            /*<Widget>[
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
@@ -278,8 +367,8 @@ class MainPageState extends State<MainPage> {
             }
           ),
         ],*/
-        ),
-        /*floatingActionButton: FloatingActionButton.extended(
+          ),
+          /*floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
           open_gallery();
           },
@@ -288,7 +377,26 @@ class MainPageState extends State<MainPage> {
           foregroundColor: Colors.black,
           backgroundColor: Colors.amberAccent,
         ),*/
-        body:  SingleChildScrollView(
+          body: TabBarView(children: <Widget>[
+            DraggableScrollbar.semicircle(
+              controller: _controller,
+              labelTextBuilder: (offset) {
+                final int currentItem = _controller.hasClients
+                    ? (_controller.offset /
+                    _controller.position.maxScrollExtent *
+                    maps.length)
+                    .floor()
+                    : 0;
+
+                return Text("$currentItem");
+              },
+              child:  _createBody(),
+            ),
+            DescriptionFolder(context,widget.foldernamesmap[widget.index]),
+          ],)
+
+
+        /*  SingleChildScrollView(
             child: Container(
                 child:Column(
                   children: <Widget>[
@@ -338,8 +446,9 @@ class MainPageState extends State<MainPage> {
                   ],
                 )
             )
-        )
+        )*/
 
+      ),
     );
 
   }
@@ -662,12 +771,13 @@ class MainPageState extends State<MainPage> {
   }
   Widget _createBody() {
     return StaggeredGridView.countBuilder(
+      controller: _controller,
       crossAxisCount: 3,
       mainAxisSpacing: 4.0,
       crossAxisSpacing: 4.0,
-      physics: ScrollPhysics(),
-      shrinkWrap: true,
-      primary: false,
+//      physics: ScrollPhysics(),
+//      shrinkWrap: true,
+//      primary: false,
       itemCount: maps.length,
       itemBuilder: (BuildContext context, int index) {
         return getGridTile(index);

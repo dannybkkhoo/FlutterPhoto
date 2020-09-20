@@ -62,6 +62,7 @@ class MainPageFolderState extends State<MainPageFolder> {
   List<Map> Tempmaps = List();
   ScrollController _controller = ScrollController();
   int num = 0;
+
   void appendfoldernames(onValue){
     if(onValue != null) {
       setState(() {
@@ -79,6 +80,62 @@ class MainPageFolderState extends State<MainPageFolder> {
   void initState() {
     super.initState();
     initDownloadsDirectoryState();
+    foldernames =[
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+    ];
+    duplicatefoldernames =[
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+      {"foldername":"Testt", "folderdate": DateFormat("dd-MM-yyyy hh:mm:ss").format(DateTime.now()).toString(),"folderdescription": null,"folderlink": null},
+    ];
   }
   Future<void> initDownloadsDirectoryState() async {
     Directory downloadsDirectory;
@@ -166,6 +223,7 @@ class MainPageFolderState extends State<MainPageFolder> {
   bool isSortfolder = true;
   bool isSortDate = true;
   bool Tick = false;
+  bool isSearching = false;
 
   void sortdate(List foldernames, duplicatefoldernames) {
     foldernames.sort((a, b) =>  isSortDate ?  a['folderdate'].compareTo(b['folderdate']) : b['folderdate'].compareTo(a['folderdate']));
@@ -253,36 +311,134 @@ class MainPageFolderState extends State<MainPageFolder> {
       );*/
     }
     else{
-      _buttons.add(
-        IconButton(
-          icon: Icon(Icons.sort_by_alpha),
-          onPressed: () {
-            _showChoiceDialogForSort(context);
-            print('Sorted');
+      if(isSearching){
+        _buttons.add(
+          IconButton(
+            icon: Icon(Icons.cancel),
+            onPressed: () {
+              setState(() {
+                this.isSearching = false;
+                foldernames.clear();
+                foldernames.addAll(duplicatefoldernames);
 
-          },
-        ),);
-      _buttons.add(
-        IconButton(
-          icon: Icon(Icons.settings),
-          onPressed: () {
-            _showChoiceDialog(context);
-          },
-        ),
-      );
+              });
 
+            },
+          ),);
+      }
+      else{
+        _buttons.add(
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () async{
+              createAlertDialog(context).then((onValue) async {
+                print('OnnnnnValuee = $onValue');
+                if(onValue != null && onValue.isNotEmpty){
+                  print('foldernames.length = ${foldernames.length}');
+
+                  if(foldernames.length == 0)
+                  {
+                    AppUtil.createFolderInAppDocDir(onValue);
+                    appendfoldernames(onValue);
+                  }
+                  else{
+                    for (int j = 0; j < foldernames.length; j++){
+                      if(foldernames[j]["foldername"] == onValue){
+                        print('This foldername exsits');
+                        FolderExistdialog(context,"Foldername Exist","Please try another Folder Name");
+                        setState(() {
+                          _checker = true;
+                        });
+                      }
+                    }
+                    if(!_checker){
+                      AppUtil.createFolderInAppDocDir(onValue);
+                      appendfoldernames(onValue);
+                      //appendfolderdates();
+
+
+                      print("Current foldernames has: $foldernames");
+                      //addFolder(onValue);
+                    }
+                    else{
+                      setState(() {
+                        _checker = false;
+                      });
+                    }
+                  }
+
+
+                }
+
+                if(onValue?.isEmpty?? false){
+                  FolderExistdialog(context,'Folder Name not given', 'Please enter a Folder Name to create new folder');
+                  print('No Foldername given, Folder not created');
+                  print(foldernames);
+                  return ;
+                }
+
+
+              });
+              //addFolder( await AppUtil.createFolderInAppDocDir(num.toString()));
+
+
+            },
+          ),);
+        _buttons.add(
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              setState(() {
+                this.isSearching = true;
+              });
+
+            },
+          ),);
+        _buttons.add(
+          IconButton(
+            icon: Icon(Icons.sort_by_alpha),
+            onPressed: () {
+              _showChoiceDialogForSort(context);
+              print('Sorted');
+
+            },
+          ),);
+        _buttons.add(
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              _showChoiceDialog(context);
+            },
+          ),
+        );
+
+      }
     }
 
     // TODO: implement build
     return new Scaffold(
 
         appBar: new AppBar(
-          title: Text(_selectedIndexList.length < 1
+          title: !isSearching?  Text(_selectedIndexList.length < 1
               ? "My Gallery"
-              : "${_selectedIndexList.length} item selected"),
-          actions: _buttons,
-        ),
-        floatingActionButton: FloatingActionButton.extended(
+              : "${_selectedIndexList.length} item selected")
+              :TextField(
+                onChanged: (text) {
+                  filterSearchResults(text);
+                  print('Current on change text is $text');
+                  },
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  icon: Icon(
+                  Icons.search,
+                  color: Colors.white,
+               ),
+                hintText: "Search Folder",
+               hintStyle: TextStyle(color: Colors.white)),
+
+          ),
+           actions: _buttons,),
+        /*floatingActionButton: FloatingActionButton.extended(
           onPressed: ()  async {
             createAlertDialog(context).then((onValue) async {
               print('OnnnnnValuee = $onValue');
@@ -340,16 +496,24 @@ class MainPageFolderState extends State<MainPageFolder> {
           foregroundColor: Colors.black,
           backgroundColor: Colors.amberAccent,
         ),
-        body: /*Container(
-          child: DraggableScrollbar.semicircle(
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,*/
+          body: DraggableScrollbar.semicircle(
             controller: _controller,
+               labelTextBuilder: (offset) {
+            final int currentItem = _controller.hasClients
+                ? (_controller.offset /
+                _controller.position.maxScrollExtent *
+                foldernames.length)
+                .floor()
+                : 0;
+
+            return Text("$currentItem");
+              },
             child:  _createBody(),
-
-          ),
-        )*/
+            )
 
 
-      SingleChildScrollView(
+      /*SingleChildScrollView(
           child: Container(
               child:Column(
                 children: <Widget>[
@@ -374,7 +538,7 @@ class MainPageFolderState extends State<MainPageFolder> {
                 ],
               )
           ),
-        )
+        )*/
 
     );
   }
@@ -1067,6 +1231,9 @@ class MainPageFolderState extends State<MainPageFolder> {
           dummyListData.add(duplicatefoldernames[i]);
 
         }
+        else {
+          print('Got calll looooo');
+        }
       };
       //List<String> dummyListData = List<String>();
       /*dummySearchList.forEach((item) {
@@ -1110,7 +1277,7 @@ class MainPageFolderState extends State<MainPageFolder> {
         decoration: InputDecoration(
             hintText: "Search Folder",
             border: InputBorder.none,
-            fillColor: Colors.grey,
+            fillColor: Colors.white,
             icon: Icon(Icons.search)
         ),
       ),
@@ -1124,12 +1291,13 @@ class MainPageFolderState extends State<MainPageFolder> {
   }
   Widget _createBody() {
     return StaggeredGridView.countBuilder(
+      controller: _controller,
         crossAxisCount: 3,
         mainAxisSpacing: 4.0,
         crossAxisSpacing: 4.0,
-        physics: ScrollPhysics(),
-        shrinkWrap: true,
-        primary: false,
+        //physics: ScrollPhysics(),
+        //shrinkWrap: true,
+        //primary: false,
         itemCount: foldernames.length,
         itemBuilder: (BuildContext context, int index) {
           return getGridTile(index);
