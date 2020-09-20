@@ -759,22 +759,10 @@ class MainPageFolderState extends State<MainPageFolder> {
 
     pdf.addPage(pw.MultiPage(
         build: (context) => items));
-    /*Directory downloadsDirectory;
-    try {
-      Directory downloadsDirectory = await DownloadsPathProvider.downloadsDirectory;
-    } on PlatformException {
-      print('Could not get the downloads directory');   }
 
-
-    if (!mounted) return;
-
-    setState(() {
-      _downloadsDirectory = downloadsDirectory;
-    });
-  }*/
     Directory documentDirectory = await getApplicationDocumentsDirectory();
-    String documentPath = documentDirectory.path;
-   // String downloaddocumentPath = downloadsDirectory.path;
+    //String documentPath = documentDirectory.path;
+   String documentPath = _downloadsDirectory.path;
     print("Path PDF: $documentPath");
    // print("downloaddocumentPath PDF: $downloaddocumentPath");
     print("File is going to created");
