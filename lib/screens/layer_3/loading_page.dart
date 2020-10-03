@@ -175,14 +175,16 @@ class _ProgressBarState extends State<ProgressBar>{
   Widget build(BuildContext context){
     return Scaffold(
         body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(message,style: TextStyle(fontSize: 18.0),),
-            LinearPercentIndicator(
-              lineHeight: 11.0,
-              percent: percent,
-            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(20.0,0.0,20.0,30.0),
+              child: LinearPercentIndicator(
+                lineHeight: 11.0,
+                percent: percent,
+              ),
+            )
           ],
         )
     );

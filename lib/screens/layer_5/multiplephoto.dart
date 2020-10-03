@@ -57,7 +57,6 @@ class MainPageState extends State<MainPage> {
             child: Text('Submit'),
             onPressed: (){
               Navigator.of(context).pop(DescriptionCon.text.toString());
-
             },
           )
         ],

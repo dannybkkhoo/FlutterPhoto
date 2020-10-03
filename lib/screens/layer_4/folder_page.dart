@@ -10,6 +10,12 @@ import '../../services/local_storage/dataprovider.dart';
 import '../../services/local_storage/userdata.dart';
 import '../../services/utils.dart';
 
+import 'package:flutter_full_pdf_viewer/flutter_full_pdf_viewer.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+
 class MainPageFolder extends StatefulWidget {
   final String title;
   final VoidCallback onSignedOut;
@@ -34,7 +40,6 @@ class MainPageFolderState extends State<MainPageFolder> {
     print("Generating folders...");
     List<Widget> showfolders = [];
     for(Map folder in folders){  //forEach cant be used as it does not await
-      //showfolders.add(Foldr(folder['folder_id']));
       showfolders.add(ShowFolder(folder["folder_id"]));
       yield showfolders;
     }
@@ -51,6 +56,210 @@ class MainPageFolderState extends State<MainPageFolder> {
     setState(() {
       _userData = data;
     });
+  }
+
+  final pdf = pw.Document();
+  List<pw.Widget> items = new List<pw.Widget>();
+  List<pw.Widget> photo = new List<pw.Widget>();
+  List<PdfImage> images = new List<PdfImage>();
+  Directory _downloadsDirectory;
+  // Future writeOnPdf(foldernames,Tempmaps) async{
+  //   pw.Widget getphotos(BuildContext context, mapsname,image) {
+  //     return pw.Row(
+  //         children: <pw.Widget>[
+  //           pw.Container(
+  //               child: pw.Column(
+  //                   children: <pw.Widget>[
+  //                     pw.Image(image,height: 100,width: 90,fit:pw.BoxFit.fill),
+  //                     pw.Text("$mapsname",style: pw.TextStyle(fontSize: 20))]
+  //               )),
+  //         ]
+  //     );
+  //   }
+  //   for(int i =0; i<Tempmaps.length;i++){
+  //     PdfImage image = await pdfImageFromImageProvider(pdf: pdf.document, image: AssetImage('${Tempmaps[i]['imagepath']}'));
+  //     setState(() {
+  //       photo = List.from(photo)..add(getphotos(context,Tempmaps[i]['name'],image));
+  //     });
+  //     print("num of photo now =  ${photo.length}");
+  //
+  //   }
+  //   pw.Widget getfolderset(BuildContext context,folderdename,maps) {
+  //     return pw.Container(
+  //       child: pw.Column(
+  //           children: <pw.Widget>[
+  //             pw.Text("$folderdename",style: pw.TextStyle(fontSize: 30, decoration: pw.TextDecoration.underline, )),
+  //             pw.GridView(
+  //                 crossAxisCount: 4,
+  //                 crossAxisSpacing: 1.0,
+  //                 mainAxisSpacing: 1.0,
+  //                 childAspectRatio:1.3 ,
+  //                 children: photo
+  //
+  //             ),
+  //           ]//10.17pm working
+  //       ),
+  //     );
+  //   }
+  //   for(int i =0; i<foldernames.length;i++){
+  //     setState(() {
+  //       items = List.from(items)..add(getfolderset(context,foldernames[i]["foldername"],Tempmaps));
+  //     });
+  //     print("num of items now =  ${items.length}");
+  //
+  //   }
+  //   pdf.addPage(pw.MultiPage(
+  //       build: (context) => items));
+  //   Directory documentDirectory = await getApplicationDocumentsDirectory();
+  //   String documentPath = _downloadsDirectory.path;
+  //   print("Path PDF: $documentPath");
+  //   print("File is going to created");
+  //   final file = await File("${documentPath}/example.pdf").create(recursive:true);
+  //   print("File created, going to save");
+  //   file.writeAsBytesSync(pdf.save());
+  //   print("File saved");
+  //   String fullPath = "$documentPath/example.pdf";
+  //   bool check = await File(fullPath).exists();
+  //   if(check){
+  //     print('Fullpath exist= $fullPath');
+  //   }
+  //   else{
+  //     print('Cannot find pdf');
+  //   }
+  //   return fullPath;
+  // }
+  Future writeOnPdf() async{
+    pw.Widget getphotos(BuildContext context, String image_name, PdfImage image_file) {
+      return pw.Row(
+        children: <pw.Widget>[
+          pw.Container(
+            child: pw.Column(
+              children: <pw.Widget>[
+                pw.Image(image_file,height: 100,width: 90,fit:pw.BoxFit.fill),
+                pw.Text("$image_name",style: pw.TextStyle(fontSize: 20))
+              ]
+            )),
+        ]
+      );
+    }
+    pw.Widget getfolderset(BuildContext context,String folder_name) {
+      return pw.Container(
+        child: pw.Column(
+            children: <pw.Widget>[
+              pw.Text("$folder_name",style: pw.TextStyle(fontSize: 30, decoration: pw.TextDecoration.underline)),
+              pw.GridView(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 1.0,
+                  mainAxisSpacing: 1.0,
+                  childAspectRatio:1.3 ,
+                  children: photo
+              ),
+            ]//10.17pm working
+        ),
+      );
+    }
+    UserData _Data = DataProvider.of(context).userData;
+    var _folders = _Data.folders;
+    final uidpart = _uid.substring(0,3);
+    List<String> folder_names = [];
+    for(Map folder in _folders){
+      folder_names.add(folder["name"]);
+      items.add(getfolderset(context,folder["name"]));
+      if(folder["children"].isNotEmpty){
+        for(Map image in folder["children"]){
+          String path = "/storage/emulated/0/Flutter Photo/IMG_$uidpart${image["image_id"]}.jpg";
+          PdfImage pdfimage = await pdfImageFromImageProvider(pdf: pdf.document, image: FileImage(File(path)));
+          photo.add(getphotos(context,image["name"],pdfimage));
+          print(".");
+        }
+      }
+    }
+    print("Adding page");
+    pdf.addPage(pw.MultiPage(build: (context) => items));
+    print("HMM");
+    Directory documentDirectory = await getApplicationDocumentsDirectory();
+    String documentPath = documentDirectory.path;//_downloadsDirectory.path;
+    print("Path PDF: $documentPath");
+    print("File is going to created");
+    final file = await File("${documentPath}/example.pdf").create(recursive:true);
+    print("File created, going to save");
+    file.writeAsBytesSync(pdf.save());
+    print("File saved");
+    String fullPath = "$documentPath/example.pdf";
+    bool check = await File(fullPath).exists();
+    if(check){
+      print('Fullpath exist= $fullPath');
+    }
+    else{
+      print('Cannot find pdf');
+    }
+    return fullPath;
+  }
+  Future savePdf() async{
+    Directory documentDirectory = await getApplicationDocumentsDirectory();
+    Directory TempdocumentDirectory = await getTemporaryDirectory();
+    final Externaldirectory = (await getExternalStorageDirectory()).path;
+    print("Tempdocument directory = ${TempdocumentDirectory.path}");
+    print("Externaldirectory = $Externaldirectory");
+    String documentPath = documentDirectory.path;
+    print("Path PDF: $documentPath");
+    print("File is going to created");
+    final file = await File("${documentPath}/example.pdf").create(recursive:true);
+    //File file = await File('/storage/emulated/0/Documents/example.pdf').create();
+    print("File created, going to save");
+    //file.createSync();
+    file.writeAsBytesSync(pdf.save());
+    print("File saved");
+    String fullPath = "$documentPath/example.pdf";
+    bool check = await File(fullPath).exists();
+    if(check){
+      print('Fullpath exist= $fullPath');
+    }
+    else{
+      print('Cannot find pdf');
+    }
+    return fullPath;
+  }
+  Future <void> _showChoiceDialog(BuildContext context){
+    return showDialog(context: context,builder: (BuildContext context){
+      return AlertDialog(
+        title: Text('Settings'),
+        contentPadding: EdgeInsets.only(top: 12.0),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              GestureDetector(
+                onTap: ()async{
+                  writeOnPdf()
+                      .then((value){
+                    print('Path passed: $value');
+                    Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => PdfPreviewScreen(value)
+                    ));
+                  });
+                  print('PDF pressed');
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    new SizedBox(
+                      width: 10.0,
+                    ),
+                    Icon(Icons.picture_as_pdf),
+                    new SizedBox(
+                      width: 10.0,
+                    ),
+                    Text('Generate PDF',style: TextStyle(fontSize: 20.0)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+    );
   }
 
   @override
@@ -88,6 +297,10 @@ class MainPageFolderState extends State<MainPageFolder> {
                           print('Sharings');
 //                ShowFolderOptions(context);
                         },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.more_horiz),
+                        onPressed: () => _showChoiceDialog(context)
                       ),
                       IconButton(
                           icon: Icon(Icons.exit_to_app),
@@ -488,3 +701,20 @@ class _FoldrState extends State<Foldr>{
   }
 }
 /*End of Foldr Page---------------------------------------------------------------------------------*/
+
+class PdfPreviewScreen extends StatelessWidget {
+  final String path;
+
+  PdfPreviewScreen(this.path);
+
+  @override
+  Widget build(BuildContext context) {
+    return PDFViewerScaffold(
+        appBar: AppBar(
+          title: Text("PDF Viewer"),
+        ),
+        path:path
+    );
+
+  }
+}
