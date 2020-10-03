@@ -324,7 +324,7 @@ class MainPageState extends State<MainPage> {
 
               ),
               title: !isSearching?  Text(_selectedIndexList.length < 1
-                  ? "Gridview of Images"
+                  ? "Photos(${maps.length})"
                   : "${_selectedIndexList.length} item selected")
                   :TextField(
                 onChanged: (text) {
@@ -380,7 +380,7 @@ class MainPageState extends State<MainPage> {
           body: TabBarView(children: <Widget>[
             DraggableScrollbar.semicircle(
               controller: _controller,
-              labelTextBuilder: (offset) {
+              /*labelTextBuilder: (offset) {
                 final int currentItem = _controller.hasClients
                     ? (_controller.offset /
                     _controller.position.maxScrollExtent *
@@ -389,7 +389,7 @@ class MainPageState extends State<MainPage> {
                     : 0;
 
                 return Text("$currentItem");
-              },
+              },*/
               child:  _createBody(),
             ),
             DescriptionFolder(context,widget.foldernamesmap[widget.index]),

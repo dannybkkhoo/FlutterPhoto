@@ -21,7 +21,7 @@ void main() => runApp(MaterialApp(
 
   initialRoute: '/Page1',
   routes: <String, WidgetBuilder>{
-    '/Page1': (context) => MainPageFolder(title: "My Gallery",),
+    '/Page1': (context) => MainPageFolder(),
 
   },
 ));
@@ -31,10 +31,10 @@ void main() => runApp(MaterialApp(
 class MainPageFolder extends StatefulWidget {
   //MainPageFolder({Key key}) : super(key:key);
 
-  final String title;
+  //final String title;
   //Custom constructor, add property : title
   @override
-  MainPageFolder({this.title}) : super();
+  MainPageFolder() : super();
 
   @override
   State<StatefulWidget> createState() {
@@ -50,6 +50,7 @@ class MainPageFolderState extends State<MainPageFolder> {
   final pdf = pw.Document();
   List<pw.Widget> items = new List<pw.Widget>();
   List<pw.Widget> photo = new List<pw.Widget>();
+  List<pw.Widget> photomore = new List<pw.Widget>();
   List<PdfImage> images = new List<PdfImage>();
 
   //List<String> folderdates = List();
@@ -420,7 +421,7 @@ class MainPageFolderState extends State<MainPageFolder> {
 
         appBar: new AppBar(
           title: !isSearching?  Text(_selectedIndexList.length < 1
-              ? "My Gallery"
+              ? "My Gallery(${foldernames.length})"
               : "${_selectedIndexList.length} item selected")
               :TextField(
                 onChanged: (text) {
@@ -499,7 +500,7 @@ class MainPageFolderState extends State<MainPageFolder> {
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,*/
           body: DraggableScrollbar.semicircle(
             controller: _controller,
-               labelTextBuilder: (offset) {
+             /*  labelTextBuilder: (offset) {
             final int currentItem = _controller.hasClients
                 ? (_controller.offset /
                 _controller.position.maxScrollExtent *
@@ -508,7 +509,7 @@ class MainPageFolderState extends State<MainPageFolder> {
                 : 0;
 
             return Text("$currentItem");
-              },
+              },*/
             child:  _createBody(),
             )
 
@@ -736,197 +737,107 @@ class MainPageFolderState extends State<MainPageFolder> {
 
     pw.Widget getphotos(BuildContext context, mapsname,image) {
 
-      return pw.Row(
+      return pw.Wrap(
         children: <pw.Widget>[
             pw.Container(
-                child: pw.Column(
-                children: <pw.Widget>[
-                  //height: 150,width: 130,fit:pw.BoxFit.fill
-                    pw.Image(image,height: 100,width: 90,fit:pw.BoxFit.fill),
-                    pw.Text("$mapsname",style: pw.TextStyle(fontSize: 20))]
+                child: pw.Wrap(
+                    children: <pw.Widget>[
+                      pw.Column(
+                          children: <pw.Widget>[
+                            //height: 150,width: 130,fit:pw.BoxFit.fill
+                            pw.Image(image,height: 100,width: 90,fit:pw.BoxFit.fill),
+                            pw.Text("$mapsname",style: pw.TextStyle(fontSize: 20))]
+                      )
+                    ]
                        )),
 
         ]
 
       );
     }
+    pw.Widget getmorephotos(BuildContext context) {
+      return pw.Wrap(
+          children: <pw.Widget>[
+            pw.Column(
+                children: <pw.Widget>[
+                  pw.GridView(
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 1.0,
+                      mainAxisSpacing: 1.0,
+                      childAspectRatio:1.3 ,
+                      children: photomore
+                  ),
+                ]//10.17pm working
+            ),
+          ]
+      );
+    }
+    pw.Widget getfolderset(BuildContext context,folderdename,maps) {
+      return pw.Wrap(
+          children: <pw.Widget>[
+            pw.Column(
+                children: <pw.Widget>[
+                  pw.Text("$folderdename",style: pw.TextStyle(fontSize: 30, decoration: pw.TextDecoration.underline, )),
+                  pw.GridView(
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 1.0,
+                      mainAxisSpacing: 1.0,
+                      childAspectRatio:1.3 ,
+                      children: photo
+                  ),
+                ]//10.17pm working
+            ),
+          ]
+      );
+    }
+
     for(int i =0; i<Tempmaps.length;i++){
       PdfImage image = await pdfImageFromImageProvider(pdf: pdf.document, image: AssetImage('${Tempmaps[i]['imagepath']}'));
       //PdfImage image = await pdfImageFromImageProvider(pdf: pdf.document, image: AssetImage('assets/Capture3.PNG'));
       //var imageProvider =  AssetImage('assets/Capture3.PNG');
       //PdfImage image = await pdfImageFromImageProvider(pdf: pdf.document, image: imageProvider);
+      if (i> 15){
+          print('howlongis ${Tempmaps.length}');
+          setState(() {
+            photomore = List.from(photomore)..add(getphotos(context, Tempmaps[i]['name'], image));
 
-      setState(() {
+          });
+          print('now photomore have ${photomore.length} items');
 
-        photo = List.from(photo)..add(getphotos(context,Tempmaps[i]['name'],image));
-      });
+//          if (i == Tempmaps.length -1 ){
+//            items = List.from(items)..add(getmorephotos(context));    }
+
+
+
+
+      }
+      else {
+        setState(() {
+          photo = List.from(photo)..add(getphotos(context, Tempmaps[i]['name'], image));
+        });
+      }
       print("num of photo now =  ${photo.length}");
 
     }
-    pw.Widget getfolderset(BuildContext context,folderdename,maps) {
-      return pw.Container(
-        child: pw.Column(
-            children: <pw.Widget>[
-              pw.Text("$folderdename",style: pw.TextStyle(fontSize: 30, decoration: pw.TextDecoration.underline, )),
-              pw.GridView(
-                crossAxisCount: 4,
-                crossAxisSpacing: 1.0,
-                mainAxisSpacing: 1.0,
-                childAspectRatio:1.3 ,
-                children: photo
-
-              ),
-              /*pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
-                  crossAxisAlignment: pw.CrossAxisAlignment.center,
-                  children: <pw.Widget>[
-                    pw.Column(
-                        children: <pw.Widget>[
-                          pw.Image(image,height: 150,width: 130,fit:pw.BoxFit.fill),
-                          pw.Text("Photoname",style: pw.TextStyle(fontSize: 20))
-                        ]
-                    ),
-                    pw.Column(
-                        children: <pw.Widget>[
-                          pw.Image(image,height: 150,width: 130,fit:pw.BoxFit.fill),
-                          pw.Text("Photoname",style: pw.TextStyle(fontSize: 20))
-                        ]
-                    ),
-                    pw.Column(
-                        children: <pw.Widget>[
-                          pw.Image(image,height: 150,width: 130,fit:pw.BoxFit.fill),
-                          pw.Text("Photoname",style: pw.TextStyle(fontSize: 20))
-                        ]
-                    ),
-                    pw.Column(
-                        children: <pw.Widget>[
-                          pw.Image(image,height: 150,width: 130,fit:pw.BoxFit.fill),
-                          pw.Text("Photoname",style: pw.TextStyle(fontSize: 20))
-                        ]
-                    ),
-
-                  ]
-              ),
-              pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
-                  crossAxisAlignment: pw.CrossAxisAlignment.center,
-                  children: <pw.Widget>[
-                    pw.Column(
-                        children: <pw.Widget>[
-                          pw.Image(image,height: 150,width: 130,fit:pw.BoxFit.fill),
-                          pw.Text("Photoname",style: pw.TextStyle(fontSize: 20))
-                        ]
-                    ),
-                    pw.Column(
-                        children: <pw.Widget>[
-                          pw.Image(image,height: 150,width: 130,fit:pw.BoxFit.fill),
-                          pw.Text("Photoname",style: pw.TextStyle(fontSize: 20))
-                        ]
-                    ),
-                    pw.Column(
-                        children: <pw.Widget>[
-                          pw.Image(image,height: 150,width: 130,fit:pw.BoxFit.fill),
-                          pw.Text("Photoname",style: pw.TextStyle(fontSize: 20))
-                        ]
-                    ),
-                    pw.Column(
-                        children: <pw.Widget>[
-                          pw.Image(image,height: 150,width: 130,fit:pw.BoxFit.fill),
-                          pw.Text("Photoname",style: pw.TextStyle(fontSize: 20))
-                        ]
-                    ),
-
-                  ]
-              ),
-              pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
-                  crossAxisAlignment: pw.CrossAxisAlignment.center,
-                  children: <pw.Widget>[
-                    pw.Column(
-                        children: <pw.Widget>[
-                          pw.Image(image,height: 150,width: 130,fit:pw.BoxFit.fill),
-                          pw.Text("Photoname",style: pw.TextStyle(fontSize: 20))
-                        ]
-                    ),
-                    pw.Column(
-                        children: <pw.Widget>[
-                          pw.Image(image,height: 150,width: 130,fit:pw.BoxFit.fill),
-                          pw.Text("Photoname",style: pw.TextStyle(fontSize: 20))
-                        ]
-                    ),
-                    pw.Column(
-                        children: <pw.Widget>[
-                          pw.Image(image,height: 150,width: 130,fit:pw.BoxFit.fill),
-                          pw.Text("Photoname",style: pw.TextStyle(fontSize: 20))
-                        ]
-                    ),
-                    pw.Column(
-                        children: <pw.Widget>[
-                          pw.Image(image,height: 150,width: 130,fit:pw.BoxFit.fill),
-                          pw.Text("Photoname",style: pw.TextStyle(fontSize: 20))
-                        ]
-                    ),
-
-                  ]
-              )*/
 
 
-              //child: pw.Image(image),
-              //pw.Text("TESTTTT",style: pw.TextStyle(fontSize: 40)),
-            ]//10.17pm working
-        ),
-
-
-      );
-    }
     for(int i =0; i<foldernames.length;i++){
       //var imageProvider =  AssetImage('assets/Capture3.PNG');
       //PdfImage image = await pdfImageFromImageProvider(pdf: pdf.document, image: imageProvider);
 
         setState(() {
           items = List.from(items)..add(getfolderset(context,foldernames[i]["foldername"],Tempmaps));
+          items = List.from(items)..add(getmorephotos(context));
         });
         print("num of items now =  ${items.length}");
 
     }
-   /* for(int i =0; i<Tempmaps.length;i++){
-      PdfImage image = await pdfImageFromImageProvider(pdf: pdf.document, image: AssetImage('${Tempmaps[i]['imagepath']}'));
-      images = List.from(images)..add(image);
-      print('Images = $images');
-
-    }*/
-   // PdfImage image = await pdfImageFromImageProvider(pdf: pdf.document, image: AssetImage('${Tempmaps[i]['imagepath']}'));
-
-
-    /*for(int i = 0; i < foldernames.length; i++)
-      //foldernames.length
-        {
-      setState(() {
-        items = List.from(items)..add(getfolderset(context,foldernames[i]["foldername"]));
-      });
-      print('items = $items');
-      for(int j = 0; j < Tempmaps.length; j++)
-        //foldernames.length
-          {
-           if(Tempmaps[j]["foldername"]==foldernames[i]["foldername"]) {
-             var imageProvider =  AssetImage(Tempmaps[i]['imagepath']);
-             PdfImage image = await pdfImageFromImageProvider(pdf: pdf.document, image: imageProvider);
-             print('Tempmaps here = $Tempmaps');
-             setState(() {
-               photo = List.from(photo)..add(getphotos(context,Tempmaps[j]['name'],image));
-             });
-             print('photo = $photo');
-           }
-      }
-    }*/
-
-
     pdf.addPage(pw.MultiPage(
         build: (context) => items));
 
     Directory documentDirectory = await getApplicationDocumentsDirectory();
-    //String documentPath = documentDirectory.path;
-   String documentPath = _downloadsDirectory.path;
+    String documentPath = documentDirectory.path;
+   //String documentPath = _downloadsDirectory.path;
     print("Path PDF: $documentPath");
    // print("downloaddocumentPath PDF: $downloaddocumentPath");
     print("File is going to created");
