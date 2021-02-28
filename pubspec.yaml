@@ -58,6 +58,7 @@ dependencies:
   random_string: ^2.0.1
   storage_path: ^0.2.0
   sliver_fill_remaining_box_adapter: ^0.1.1
+  flappy_search_bar: ^1.7.2
 
 dev_dependencies:
   flutter_test:

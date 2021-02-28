@@ -58,11 +58,9 @@ class _RootPageState extends State<RootPage>{
         );
         break;
       case AuthStatus.SignedIn:
-        return DataProvider(
-          child: Navigator(
+        return Navigator(
             onGenerateRoute: _HomeRoutes(),
-          )
-        );
+          );
         break;
       default:
         return ErrorScreen(_signedOut);
@@ -76,7 +74,6 @@ class _RootPageState extends State<RootPage>{
       switch(settings.name){
         case Loading_Page:
           screen = LoadingPage();break;
-          //screen = MainPageFolder(title: "Home Page", onSignedOut: _signedOut);break;
         case Folder_Page:
           screen = MainPageFolder(title: "Home Page", onSignedOut: _signedOut);break;
         case FolderDescription_Page:

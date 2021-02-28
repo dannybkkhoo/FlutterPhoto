@@ -10,6 +10,7 @@ import '../../services/cloud_storage/image_storage.dart';
 import '../../services/local_storage/dataprovider.dart';
 import '../../services/local_storage/userdata.dart';
 import '../../services/utils.dart';
+import 'package:flappy_search_bar/flappy_search_bar.dart';
 
 import 'package:flutter_full_pdf_viewer/flutter_full_pdf_viewer.dart';
 import 'package:path_provider/path_provider.dart';
@@ -29,12 +30,6 @@ class MainPageFolderState extends State<MainPageFolder> {
   String _uid;
   UserData _userData;
   Future<UserData> _receivedData;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _receivedData = _loadUserData();
-  }
 
   Stream<List<ShowFolder>> _generateFolders(List folders) async* {
     print("Generating folders...");
@@ -199,6 +194,12 @@ class MainPageFolderState extends State<MainPageFolder> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _receivedData = _loadUserData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: _receivedData,
@@ -257,12 +258,18 @@ class FolderArea extends StatefulWidget{
   _FolderAreaState createState() => _FolderAreaState();
 }
 class _FolderAreaState extends State<FolderArea>{
+  final _searchTextController = TextEditingController();
+  int _searchFolderLength = 0;
   bool _selectionMode = false;
   bool _isSearching = false;
   List<int> _selectedIndexList = List();
   List<Widget> _buttons = List();
+  List<ShowFolder> _filteredShowfolders = List();
+  List<ShowFolder> _displayedShowfolders = List();
   ImageStorage imageStorage = ImageStorage();
-  void _buttonList(){
+
+  List<Widget> _buttonList(){
+    _buttons = [];
     if (_selectionMode) {
       _buttons.add(
         IconButton(
@@ -286,7 +293,7 @@ class _FolderAreaState extends State<FolderArea>{
             child:Text('Cancel', style: TextStyle(color: Colors.white),),
             onPressed: () {
               setState(() {
-                _selectionMode =false;
+                _selectionMode = false;
                 _selectedIndexList.clear();
               });
             }),
@@ -316,10 +323,10 @@ class _FolderAreaState extends State<FolderArea>{
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
+              filterSearchResults("");
               setState(() {
                 _isSearching = true;
               });
-
             },
           ),);
         _buttons.add(
@@ -339,32 +346,84 @@ class _FolderAreaState extends State<FolderArea>{
             },
           ),
         );
-
       }
     }
+    return _buttons;
+  }
+
+  void filterSearchResults(String text) {
+    int searchFolderLength = 0;
+    final userData = DataProvider.of(context).userData;
+    final folderList = userData.folder_list;
+    List<ShowFolder> originalShowfolders = List.from(widget.folders);
+    List<ShowFolder> filteredShowfolders = List();
+    if(text.isNotEmpty && text.length > 0){
+      List wantedIDList = folderList.keys.where((folder_id){
+        return(folderList[folder_id].contains(RegExp(text,caseSensitive: false)));
+      }).toList();
+
+      print("wanted");
+      print(wantedIDList);
+
+      filteredShowfolders = originalShowfolders.where((folder){
+        return(wantedIDList.contains(folder.folder_id));
+      }).toList();
+
+      print("folder");
+      print(filteredShowfolders);
+
+      // for(String folder_id in folderList.keys){
+      //   String folder_name = folderList[folder_id];
+      //   if(folder_name.contains(RegExp(text,caseSensitive: false))){
+      //     for(var folder in originalShowfolders){
+      //       if(folder.folder_id == folder_id) {
+      //         filteredShowfolders.add(folder);
+      //       }
+      //     }
+      //   }
+      // };
+    }
+    if(text.isNotEmpty && text.length > 0){ //if user is searching
+      if(filteredShowfolders.isNotEmpty){  //if filtered folder is found
+        searchFolderLength = filteredShowfolders.length;
+      }
+      else{ //if no filtered folder is found
+        searchFolderLength = 1;
+      }
+    }
+    else{ //if user havent typed in anything
+      searchFolderLength = _displayedShowfolders.length;
+    }
+    print(filteredShowfolders);
+    setState(() {
+      _filteredShowfolders = List.from(filteredShowfolders);
+      _searchFolderLength = searchFolderLength;
+    });
   }
   Widget _appbarTitle(){
-    if(!_isSearching){
-      if(_selectedIndexList.length < 1)
-        return Text("My Gallery");
-      else
-        return Text("${_selectedIndexList.length} item selected");
+    if(_selectionMode){
+      return Text("${_selectedIndexList.length} item selected");
     }
-    else{
-      return TextField(
-        onChanged: (text) {
-          //filterSearchResults(text);
-          print('Current on change text is $text');
-        },
-        style: TextStyle(color: Colors.white),
-        decoration: InputDecoration(
+    else if(!_selectionMode){
+      if(_isSearching){
+        return TextField(
+          controller: _searchTextController,
+          onChanged: (String text) {
+            filterSearchResults(text);
+          },
+          style: TextStyle(color: Colors.white),
+          decoration: InputDecoration(
             icon: Icon(
               Icons.search,
               color: Colors.white,
             ),
             hintText: "Search Folder",
             hintStyle: TextStyle(color: Colors.white)),
-      );
+        );
+      }
+      else {
+        return Text("My Gallery");
+      }
     }
   }
   void _changeSelection({bool enable, int index}) {
@@ -374,7 +433,7 @@ class _FolderAreaState extends State<FolderArea>{
       _selectedIndexList.clear();
     }
   }
-  GridTile _getGridTile(int index, List<ShowFolder> showfolders){
+  GridTile _getGridTile(int index, List<ShowFolder> folders){
     if(_selectionMode){
       return GridTile(
         header: GridTileBar(
@@ -387,12 +446,11 @@ class _FolderAreaState extends State<FolderArea>{
           onLongPress: () {
             setState((){
               _changeSelection(enable: false, index: -1);
-              print("Selection list after cancel =${_selectedIndexList}");
             });
+            print("Selection list after cancel =${_selectedIndexList}");
             print("long press detected");
           },
           onTap: () {
-            print("pressed");
             setState(() {
               if(_selectedIndexList.contains(index))
                 _selectedIndexList.remove(index);
@@ -401,9 +459,52 @@ class _FolderAreaState extends State<FolderArea>{
               print(_selectedIndexList);
             });
           },
-          child: showfolders[index],
+          child: folders[index],
         )
       );
+    }
+    else if(_isSearching){  //if user is searching
+      if(_searchTextController.text.isNotEmpty && _searchTextController.text.length > 0) { //if user is searching
+        if(_filteredShowfolders.isNotEmpty) { //if filtered folder is found
+          return GridTile(
+              child: GestureDetector(
+                onLongPress: () {
+                  setState(() {
+                    _changeSelection(enable: true, index: index);
+                  });
+                  print("long press detected");
+                },
+                onTap:() {
+                  Navigator.popAndPushNamed(context,File_Page,arguments: {'folder_id':_filteredShowfolders[index].folder_id});
+                },
+                child: _filteredShowfolders[index],
+              )
+          );
+        }
+        else{ //if no filtered folder is found
+          return GridTile(
+              child: GestureDetector(
+                child: Text("No results..."),
+              )
+          );
+        }
+      }
+      else {  //user has not typed in folder name yet, or if at least 1 folder found
+        return GridTile(
+            child: GestureDetector(
+              onLongPress: () {
+                setState(() {
+                  _changeSelection(enable: true, index: index);
+                });
+                print("long press detected");
+              },
+              onTap:() {
+                Navigator.popAndPushNamed(context,File_Page,arguments: {'folder_id':folders[index].folder_id});
+              },
+              child: folders[index],
+            )
+        );
+      }
     }
     else{
       return GridTile(
@@ -415,21 +516,22 @@ class _FolderAreaState extends State<FolderArea>{
             print("long press detected");
           },
           onTap:() {
-            Navigator.popAndPushNamed(context,File_Page,arguments: {'folder_id':showfolders[index].folder_id});
+            Navigator.popAndPushNamed(context,File_Page,arguments: {'folder_id':folders[index].folder_id});
           },
-          child: showfolders[index],
+          child: folders[index],
         )
       );
     }
   }
-  Widget _createBody(List<ShowFolder> showfolders){
+  Widget _createBody(List<ShowFolder> folders){
     return StaggeredGridView.countBuilder(
+      key: UniqueKey(),
       crossAxisCount: 3,
-      mainAxisSpacing: 4.0,
-      crossAxisSpacing: 4.0,
-      itemCount: showfolders.length,
+      mainAxisSpacing: 0.0,
+      crossAxisSpacing: 0.0,
+      itemCount: _isSearching?_searchFolderLength:_displayedShowfolders.length,
       itemBuilder: (BuildContext context, int index){
-        return _getGridTile(index, showfolders);
+        return AspectRatio(aspectRatio: (2/3),child:_getGridTile(index, folders));
       },
       staggeredTileBuilder: (int index) => StaggeredTile.count(1,1),
       padding: const EdgeInsets.all(4.0),
@@ -437,14 +539,24 @@ class _FolderAreaState extends State<FolderArea>{
   }
 
   @override
+  void initState() {
+    super.initState();
+    _displayedShowfolders = List.of(widget.folders);
+  }
+
+  @override
+  void dispose() {
+    _searchTextController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    _buttons = [];
-    _buttonList();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: _appbarTitle(),
-        actions: _buttons,
+        actions: _buttonList(),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
@@ -460,7 +572,7 @@ class _FolderAreaState extends State<FolderArea>{
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: _createBody(widget.folders)
+            child: _createBody(_displayedShowfolders),
           )
         ],
       )
@@ -470,7 +582,7 @@ class _FolderAreaState extends State<FolderArea>{
 
 class ShowFolder extends StatefulWidget {
   final String folder_id;
-  ShowFolder(this.folder_id);
+  ShowFolder(this.folder_id, {Key key}):super(key:key);
 
   @override
   _ShowFolderState createState() => _ShowFolderState();
@@ -486,6 +598,9 @@ class _ShowFolderState extends State<ShowFolder>{
     _receivedData = _loadFolderData();
   }
 
+  String getFolderName() {
+    return _name;
+  }
   Future<Map> _loadFolderData() async {
     _uid = await AuthProvider.of(context).auth.getUID();
     _appDocDir = await getLocalPath();

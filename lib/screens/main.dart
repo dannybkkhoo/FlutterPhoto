@@ -9,18 +9,18 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-      return AuthProvider(
+    return AuthProvider(
         auth: Auth(),
         child: DataProvider(
-          child:MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'FlutterPhoto',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            home: RootPage(),
-          )
+            child:MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'FlutterPhoto',
+              theme: ThemeData(
+                primarySwatch: Colors.blue,
+              ),
+              home: RootPage(),
+            )
         )
-      );
+    );
   }
 }
