@@ -582,7 +582,7 @@ class _FolderAreaState extends State<FolderArea>{
 
 class ShowFolder extends StatefulWidget {
   final String folder_id;
-  ShowFolder(this.folder_id, {Key key}):super(key:key);
+  ShowFolder(this.folder_id);
 
   @override
   _ShowFolderState createState() => _ShowFolderState();
