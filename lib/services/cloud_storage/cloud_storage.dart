@@ -78,7 +78,7 @@ class CloudStorage {
 //    File temp_image_file = File("IMG_$uidpart$image_id.jpg");
     File temp_image_file = await createImageTempFile(uid, image_id);
     await temp_image_file.writeAsBytes(image);                        //saves image data into file
-    await createImageGarFile(temp_image_file.path,"Flutter Photo");   //saves image file in gallery
+    await createImageGarFile(temp_image_file.path,"Flutter Photo///TESTING");   //saves image file in gallery
     File tmb = await createLocalThumbnail(uid, image_id, folder_path, temp_image_file); //create & save thumbnail in appdocdir
     //temp_image_file.deleteSync(recursive: true);  //delete temp image file
     //imageCache.clear(); //clear cache, otherwise temp image file will persist
