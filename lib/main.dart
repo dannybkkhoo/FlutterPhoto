@@ -1,22 +1,22 @@
-import 'package:flutter/foundation.dart';
+import 'package:app2/top_level_providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
-import 'layer_1/root_page.dart';
-import '../services/authentication/authprovider.dart';
-import '../services/local_storage/dataprovider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'app_router.dart';
+import 'root_page.dart';
 
 void main() async {
   //Call this first to make sure we can make other system level calls safely
   WidgetsFlutterBinding.ensureInitialized();
-  // Status bar style on Android/iOS
+  //Status bar style on Android/iOS
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle());
+  //Must initialize firebase first
+  await Firebase.initializeApp();
 
+  //Since we're using Riverpod instead of standard providers, all providers are instantiated in top_level_providers.dart
   runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => AuthProvider.instance()),
-        ],
+      ProviderScope(
         child: MyApp(),
       )
   );
@@ -25,6 +25,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final firebaseAuth = context.read(firebaseAuthProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'FlutterPhoto',
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: RootPage(),
+      onGenerateRoute: (settings) => AppRouter.onGenerateRoute(settings, firebaseAuth),
     );
   }
 }
