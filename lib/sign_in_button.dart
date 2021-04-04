@@ -1,51 +1,70 @@
 import 'package:flutter/material.dart';
 
-class LogInOption extends StatelessWidget {
-  final Function loginMethod;
-  final String logoAsset, loginText;
-  LogInOption(this.loginMethod,this.logoAsset,this.loginText);
+class SignInButton extends StatelessWidget {
+  //Note: final variables (including String) are immutable once initialized, thus no need for private
+  final VoidCallback? _loginMethod;   //the method to run when button pressed, private to prevent access of method detail outside class
+  final String loginLogo;             //logo to show for the button
+  final String loginText;             //text to show for the button
+
+  SignInButton({
+    final VoidCallback? loginMethod = null,  //by default, no function attached, making the button disabled
+    this.loginLogo = "assets/images/question_mark.png", //by default is a question mark picture
+    this.loginText = "Unassigned"
+    }):
+    _loginMethod = loginMethod;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 60.0,
-      width: 270.0,
-      margin: EdgeInsets.fromLTRB(30.0, 5.0, 30.0, 5.0),
-      child: RaisedButton(
-        padding: EdgeInsets.only(top: 5.0, bottom: 5.0, left: 5.0),
-        color: Colors.white,
-        elevation: 5.0,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(13.0),
-            side: BorderSide(color: Colors.white)
-        ),
-        onPressed: loginMethod,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Image(
-              image: AssetImage(logoAsset),
-              height: 50.0,
-            ),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.only(left: 10.0, right: 10.0),
-                alignment: Alignment.center,
-                child: Text(
-                  loginText,
-                  style: TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "Roboto-Medium"
-                  ),
-                )
-              )
-            ),
-          ],
-        )
-      )
-    );
+     final screenHeight = MediaQuery.of(context).size.height;  //get full height of screen (including status bar etc)
+     final screenWidth = MediaQuery.of(context).size.width;    //get full width of screen
+     return Container(
+       height: screenHeight * 0.1,  //fixed ratios on all screen, adaptive size
+       width: screenWidth * 0.7,
+       margin: EdgeInsets.fromLTRB(30.0, 5.0, 30.0, 5.0), //to not stick with other buttons
+       child: ElevatedButton(
+         style: ElevatedButton.styleFrom(
+           padding: EdgeInsets.all(5.0),
+           primary: Colors.white,
+           elevation: 5.0,
+           shape: RoundedRectangleBorder(
+               borderRadius: BorderRadius.circular(13.0),
+               side: BorderSide(color: Colors.white)
+           ),
+         ),
+         onPressed: _loginMethod, //null will disable the button, and also removes elevation
+         child: LayoutBuilder(
+           builder: (context, constraints) {  //to get the size of the container
+             return Row(
+               mainAxisAlignment: MainAxisAlignment.start,
+               crossAxisAlignment: CrossAxisAlignment.stretch,
+               children: <Widget>[
+                 Image.asset(
+                   loginLogo,
+                   height: constraints.maxHeight * 0.95,
+                   width: constraints.maxHeight * 0.95,
+                   fit: BoxFit.cover,
+                 ),
+                 Expanded(  //take up the remaining space on the right side of icon
+                   child: Container(
+                     padding: EdgeInsets.only(left: 10.0, right: 10.0), //to not stick to icon
+                     alignment: Alignment.center,
+                     child: Text(
+                       loginText,
+                       overflow: TextOverflow.ellipsis, //prevents text that are too long, eg, Longggggg...
+                       style: TextStyle(
+                         fontSize: 18.0,
+                         color: Colors.grey,
+                         fontWeight: FontWeight.bold,
+                         fontFamily: "Roboto-Medium"  //Recommended to use Roboto-Medium specified by google docs
+                       ),
+                     )
+                   )
+                 ),
+               ],
+             );
+           }
+         )
+       )
+     );
   }
 }

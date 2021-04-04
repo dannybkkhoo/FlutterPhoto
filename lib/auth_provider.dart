@@ -16,7 +16,7 @@ class AuthProvider with ChangeNotifier {
   String? get uid => _firebaseUser?.uid;    //may return null if not signed in or already signed out, otherwise returns a string of uid
 
   //This method is used as a template for any sign in action, where notifyListeners should be called to refresh page
-  Future<void> _signIn(Future<UserCredential?> Function() signInMethod) async {
+  Future<void> _signIn(Future<UserCredential> Function() signInMethod) async {
     try{
       isLoading = true;
       notifyListeners();
@@ -40,22 +40,30 @@ class AuthProvider with ChangeNotifier {
     }
     catch (e) {
       error = e;
-      rethrow;  //pass exception to caller
+      rethrow;  //pass exception to caller, to show a pop up dialog
     }
     finally {
       notifyListeners();  //notify to redraw page to sign in page
     }
   }
 
+  Future<UserCredential> _withGoogle() async {
+    final GoogleAuth googleAuth = GoogleAuth();
+    return _firebaseAuth.signInWithCredential(await googleAuth.signInWithGoogle() as AuthCredential);
+  }
+
+  Future<UserCredential> _withFacebook() async {
+    final FacebookAuth facebookAuth = FacebookAuth();
+    return _firebaseAuth.signInWithCredential(await facebookAuth.signInWithFacebook() as AuthCredential);
+  }
+
   //Sign in with google using google API, once google signed in, create/sign in to firebase using that account
   Future<void> signInWithGoogle() async {
-    final GoogleAuth googleAuth = GoogleAuth();
-    await _signIn(_firebaseAuth.signInWithCredential(await googleAuth.signInWithGoogle()));
+    await _signIn(_withGoogle);
   }
 
   //Sign in with facebook using facebook API, once facebook signed in, create/sign in to firebase using that account
   Future<void> signInWithFacebook() async {
-    final FacebookAuth facebookAuth = FacebookAuth();
-    await _signIn(_firebaseAuth.signInWithCredential(await facebookAuth.signInWithFacebook()));
+    await _signIn(_withFacebook);
   }
 }

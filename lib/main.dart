@@ -16,9 +16,9 @@ void main() async {
 
   //Since we're using Riverpod instead of standard providers, all providers are instantiated in top_level_providers.dart
   runApp(
-      ProviderScope(
-        child: MyApp(),
-      )
+    ProviderScope(
+      child: MyApp(),
+    )
   );
 }
 

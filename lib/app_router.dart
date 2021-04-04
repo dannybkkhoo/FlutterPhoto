@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'sign_in_page.dart';
 import 'home_page.dart';
 import 'error_page.dart';
+import 'auth_provider.dart';
 
 class AppRoutes {
   static const signInPage = '/sign-in-page';
@@ -13,7 +14,7 @@ class AppRoutes {
 }
 
 class AppRouter {
-  static Route<dynamic>? onGenerateRoute(RouteSettings settings, FirebaseAuth firebaseAuth) {
+  static Route<dynamic>? onGenerateRoute(RouteSettings settings, AuthProvider firebaseAuth) {
     final args = settings.arguments;
     Widget screen;
 
