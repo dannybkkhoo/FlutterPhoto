@@ -5,6 +5,7 @@ import 'error_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'top_level_providers.dart';
+import 'connection_provider.dart';
 
 /*
 This page is the base of the app, on the highest level of the widget tree just
@@ -21,12 +22,26 @@ class RootPage extends ConsumerWidget { //Using ConsumerWidget instead of Consum
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {  //ScopedReader is like a function to subscribe/listen to changes
-    final authStateChanges = watch(authStateChangesProvider); //listen to user authentication status changes
-    return authStateChanges.when(
-      data: (user) => user != null? HomePage(): SignInPage(), //if user instance is null, means either unauthenticated/signed out
-      loading: () => LoadingPage(),
-      error: (_, __) => ErrorPage(),
+    // final authStateChanges = watch(authStateChangesProvider); //listen to user authentication status changes
+    // return authStateChanges.when(
+    //   data: (user) => user != null? HomePage(): SignInPage(), //if user instance is null, means either unauthenticated/signed out
+    //   loading: () => LoadingPage(),
+    //   error: (_, __) => ErrorPage(),
+    // );
+    final connStateChanges = watch(connProvider);
+    // return connStateChanges.when(
+    //   data: (conn) => Text(conn.toString()),
+    //   loading: () => Text("LOADING"),
+    //   error: (_,__) => Text("ERROR")
+    // );
+    return Scaffold(
+      body: Container(
+        child: Center(
+          child: Text(connStateChanges.connectionStatus.toString())
+        )
+      )
     );
   }
 }
+
 

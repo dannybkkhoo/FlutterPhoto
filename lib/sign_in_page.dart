@@ -11,12 +11,11 @@ class SignInPage extends ConsumerWidget {
   Widget build(BuildContext context,ScopedReader watch) {
     print("rebuild");
     final _firebaseAuth = watch(firebaseAuthProvider);
-    final _isLoading = _firebaseAuth.isLoading;
     return Scaffold(
       body: Container(
         padding: EdgeInsets.all(16.0),
         child: Center(
-          child: _isLoading?
+          child: _firebaseAuth.isLoading?
             LoadingPage():
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -25,7 +24,6 @@ class SignInPage extends ConsumerWidget {
               children: <Widget>[
                 SignInButton(loginMethod:_firebaseAuth.signInWithGoogle,loginLogo:"assets/images/google_logo.png",loginText:"Sign in with Google"),
                 SignInButton(loginMethod:_firebaseAuth.signInWithFacebook,loginLogo:"assets/images/facebook_logo.png",loginText:"Sign in with Facebook"),
-                SignInButton()
               ],
             )
         )
