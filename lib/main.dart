@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'app_router.dart';
 import 'root_page.dart';
+import 'themes.dart';
 
 void main() async {
   //Call this first to make sure we can make other system level calls safely
@@ -22,16 +23,15 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ScopedReader watch) {
     final firebaseAuth = context.read(firebaseAuthProvider);
+    final themeStateChanges = watch(themeProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'FlutterPhoto',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: themeStateChanges.theme,
       home: RootPage(),
       onGenerateRoute: (settings) => AppRouter.onGenerateRoute(settings, firebaseAuth),
     );
