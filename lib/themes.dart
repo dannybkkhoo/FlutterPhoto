@@ -7,7 +7,7 @@ enum ThemeType {
 }
 
 class AppTheme {
-  static ThemeType defaultTheme = ThemeType.Light;
+  static ThemeType defaultTheme = ThemeType.Purple;
 
   final ThemeType type;
   final bool isDark;
@@ -91,36 +91,47 @@ class AppTheme {
   }
 
   ThemeData toThemeData() {
+    // Use the .dark() and .light() constructors to handle the text themes
+    TextTheme textTheme;
+    if(isDark)
+      textTheme = ThemeData.dark().textTheme;
+    else
+      textTheme = ThemeData.light().textTheme;
+    textTheme = textTheme.copyWith(
+      headline6: TextStyle(color: surface1),
+      bodyText1: TextStyle(color: surface1),
+      bodyText2: TextStyle(color: surface1),
+    );
     var t = ThemeData.from(
-      // Use the .dark() and .light() constructors to handle the text themes
-      textTheme: (isDark ? ThemeData.dark() : ThemeData.light()).textTheme,
+      textTheme: textTheme,
       // Use ColorScheme to generate the bulk of the color theme
       colorScheme: ColorScheme(
-          brightness: isDark ? Brightness.dark : Brightness.light,
-          primary: accent1,
-          primaryVariant: shift(accent1, .1),
-          secondary: accent1,
-          secondaryVariant: shift(accent1, .1),
-          background: bg1,
-          surface: surface1,
-          onBackground: mainTextColor,
-          onSurface: mainTextColor,
-          onError: mainTextColor,
-          onPrimary: inverseTextColor,
-          onSecondary: inverseTextColor,
-          error: focus),
+        brightness: isDark ? Brightness.dark : Brightness.light,
+        primary: accent1,
+        primaryVariant: shift(accent1, .1),
+        secondary: accent1,
+        secondaryVariant: shift(accent1, .1),
+        background: bg1,
+        surface: surface1,
+        onBackground: mainTextColor,
+        onSurface: mainTextColor,
+        onError: mainTextColor,
+        onPrimary: inverseTextColor,
+        onSecondary: inverseTextColor,
+        error: focus),
     );
     // Apply additional styling that is missed by ColorScheme
     t.copyWith(
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        textSelectionTheme: TextSelectionThemeData(
-          cursorColor: surface1,
-          selectionHandleColor: Colors.transparent,
-          selectionColor: surface1,
-        ),
-        buttonColor: accent1,
-        highlightColor: shift(accent1, .1),
-        toggleableActiveColor: accent1);
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: surface1,
+        selectionHandleColor: Colors.transparent,
+        selectionColor: surface1,
+      ),
+      buttonColor: accent1,
+      highlightColor: shift(accent1, .1),
+      toggleableActiveColor: accent1,
+    );
     // All done, return the ThemeData
     return t;
   }

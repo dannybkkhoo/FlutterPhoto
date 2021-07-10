@@ -3,10 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'sign_in_button.dart';
 import 'loading_page.dart';
 import 'top_level_providers.dart';
+import 'screen.dart';
 import 'strings.dart';
+import 'images.dart';
+
 import 'package:alert_dialog/alert_dialog.dart';
 
 class SignInPage extends ConsumerWidget {
+  SignInPage({Key? key}) : super(key:key) {Screen().portrait();}
+
   @override
   Widget build(BuildContext context,ScopedReader watch) {
     final _firebaseAuth = watch(firebaseAuthProvider);

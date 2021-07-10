@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 
 class SignInButton extends StatelessWidget {
   //Note: final variables (including String) are immutable once initialized, thus no need for private
-  final VoidCallback? _loginMethod;   //the method to run when button pressed, private to prevent access of method detail outside class
+  late VoidCallback? _loginMethod;    //the method to run when button pressed, private to prevent access of method detail outside class
   final String loginLogo;             //logo to show for the button
   final String loginText;             //text to show for the button
 
   SignInButton({
+    Key? key,
     final VoidCallback? loginMethod = null,  //by default, no function attached, making the button disabled
     this.loginLogo = "assets/images/question_mark.png", //by default is a question mark picture
     this.loginText = "Unassigned"
-    }):
-    _loginMethod = loginMethod;
+    }) : super(key: key) {_loginMethod = loginMethod;}
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +24,9 @@ class SignInButton extends StatelessWidget {
        child: ElevatedButton(
          style: ElevatedButton.styleFrom(
            padding: EdgeInsets.all(5.0),
-           primary: Colors.white,
            elevation: 5.0,
            shape: RoundedRectangleBorder(
                borderRadius: BorderRadius.circular(13.0),
-               side: BorderSide(color: Colors.white)
            ),
          ),
          onPressed: _loginMethod, //null will disable the button, and also removes elevation
@@ -38,25 +36,26 @@ class SignInButton extends StatelessWidget {
                mainAxisAlignment: MainAxisAlignment.start,
                crossAxisAlignment: CrossAxisAlignment.stretch,
                children: <Widget>[
-                 Image.asset(
-                   loginLogo,
-                   height: constraints.maxHeight * 0.95,
-                   width: constraints.maxHeight * 0.95,
-                   fit: BoxFit.cover,
+                 Padding(
+                   padding: EdgeInsets.only(left: 5.0, right: 2.5),
+                   child: ClipRRect(
+                     borderRadius: BorderRadius.circular(13.0),
+                     child: Image.asset(
+                       loginLogo,
+                       height: constraints.maxHeight * 0.95,
+                       width: constraints.maxHeight * 0.95,
+                       fit: BoxFit.cover,
+                     ),
+                   ),
                  ),
                  Expanded(  //take up the remaining space on the right side of icon
                    child: Container(
-                     padding: EdgeInsets.only(left: 10.0, right: 10.0), //to not stick to icon
+                     padding: EdgeInsets.only(left: 2.5, right: 5.0), //to not stick to icon
                      alignment: Alignment.center,
                      child: Text(
                        loginText,
                        overflow: TextOverflow.ellipsis, //prevents text that are too long, eg, Longggggg...
-                       style: TextStyle(
-                         fontSize: 18.0,
-                         color: Colors.grey,
-                         fontWeight: FontWeight.bold,
-                         fontFamily: "Roboto-Medium"  //Recommended to use Roboto-Medium specified by google docs
-                       ),
+                       style: Theme.of(context).textTheme.headline6, textAlign: TextAlign.center,
                      )
                    )
                  ),

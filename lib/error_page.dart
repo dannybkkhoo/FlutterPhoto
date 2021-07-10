@@ -6,7 +6,7 @@ import 'images.dart';
 class ErrorPage extends StatelessWidget {
   late String text;
   late String image;
-  ErrorPage({this.text = Strings.defaultError, this.image = Images.defaultError}) {Screen().portrait();}
+  ErrorPage({Key? key, this.text = Strings.defaultError, this.image = Images.defaultError}) : super(key:key) {Screen().portrait();}
 
   @override
   Widget build(BuildContext context) {
@@ -17,12 +17,11 @@ class ErrorPage extends StatelessWidget {
             return Container(
               height: constraints.maxHeight,
               width: constraints.maxWidth,
-              color: Theme.of(context).colorScheme.background,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Image.asset(image, width: constraints.maxHeight*0.15, height: constraints.maxHeight*0.15, fit: BoxFit.contain),
+                  ClipRRect(borderRadius: BorderRadius.circular(13.0),child: Image.asset(image, width: constraints.maxHeight*0.15, height: constraints.maxHeight*0.15, fit: BoxFit.contain)),
                   Container(height: constraints.maxHeight*0.05),
                   Text(this.text, style: Theme.of(context).textTheme.headline6, textAlign: TextAlign.center,)
                 ],

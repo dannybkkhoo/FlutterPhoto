@@ -4,8 +4,10 @@ import 'sign_in_page.dart';
 import 'home_page.dart';
 import 'error_page.dart';
 import 'auth_provider.dart';
+import 'root_page.dart';
 
 class AppRoutes {
+  static const rootPage=  "/";
   static const signInPage = '/sign-in-page';
   static const homePage = '/home-page';
   static const loadingPage = '/loading-page';
@@ -19,12 +21,14 @@ class AppRouter {
     Widget screen;
 
     switch(settings.name){
+      case AppRoutes.rootPage:
+        screen = RootPage(); break;
       case AppRoutes.signInPage:
         screen = SignInPage(); break;
       case AppRoutes.homePage:
         screen = HomePage(); break;
       default:
-        screen =  ErrorPage();
+        screen = ErrorPage();
     }
     return MaterialPageRoute(
       builder: (_) => screen,

@@ -1,60 +1,59 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+part 'userdata.freezed.dart';
 part 'userdata.g.dart';
+
 /*
-Use the terminal command below to generate the userdata.g.dart automatically
-flutter packages pub run build_runner build
- */
+Use this command in terminal to automatically rebuild freezed/json part file:
+flutter pub run build_runner watch --delete-conflicting-outputs
+Use this command in terminal to rebuild freezed/json part file once:
+flutter packages pub run build_runner build --delete-conflicting-outputs
 
-@JsonSerializable()
-class UserData extends Equatable {
-  
+Note: Must manually add build.yaml file to configure "explicit_to_json: true"
+for json_serializable due to having nested dataclasses. References here:
+https://github.com/rrousselGit/freezed/issues/86
+*/
+
+@freezed
+abstract class Userdata with _$Userdata {
+  const factory Userdata({
+    required String id,
+    required String name,
+    required String createdAt,
+    required String version,
+    @Default("Light") String theme,
+    @Default({}) Map<String,Folderdata> folders,
+    @Default({}) Map<String,Imagedata> images,
+  }) = _Userdata;
+  factory Userdata.fromJson(Map<String,dynamic> json) => _$UserdataFromJson(json);
 }
 
-@JsonSerializable()
-class FolderModel extends Equatable {
-  final String id, name, date, description, link;
-  final Map<String,dynamic> children;
-
-  FolderModel({
-    required this.id,
-    required this.name,
-    required this.date,
-    this.description = "",
-    this.link = "",
-    this.children = const {}
-  });
-
-  @override
-  bool get stringify => true; //enable toString method for this class, eg. returns data of each field in string instead of "Instance of Foldermodel" when toString is called
-
-  @override
-  List<Object> get props => [id, name, date, description, link, children];  //get all properties easily for this class
-
-  //easily copy over parameters and create new instance of object, while overriding specific parameter
-  FolderModel copyWith({String? id, String? name, String? date, String? description, String? link, Map<String,dynamic>? children,})
-  => FolderModel(id:id??this.id,name:name??this.name,date:date??this.date,description:description??this.description,link:link??this.link,children:children??this.children);
+//imagelist initially named as "images", which is same as Userdata, but will
+// cause issues when decoding from json, as both key with same name appear in
+// the json data, thus renamed as "imagelist" to better reflect the datatype
+// and also to workaround this issue
+@freezed
+abstract class Folderdata with _$Folderdata {
+  const factory Folderdata({
+    required String id,
+    required String name,
+    required String createdAt,
+    required String updatedAt,
+    @Default("") String link,
+    @Default("") String description,
+    @Default([]) List<String> imagelist,
+  }) = _Folderdata;
+  factory Folderdata.fromJson(Map<String,dynamic> json) => _$FolderdataFromJson(json);
 }
 
-@JsonSerializable()
-class ImageModel extends Equatable {
-  final String id, name, date, filepath, description;
-
-  ImageModel({
-    required this.id,
-    required this.name,
-    required this.date,
-    required this.filepath,
-    this.description = ""
-  });
-
-  @override
-  bool get stringify => true; //enable toString method for this class
-
-  @override
-  List<Object> get props => [id,name,date,filepath,description];  //get all properties easily for this class
-
-  //easily copy over parameters and create new instance of object, while overriding specific parameter
-  ImageModel copyWith({String? id, String? name, String? date, String? filepath, String? description})
-  => ImageModel(id:id??this.id,name:name??this.name,date:date??this.date,filepath:filepath??this.filepath,description:description??this.description);
+@freezed
+abstract class Imagedata with _$Imagedata {
+  const factory Imagedata({
+    required String id,
+    required String name,
+    required String createdAt,
+    @Default("") String description,
+  }) = _Imagedata;
+  factory Imagedata.fromJson(Map<String,dynamic> json) => _$ImagedataFromJson(json);
 }

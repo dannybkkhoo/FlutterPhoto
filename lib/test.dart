@@ -6,11 +6,46 @@ import 'strings.dart';
 import 'theme_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'top_level_providers.dart';
+import 'userdata.dart';
 
 class TestPage extends ConsumerWidget {
   late String text;
   late String image;
-  TestPage({this.text = Strings.defaultError, this.image = Images.defaultError}) {Screen().portrait();}
+  TestPage({Key? key, this.text = Strings.defaultError, this.image = Images.defaultError}) : super(key:key) {Screen().portrait();}
+
+  Userdata user = Userdata(
+    id:"123",
+    name:"ABC",
+    createdAt: DateTime.now().toString(),
+    version: DateTime.now().toString(),
+  );
+
+  Folderdata fold = Folderdata(
+    id:"123",
+    name:"ABC",
+    createdAt: DateTime.now().toString(),
+    updatedAt: DateTime.now().toString(),
+    link: "DEF",
+    description: "GHI",
+    //images: ["HMMM","LOL"]
+  );
+
+  Imagedata imag = Imagedata(
+    id: "123",
+    name: "ABC",
+    createdAt: DateTime.now().toString(),
+  );
+
+  void test() {
+    final userz = user.copyWith(folders: {fold.id:fold}, images: {imag.id:imag});
+    //final userz = user.copyWith(images: {imag.id:imag});
+    //final userz = fold;
+    final serial = userz.toJson();
+    final deserial = Folderdata.fromJson(serial);
+    print(serial);
+    print(deserial);
+  }
+
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
@@ -37,6 +72,12 @@ class TestPage extends ConsumerWidget {
                           ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.Light), child: Text("Light")),
                           ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.Dark), child: Text("Dark")),
                           ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.Purple), child: Text("Purple"))
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(onPressed: test, child: Text("Print")),
                         ],
                       )
                     ],
