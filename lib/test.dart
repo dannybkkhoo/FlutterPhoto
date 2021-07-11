@@ -7,6 +7,8 @@ import 'theme_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'top_level_providers.dart';
 import 'userdata.dart';
+import 'firestore_storage.dart';
+
 
 class TestPage extends ConsumerWidget {
   late String text;
@@ -27,7 +29,7 @@ class TestPage extends ConsumerWidget {
     updatedAt: DateTime.now().toString(),
     link: "DEF",
     description: "GHI",
-    //images: ["HMMM","LOL"]
+    imagelist: ["HMMM","LOL"]
   );
 
   Imagedata imag = Imagedata(
@@ -37,19 +39,32 @@ class TestPage extends ConsumerWidget {
   );
 
   void test() {
-    final userz = user.copyWith(folders: {fold.id:fold}, images: {imag.id:imag});
-    //final userz = user.copyWith(images: {imag.id:imag});
-    //final userz = fold;
+    final userz = user.copyWith(images: {imag.id:imag});
     final serial = userz.toJson();
     final deserial = Folderdata.fromJson(serial);
     print(serial);
     print(deserial);
   }
 
+  void upload(String uid) async {
+    final userz = user.copyWith(folders:{fold.id:fold},images: {imag.id:imag});
+    final data = userz.toJson();
+    await FirestoreStorage().writeData("UserData", uid, "collection", "main_collection", data);
+  }
+
+  void download(String uid) async {
+    final data = await FirestoreStorage().readData("UserData", uid, "collection", "main_collection");
+    if(data != null){
+      final deserial = Userdata.fromJson(data);
+      print("Data is:\n${deserial}");
+    }
+  }
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
     final theme= watch(themeProvider);
+    final firebaseAuth = context.read(firebaseAuthProvider);
+    final uid = firebaseAuth.firebaseUser?.uid;
     return Scaffold(
         body: SafeArea(
           child: LayoutBuilder(
@@ -78,6 +93,13 @@ class TestPage extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           ElevatedButton(onPressed: test, child: Text("Print")),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(onPressed: () => upload(uid??""), child: Text("Upload")),
+                          ElevatedButton(onPressed: () => download(uid??""), child: Text("Download")),
                         ],
                       )
                     ],

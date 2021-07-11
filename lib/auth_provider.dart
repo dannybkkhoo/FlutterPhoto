@@ -5,15 +5,14 @@ import 'google_auth.dart';
 
 class AuthProvider with ChangeNotifier {
   final FirebaseAuth _firebaseAuth; //firebase instance must be created and provided to this class
-  User? _firebaseUser = null;  //initially null before sign in, may also be null if sign in failed or signed out
   String? _error = null;
   bool _isLoading = false;
 
   AuthProvider(this._firebaseAuth);
 
-  FirebaseAuth get firebaseAuth => _firebaseAuth; //returns the firebase instance
-  User? get firebaseUser => _firebaseUser;  //may return null if not signed in
-  String? get uid => _firebaseUser?.uid;    //may return null if not signed in or already signed out, otherwise returns a string of uid
+  FirebaseAuth get firebaseAuth => _firebaseAuth;       //returns the firebase instance
+  User? get firebaseUser => _firebaseAuth.currentUser;  //may return null if not signed in
+  String? get uid => _firebaseAuth.currentUser?.uid;    //may return null if not signed in or already signed out, otherwise returns a string of uid
   String? get error => _error;
   bool get isLoading => _isLoading;
 

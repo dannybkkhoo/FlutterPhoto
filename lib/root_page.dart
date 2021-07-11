@@ -9,6 +9,7 @@ import 'connection_provider.dart';
 import 'strings.dart';
 import 'images.dart';
 import 'test.dart';
+import 'home_test.dart';
 
 /*
 This page is the base of the app, on the highest level of the widget tree just

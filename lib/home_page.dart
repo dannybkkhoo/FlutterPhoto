@@ -7,6 +7,7 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ScopedReader watch) {
     final firebaseAuth = watch(firebaseAuthProvider);
+    final String? uid = firebaseAuth.uid;
     Future<bool> _willPopCallBack() async {
       return await showDialog<bool>(
         context: context,
@@ -25,7 +26,7 @@ class HomePage extends ConsumerWidget {
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 }
-            )
+            ),
           ]
         )
       )??false; //if showDialog dismissed/"No" pressed, return false, else true
@@ -33,11 +34,15 @@ class HomePage extends ConsumerWidget {
     return WillPopScope(
       onWillPop: _willPopCallBack,
       child: Scaffold(
-        body: Center(
-          child: ElevatedButton(
-            child: Text("Log Out"),
-            onPressed: firebaseAuth.signOut,
-          )
+        body: Column(
+          children:[
+            Center(
+              child: ElevatedButton(
+                child: Text("Log Out"),
+                onPressed: firebaseAuth.signOut,
+              ),
+            ),
+          ]
         ),
       ),
     );
