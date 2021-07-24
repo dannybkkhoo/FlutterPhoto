@@ -13,8 +13,8 @@ class AuthProvider with ChangeNotifier {
   FirebaseAuth get firebaseAuth => _firebaseAuth;       //returns the firebase instance
   User? get firebaseUser => _firebaseAuth.currentUser;  //may return null if not signed in
   String? get uid => _firebaseAuth.currentUser?.uid;    //may return null if not signed in or already signed out, otherwise returns a string of uid
-  String? get error => _error;
-  bool get isLoading => _isLoading;
+  String? get error => _error;                          //null if no error
+  bool get isLoading => _isLoading;                     //isLoading = true when attempting to login and authenticate
 
   //This method is used as a template for any sign in action, where notifyListeners should be called to refresh page
   Future<void> _signIn(Future<UserCredential> Function() signInMethod) async {

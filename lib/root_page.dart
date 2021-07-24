@@ -31,7 +31,7 @@ class RootPage extends ConsumerWidget { //Using ConsumerWidget instead of Consum
     switch(connStateChanges.connectionStatus){
       case ConnStatus.connected:{       //If user device has internet connection
         return authStateChanges.when(   //Go to pages depending on user authentication status
-          data: (user) => user != null? HomePage(): SignInPage(), //if user instance is null, means either unauthenticated/signed out
+          data: (user) => user != null? TestPage(): SignInPage(), //if user instance is null, means either unauthenticated/signed out
           loading: () => LoadingPage(),
           error: (_, __) => ErrorPage(), //default error page
         );

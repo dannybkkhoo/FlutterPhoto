@@ -6,11 +6,12 @@ import 'connection_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_provider.dart';
 import 'theme_provider.dart';
+import 'cloud_storage.dart';
 /*
 Create provider instances here to avoid more imports in the other files
  */
 
-//Theme
+//Create instance of theme, used for the whole app
 final themeProvider = ChangeNotifierProvider<ThemeProvider>((ref) => ThemeProvider());
 
 //Create instance of connectivity, continuously check network/internet connection
@@ -25,4 +26,6 @@ final authStateChangesProvider = StreamProvider<User?>((ref) {
   return auth.firebaseAuth.authStateChanges();
 });
 
+//cloud storage
+final cloudStorageProvider = ChangeNotifierProvider<CloudStorage>((ref) => CloudStorage());
 
