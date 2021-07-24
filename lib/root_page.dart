@@ -8,7 +8,7 @@ import 'top_level_providers.dart';
 import 'connection_provider.dart';
 import 'strings.dart';
 import 'images.dart';
-import 'test.dart';
+import 'debug.dart';
 import 'home_test.dart';
 
 /*
@@ -31,7 +31,7 @@ class RootPage extends ConsumerWidget { //Using ConsumerWidget instead of Consum
     switch(connStateChanges.connectionStatus){
       case ConnStatus.connected:{       //If user device has internet connection
         return authStateChanges.when(   //Go to pages depending on user authentication status
-          data: (user) => user != null? TestPage(): SignInPage(), //if user instance is null, means either unauthenticated/signed out
+          data: (user) => user != null? DebugPage2(): SignInPage(), //if user instance is null, means either unauthenticated/signed out
           loading: () => LoadingPage(),
           error: (_, __) => ErrorPage(), //default error page
         );
@@ -43,7 +43,7 @@ class RootPage extends ConsumerWidget { //Using ConsumerWidget instead of Consum
         //   text: Strings.noConnection,
         //   image: Images.noConnection,
         // );
-      return TestPage();
+      return DebugPage();
       }
     }
   }

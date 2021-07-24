@@ -14,10 +14,10 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:firebase_storage/firebase_storage.dart';
 
-class TestPage extends ConsumerWidget {
+class DebugPage extends ConsumerWidget {
   late String text;
   late String image;
-  TestPage({Key? key, this.text = Strings.defaultError, this.image = Images.defaultError}) : super(key:key) {Screen().portrait();}
+  DebugPage({Key? key, this.text = Strings.defaultError, this.image = Images.defaultError}) : super(key:key) {Screen().portrait();}
 
   Userdata user = Userdata(
     id:"123",
@@ -103,37 +103,104 @@ class TestPage extends ConsumerWidget {
                       Container(height: constraints.maxHeight*0.05),
                       Text(this.text, style: Theme.of(context).textTheme.headline6, textAlign: TextAlign.center,),
                       Container(height: constraints.maxHeight*0.05, width: constraints.maxHeight*0.05, padding: EdgeInsets.all(constraints.maxHeight*0.02)),
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   children: [
-                      //     ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.Light), child: Text("Light")),
-                      //     ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.Dark), child: Text("Dark")),
-                      //     ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.Purple), child: Text("Purple"))
-                      //   ],
-                      // ),
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   children: [
-                      //     ElevatedButton(onPressed: test, child: Text("Print")),
-                      //   ],
-                      // ),
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   children: [
-                      //     ElevatedButton(onPressed: () => upload(uid??""), child: Text("Upload")),
-                      //     ElevatedButton(onPressed: () => download(uid??""), child: Text("Download")),
-                      //   ],
-                      // ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.Light), child: Text("Light")),
+                          ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.Dark), child: Text("Dark")),
+                          ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.Purple), child: Text("Purple"))
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(onPressed: test, child: Text("Print")),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(onPressed: () => upload(uid??""), child: Text("Upload")),
+                          ElevatedButton(onPressed: () => download(uid??""), child: Text("Download")),
+                        ],
+                      ),
                       Column(
                         children:[
                           Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ElevatedButton(onPressed: () => uploadImage(cloud), child: Text("Upload image")),
-                                Text("${((cloud.bytesTransferred/cloud.totalBytes)*100).toStringAsFixed(2)}%", style: TextStyle(color: Colors.black))
+                                Text("${((cloud.bytesTransferred/cloud.totalTransferring)*100).toStringAsFixed(2)}%", style: TextStyle(color: Colors.black))
                               ]
                           ),
                           ImageHolder(imageExists: _imageExists, imageNotExists: _imageNotExists,)
+                        ]
+                      )
+                    ],
+                  ),
+                );
+              }
+          ),
+        )
+    );
+  }
+}
+
+class DebugPage2 extends ConsumerWidget {
+  File? _image = null;
+
+  void uploadImage(CloudStorage2 ref) async {
+    if(_image != null)
+      ref.uploadImage("123/photos/testing.jpg", _image!);
+    else
+      print("Null image");
+  }
+
+  void _imageExists(File image) {
+    _image = image;
+  }
+
+  void _imageNotExists() {
+    _image = null;
+  }
+
+  @override
+  Widget build(BuildContext context, ScopedReader watch) {
+    final theme = watch(themeProvider);
+    final firebaseAuth = context.read(firebaseAuthProvider);
+    final uid = firebaseAuth.firebaseUser?.uid;
+    final cloud = watch(cloudStorageProvider2);
+    return Scaffold(
+        body: SafeArea(
+          child: LayoutBuilder(
+              builder: (context,constraints) {
+                return Container(
+                  height: constraints.maxHeight,
+                  width: constraints.maxWidth,
+                  color: Theme.of(context).colorScheme.background,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(height: constraints.maxHeight*0.05, width: constraints.maxHeight*0.05, padding: EdgeInsets.all(constraints.maxHeight*0.02)),
+                      Column(
+                        children:[
+                          ImageHolder(imageExists: _imageExists, imageNotExists: _imageNotExists, height: constraints.maxHeight*0.3, width: constraints.maxHeight*0.15),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(onPressed: () => uploadImage(cloud), child: Text("Upload image")),
+                            ]
+                          ),
+                          if(cloud.isUploading)
+                            if(cloud.uploadMap.isNotEmpty)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ...cloud.uploadMap.entries.map((item) => uploadBox(taskName: item.key, task: item.value)).toList(),
+                                ]
+                              )
                         ]
                       )
                     ],
@@ -150,8 +217,10 @@ class ImageHolder extends StatefulWidget {
   XFile? image = null;
   Function imageExists;
   VoidCallback imageNotExists;
+  double height;
+  double width;
 
-  ImageHolder({Key? key, this.image,required this.imageExists, required this.imageNotExists}):super(key:key); //acccess the _image of _ImageHolderState, allow parent to access methods.
+  ImageHolder({Key? key, this.image,required this.imageExists, required this.imageNotExists, this.height = 400, this.width = 300}):super(key:key); //acccess the _image of _ImageHolderState, allow parent to access methods.
   @override
   State<StatefulWidget> createState() => ImageHolderState();
 }
@@ -238,8 +307,8 @@ class ImageHolderState extends State<ImageHolder> {
         child: GestureDetector(
           onTap: () => _image == null ? getGalleryImage() : removeImage(context),
           child: Container(
-            width: 300,
-            height: 400,
+            width: widget.width,
+            height: widget.height,
             child: Center(
               //child: widget.image == null? Text("No images...") : Image.file(widget.image)
                 child: _image == null

@@ -28,4 +28,5 @@ final authStateChangesProvider = StreamProvider<User?>((ref) {
 
 //cloud storage
 final cloudStorageProvider = ChangeNotifierProvider<CloudStorage>((ref) => CloudStorage());
+final cloudStorageProvider2 = ChangeNotifierProvider<CloudStorage2>((ref) => CloudStorage2());
 
