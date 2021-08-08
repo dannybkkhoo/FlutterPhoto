@@ -39,6 +39,7 @@ class DebugPage extends ConsumerWidget {
   Imagedata imag = Imagedata(
     id: "123",
     name: "ABC",
+    ext: "jpg",
     createdAt: DateTime.now().toString(),
   );
 
@@ -130,7 +131,6 @@ class DebugPage extends ConsumerWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ElevatedButton(onPressed: () => uploadImage(cloud), child: Text("Upload image")),
-                                Text("${((cloud.bytesTransferred/cloud.totalTransferring)*100).toStringAsFixed(2)}%", style: TextStyle(color: Colors.black))
                               ]
                           ),
                           ImageHolder(imageExists: _imageExists, imageNotExists: _imageNotExists,)
@@ -147,13 +147,18 @@ class DebugPage extends ConsumerWidget {
 }
 
 class DebugPage2 extends ConsumerWidget {
-  File? _image = null;
+  File? _image;
 
-  void uploadImage(CloudStorage2 ref) async {
+  void uploadImage(CloudStorage ref) async {
     if(_image != null)
-      ref.uploadImage("123/photos/testing.jpg", _image!);
+      ref.uploadImage("123/photos/testing", _image!);
     else
       print("Null image");
+  }
+
+  void downloadImage(CloudStorage ref) async {
+    _image = null;
+    await ref.downloadImage("123/photos/testing");
   }
 
   void _imageExists(File image) {
@@ -169,7 +174,7 @@ class DebugPage2 extends ConsumerWidget {
     final theme = watch(themeProvider);
     final firebaseAuth = context.read(firebaseAuthProvider);
     final uid = firebaseAuth.firebaseUser?.uid;
-    final cloud = watch(cloudStorageProvider2);
+    final cloud = watch(cloudStorageProvider);
     return Scaffold(
         body: SafeArea(
           child: LayoutBuilder(
@@ -189,7 +194,12 @@ class DebugPage2 extends ConsumerWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              ElevatedButton(onPressed: () => uploadImage(cloud), child: Text("Upload image")),
+                              Column(
+                                children: [
+                                  ElevatedButton(onPressed: () => uploadImage(cloud), child: Text("Upload image")),
+                                  ElevatedButton(onPressed: () => downloadImage(cloud),child: Text("Download image"))
+                                ],
+                              )
                             ]
                           ),
                           if(cloud.isUploading)
@@ -198,7 +208,17 @@ class DebugPage2 extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  ...cloud.uploadMap.entries.map((item) => uploadBox(taskName: item.key, task: item.value)).toList(),
+                                  ...cloud.uploadMap.entries.map((item) => taskBox.upload(taskName: item.key, task: item.value, ref: cloud)).toList(),
+                                ]
+                              )
+                          ,
+                          if(cloud.isDownloading)
+                            if(cloud.downloadMap.isNotEmpty)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                ...cloud.downloadMap.entries.map((item) => taskBox.download(taskName: item.key, task: item.value, ref: cloud)).toList(),
                                 ]
                               )
                         ]

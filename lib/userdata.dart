@@ -53,6 +53,7 @@ abstract class Imagedata with _$Imagedata {
     required String id,
     required String name,
     required String createdAt,
+    required String ext,
     @Default("") String description,
   }) = _Imagedata;
   factory Imagedata.fromJson(Map<String,dynamic> json) => _$ImagedataFromJson(json);
