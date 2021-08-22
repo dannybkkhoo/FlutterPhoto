@@ -8,6 +8,33 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
+/*
+The CloudStorage class is used to upload or download images to/from firebase
+cloud storage, and allow the app to track the upload/download progress. Every
+upload/download is treated as individual tasks, and each task is stored in a
+map with the filename as its key. This means that the app can track the progress
+of each individual task, and the user can retry or cancel a task if desired.
+
+Note:
+- The upload path (firebasePath) is structured below:
+  user_id/images/image_id
+- The download path (to user phone) is structured below:
+  Android:
+    appDocDir/user_id/images/image_id
+  iOS:
+    undecided
+- The reason why folder_id is not used for organizing the images, eg.
+  user_id/folder_id/image_id, is because in the case where the user decides to
+  move images from folder to folder, extra cost will be incurred due to the
+  firebase charging plan policy, where each read/write/delete has a cost, thus,
+  images are not organized under folder_id and instead kept under the "images"
+  folder only. Instead, the folder structure for the images are stored in a
+  document where the document itself it stored in firestore database. In this
+  case, when the user decides to move images from folder to folder, the only
+  cost incurred is a write to the document in firestore database, which is much
+  simpler and cheaper than write/delete in cloud storage.
+*/
+
 class CloudStorage with ChangeNotifier{
   final _cloudStorage = FirebaseStorage.instance;
   bool _isUploading = false;
@@ -30,6 +57,7 @@ class CloudStorage with ChangeNotifier{
   Map<String, Object?> get downloadException => _downloadException;
 
   Future<void> uploadImage(String firebasePath, File file) async {  //firebasePath w/o extension, extract extension from file
+    Directory appDocDir = await getApplicationDocumentsDirectory();
     final String filename = basename(firebasePath); //get filename w/o extension and path
     final String ext = file.path.split('.').last;   //get extension of file
 
@@ -39,35 +67,38 @@ class CloudStorage with ChangeNotifier{
     notifyListeners();
 
     assert(file.existsSync());
-    final UploadTask uploadTask = _cloudStorage.ref().child("$firebasePath").putFile( //eg. uid123/photos/testing
-        file,
-        SettableMetadata(
-          contentType: 'image/$ext',    //eg. image/jpg
-        )
+    final UploadTask uploadTask = _cloudStorage.ref().child("$firebasePath").putFile( //eg. uid123/images/testing
+      file,
+      SettableMetadata(
+        contentType: 'image/$ext',      //eg. image/jpg
+      )
     );
     _uploadMap[filename] = uploadTask;  //eg. {"testing":uploadTask}
     notifyListeners();
 
     uploadTask
       .catchError((Object e){
-      _uploadParam[filename] = {"firebasePath":firebasePath,"file":file};  //to retry if needed
-      _uploadException[filename] = e;       //to indicate failure and to check exception
+      _uploadParam[filename] = {"firebasePath":firebasePath,"file":file};  //to retry if needed, also indicates error occurred
+      _uploadException[filename] = e;   //to indicate failure and to check exception
       notifyListeners();
     })
       .whenComplete((){
-      if(!_uploadParam.containsKey(filename)){_uploadMap.remove(filename);}
-      if(_uploadMap.isEmpty){_isUploading = false;}
+      if(!_uploadParam.containsKey(filename)){        //if filename(key) is not in _uploadParam, this means that no error occurred when uploading this file
+        _uploadMap.remove(filename);                  //then safe to remove task from list
+        file.copy("${appDocDir.path}/$firebasePath"); //then move the uploaded file(original) to appDocDir for app safekeeping (same as download path)
+      }
+      if(_uploadMap.isEmpty){_isUploading = false;}   //if all upload tasks are done, then trigger _isUploading = false
       notifyListeners();
     });
   }
 
-  Future<void> downloadImage(String firebasePath) async {   //firebasePath w/o extension
+  Future<void> downloadImage(String firebasePath) async {           //firebasePath w/o extension, eg. user123/images/cat_image
     Directory appDocDir = await getApplicationDocumentsDirectory();
-    final String filename = basename(firebasePath);
-    File downloadToFile = File("${appDocDir.path}/$filename");  //eg. /data/user/0/com.fiftee.app2/app_flutter/testing
+    final String filename = basename(firebasePath);                 //cat_image
+    File downloadToFile = File("${appDocDir.path}/$firebasePath");  //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image
 
     _isDownloading = true;
-    _downloadParam.remove(filename);       //reset
+    _downloadParam.remove(filename);      //reset
     _downloadException.remove(filename);  //reset
     notifyListeners();
 
@@ -77,7 +108,7 @@ class CloudStorage with ChangeNotifier{
 
     downloadTask//.then((_) => throw(Exception("lol")))
       .catchError((Object e){
-      _downloadParam[filename] = {"firebasePath":firebasePath};  //to retry if needed
+      _downloadParam[filename] = {"firebasePath":firebasePath};  //to retry if needed, indicates error occurred
       _downloadException[filename] = e;       //to indicate failure and to check exception
       notifyListeners();
     })
@@ -112,6 +143,13 @@ class CloudStorage with ChangeNotifier{
     }
   }
 }
+
+/*
+The taskBox class complements the CloudStorage class, where it is a UI that
+displays the progress of either an upload/download task, and users can interact
+with the task by deciding whether to cancel the task while it is in progress, or
+retry (restart) the task if an error has occured or if the task was cancelled.
+*/
 
 class taskBox extends ConsumerWidget{
   late UploadTask? _utask = null;

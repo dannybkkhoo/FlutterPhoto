@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_provider.dart';
 import 'theme_provider.dart';
 import 'cloud_storage.dart';
+import 'userdata_provider.dart';
 /*
 Create provider instances here to avoid more imports in the other files
  */
@@ -26,6 +27,12 @@ final authStateChangesProvider = StreamProvider<User?>((ref) {
   return auth.firebaseAuth.authStateChanges();
 });
 
-//cloud storage
+//Create instance of CloudStorage, to allow for upload/download tasks and tracking of its progress
 final cloudStorageProvider = ChangeNotifierProvider<CloudStorage>((ref) => CloudStorage());
 
+//user data
+final userdataProvider = ChangeNotifierProvider<UserdataProvider>((ref) {
+  final firebaseAuth = ref.watch(firebaseAuthProvider);
+  final String? uid = firebaseAuth.uid;
+  return UserdataProvider(uid);
+});

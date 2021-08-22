@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'sign_in_button.dart';
-import 'loading_page.dart';
+import 'bootstrap_page.dart';
 import 'top_level_providers.dart';
 import 'screen.dart';
 import 'strings.dart';
@@ -24,7 +24,7 @@ class SignInPage extends ConsumerWidget {
               width: constraints.maxWidth,
               child: Center(
                 child: _firebaseAuth.isLoading?
-                LoadingPage():
+                BootstrapPage():
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,6 +1,6 @@
 import 'sign_in_page.dart';
 import 'home_page.dart';
-import 'loading_page.dart';
+import 'bootstrap_page.dart';
 import 'error_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +32,7 @@ class RootPage extends ConsumerWidget { //Using ConsumerWidget instead of Consum
       case ConnStatus.connected:{       //If user device has internet connection
         return authStateChanges.when(   //Go to pages depending on user authentication status
           data: (user) => user != null? DebugPage2(): SignInPage(), //if user instance is null, means either unauthenticated/signed out
-          loading: () => LoadingPage(),
+          loading: () => BootstrapPage(),
           error: (_, __) => ErrorPage(), //default error page
         );
       }
