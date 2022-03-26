@@ -36,32 +36,33 @@ class ConnProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  //check if it still runs in background if app is not in foreground
   Future<void> _updateInternetStatus([Timer? timer = null]) async {  //tries to connect to an example webpage on the internet
-    if(_stopChecking){    //only stop checking when not connected to wifi/mobile network (not internet)
-      if(timer != null){
-        timer.cancel();
-      }
-    }
-    else{
-      bool _prevStatus = _internetStatus;
-      try{
-        final result = await InternetAddress.lookup('example.com'); //tries to access a webpage to check if internet access available
-        if(result.isNotEmpty && result[0].rawAddress.isNotEmpty){
-          _internetStatus = true;
+      if(_stopChecking){    //only stop checking when not connected to wifi/mobile network (not internet)
+        if(timer != null){
+          timer.cancel();
         }
-      } on SocketException catch (_) {
-        _internetStatus = false;
       }
-      if(_prevStatus != _internetStatus){ //if internet connection status changed, then notify other widgets
-        if(_internetStatus){  //if connected to internet
-          _connectionStatus = ConnStatus.connected;
+      else{
+        bool _prevStatus = _internetStatus;
+        try{
+          final result = await InternetAddress.lookup('example.com'); //tries to access a webpage to check if internet access available
+          if(result.isNotEmpty && result[0].rawAddress.isNotEmpty){
+            _internetStatus = true;
+          }
+        } on SocketException catch (_) {
+          _internetStatus = false;
         }
-        else{
-          _connectionStatus = ConnStatus.notConnected;
+        if(_prevStatus != _internetStatus){ //if internet connection status changed, then notify other widgets
+          if(_internetStatus){  //if connected to internet
+            _connectionStatus = ConnStatus.connected;
+          }
+          else{
+            _connectionStatus = ConnStatus.notConnected;
+          }
+          notifyListeners();
         }
-        notifyListeners();
       }
-    }
   }
 
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {

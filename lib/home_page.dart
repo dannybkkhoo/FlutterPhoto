@@ -5,8 +5,8 @@ import 'top_level_providers.dart';
 
 class HomePage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final firebaseAuth = watch(firebaseAuthProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final firebaseAuth = ref.watch(firebaseAuthProvider);
     final String? uid = firebaseAuth.uid;
     Future<bool> _willPopCallBack() async {
       return await showDialog<bool>(

@@ -5,15 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_provider.dart';
 import 'images.dart';
 
-class Home extends StatefulWidget {
+class Home extends ConsumerStatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends ConsumerState<Home> {
   @override
   Widget build(BuildContext context) {
-    final user = context.read(firebaseAuthProvider);
+    final user = ref.read(firebaseAuthProvider);
     final uid = user.firebaseUser?.uid;
     return Scaffold(
       body: SafeArea(
@@ -80,12 +80,12 @@ class FolderItem extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  color:Colors.black,
+                  // color:Theme.of(context).colorScheme.surface,
                   width: _width,
                   padding: EdgeInsets.only(left: 2.0, right: 2.0),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(13.0),
-                    child: Text(_name, style: Theme.of(context).textTheme.bodyText1, textAlign: TextAlign.center, overflow: TextOverflow.ellipsis,)
+                    child: Text(_name, style: Theme.of(context).textTheme.bodyText2, textAlign: TextAlign.center, overflow: TextOverflow.ellipsis,)
                   ),
                 ),
               ]

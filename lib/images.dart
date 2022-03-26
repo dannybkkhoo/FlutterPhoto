@@ -6,5 +6,4 @@ class Images {
   //Connection
   static const noConnection = 'assets/images/no_connection.png';
 
-
 }

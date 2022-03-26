@@ -14,7 +14,6 @@ Note: Must manually add build.yaml file to configure "explicit_to_json: true"
 for json_serializable due to having nested dataclasses. References here:
 https://github.com/rrousselGit/freezed/issues/86
 */
-
 @freezed
 abstract class Userdata with _$Userdata {
   const factory Userdata({

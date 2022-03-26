@@ -25,9 +25,9 @@ void main() async {
 
 class MyApp extends ConsumerWidget {
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final firebaseAuth = context.read(firebaseAuthProvider);
-    final themeStateChanges = watch(themeProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final firebaseAuth = ref.read(firebaseAuthProvider);
+    final themeStateChanges = ref.watch(themeProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'FlutterPhoto',

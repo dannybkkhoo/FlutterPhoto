@@ -38,7 +38,7 @@ class DebugPage extends ConsumerWidget {
 
   Imagedata imag = Imagedata(
     id: "123",
-    name: "ABC",
+    name: "testing",
     ext: "jpg",
     createdAt: DateTime.now().toString(),
   );
@@ -54,11 +54,11 @@ class DebugPage extends ConsumerWidget {
   void upload(String uid) async {
     final userz = user.copyWith(folders:{fold.id:fold},images: {imag.id:imag});
     final data = userz.toJson();
-    await FirestoreStorage().writeData("UserData", uid, "collection", "main_collection", data);
+    await FirestoreStorage().writeData("Userdata", uid, "collection", "main_collection", data);
   }
 
   void download(String uid) async {
-    final data = await FirestoreStorage().readData("UserData", uid, "collection", "main_collection");
+    final data = await FirestoreStorage().readData("Userdata", uid, "collection", "main_collection");
     if(data != null){
       final deserial = Userdata.fromJson(data);
       print("Data is:\n${deserial}");
@@ -67,9 +67,12 @@ class DebugPage extends ConsumerWidget {
 
   File? _image = null;
 
-  void uploadImage(CloudStorage ref) async {
+  void uploadImage(CloudStorageProvider ref, String firebasePath,String uid) async {
+    final userz = user.copyWith(folders:{fold.id:fold},images: {imag.id:imag});
+    final data = userz.toJson();
+    await FirestoreStorage().writeData("Userdata", uid, "collection", "main_collection", data);
     if(_image != null)
-      ref.uploadImage("123/photos/testing.jpg", _image!);
+      ref.uploadImage("${firebasePath}/testing.jpg", _image!);
     else
       print("Null image");
   }
@@ -83,11 +86,13 @@ class DebugPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final theme = watch(themeProvider);
-    final firebaseAuth = context.read(firebaseAuthProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
+    final firebaseAuth = ref.read(firebaseAuthProvider);
     final uid = firebaseAuth.firebaseUser?.uid;
-    final cloud = watch(cloudStorageProvider);
+    final cloud = ref.watch(cloudStorageProvider);
+    final userdata = ref.read(userdataProvider);
+    String firebasePath = userdata.firebasePath!;
     return Scaffold(
         body: SafeArea(
           child: LayoutBuilder(
@@ -115,14 +120,8 @@ class DebugPage extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ElevatedButton(onPressed: test, child: Text("Print")),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(onPressed: () => upload(uid??""), child: Text("Upload")),
-                          ElevatedButton(onPressed: () => download(uid??""), child: Text("Download")),
+                          //ElevatedButton(onPressed: () => upload(uid??""), child: Text("Upload")),
+                          //ElevatedButton(onPressed: () => download(uid??""), child: Text("Download")),
                         ],
                       ),
                       Column(
@@ -130,7 +129,7 @@ class DebugPage extends ConsumerWidget {
                           Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                ElevatedButton(onPressed: () => uploadImage(cloud), child: Text("Upload image")),
+                                ElevatedButton(onPressed: () => uploadImage(cloud,userdata.firebasePath!,uid!), child: Text("Upload image")),
                               ]
                           ),
                           ImageHolder(imageExists: _imageExists, imageNotExists: _imageNotExists,)
@@ -149,16 +148,16 @@ class DebugPage extends ConsumerWidget {
 class DebugPage2 extends ConsumerWidget {
   File? _image;
 
-  void uploadImage(CloudStorage ref) async {
+  void uploadImage(CloudStorageProvider ref) async {
     if(_image != null)
-      ref.uploadImage("123/photos/testing", _image!);
+      ref.uploadImage("123/photos/testing2", _image!);
     else
       print("Null image");
   }
 
-  void downloadImage(CloudStorage ref) async {
+  void downloadImage(CloudStorageProvider ref) async {
     _image = null;
-    await ref.downloadImage("123/photos/testing");
+    await ref.downloadImage("123/photos/testing2");
   }
 
   void _imageExists(File image) {
@@ -170,11 +169,11 @@ class DebugPage2 extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final theme = watch(themeProvider);
-    final firebaseAuth = context.read(firebaseAuthProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
+    final firebaseAuth = ref.read(firebaseAuthProvider);
     final uid = firebaseAuth.firebaseUser?.uid;
-    final cloud = watch(cloudStorageProvider);
+    final cloud = ref.watch(cloudStorageProvider);
     return Scaffold(
         body: SafeArea(
           child: LayoutBuilder(

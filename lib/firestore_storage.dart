@@ -20,7 +20,19 @@ class FirestoreStorage {
       final result = await _dbRef.collection(col).doc(doc).collection(col1).doc(doc1).get();
       return result.data();
     } on Exception catch (e) {
+      print(e);
       return null;
     }
+  }
+
+  Future<bool> deleteData(String col, String doc, String col1, String doc1) async {
+    try {
+      await _dbRef.collection(col).doc(doc).collection(col1).doc(doc1).delete();
+    } on Exception catch (e) {
+      print(e);
+      return false;
+    }
+    print("Document deleted in " + col + "/" + doc + "/" + col1 + "/" + doc1);
+    return true;
   }
 }

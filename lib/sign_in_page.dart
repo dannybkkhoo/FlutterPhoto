@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'sign_in_button.dart';
-import 'bootstrap_page.dart';
+import 'loading_page.dart';
 import 'top_level_providers.dart';
 import 'screen.dart';
 import 'strings.dart';
@@ -13,8 +13,8 @@ class SignInPage extends ConsumerWidget {
   SignInPage({Key? key}) : super(key:key) {Screen().portrait();}
 
   @override
-  Widget build(BuildContext context,ScopedReader watch) {
-    final _firebaseAuth = watch(firebaseAuthProvider);
+  Widget build(BuildContext context,WidgetRef ref) {
+    final _firebaseAuth = ref.watch(firebaseAuthProvider);
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
@@ -24,7 +24,7 @@ class SignInPage extends ConsumerWidget {
               width: constraints.maxWidth,
               child: Center(
                 child: _firebaseAuth.isLoading?
-                BootstrapPage():
+                LoadingPage():
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,

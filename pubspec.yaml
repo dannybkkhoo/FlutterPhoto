@@ -22,7 +22,7 @@ dependencies:
   alert_dialog: ^1.0.0
   firebase_auth: ^1.0.1
   flutter_facebook_login: ^3.0.0
-  flutter_riverpod: ^0.13.1
+  flutter_riverpod: ^1.0.3
   google_sign_in: ^5.0.1
   shared_preferences: ^2.0.5
   equatable: ^2.0.0
@@ -36,6 +36,7 @@ dependencies:
   http: ^0.13.3
   image_picker: ^0.8.2
   path_provider: ^2.0.2
+  percent_indicator: ^4.0.0
 
 dev_dependencies:
   flutter_test:

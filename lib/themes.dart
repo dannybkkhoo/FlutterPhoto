@@ -49,7 +49,7 @@ class AppTheme {
           type: t,
           bg1: const Color(0xFFF3F3F3),
           surface1: Colors.white,
-          surface2: const Color(0xFFEBF0F3),
+          surface2: Colors.black,
           accent1: const Color(0xFF2962FF),
           greyWeak: const Color(0xFFCCCCCC),
           grey: const Color(0xFF999999),
@@ -63,7 +63,7 @@ class AppTheme {
           type: t,
           bg1: const Color(0xFF303030),
           surface1: Colors.black,
-          surface2: const Color(0xFF616161),
+          surface2: Colors.white,
           accent1: const Color(0xFF2962FF),
           greyWeak: const Color(0xFFCCCCCC),
           grey: const Color(0xFF999999),
@@ -77,7 +77,7 @@ class AppTheme {
           type: t,
           bg1: const Color(0xFFF3F3F3),
           surface1: Colors.white,
-          surface2: const Color(0xFFEBF0F3),
+          surface2: Colors.black,
           accent1: const Color(0xFFD500F9),
           greyWeak: const Color(0xFFCCCCCC),
           grey: const Color(0xFF999999),
@@ -101,6 +101,8 @@ class AppTheme {
       headline6: TextStyle(color: surface1),
       bodyText1: TextStyle(color: surface1),
       bodyText2: TextStyle(color: surface1),
+      subtitle1: TextStyle(color: surface2),
+      subtitle2: TextStyle(color: surface2)
     );
     var t = ThemeData.from(
       textTheme: textTheme,

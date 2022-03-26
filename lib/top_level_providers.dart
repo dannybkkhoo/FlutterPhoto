@@ -8,6 +8,7 @@ import 'auth_provider.dart';
 import 'theme_provider.dart';
 import 'cloud_storage.dart';
 import 'userdata_provider.dart';
+import 'initialization_provider.dart';
 /*
 Create provider instances here to avoid more imports in the other files
  */
@@ -27,12 +28,23 @@ final authStateChangesProvider = StreamProvider<User?>((ref) {
   return auth.firebaseAuth.authStateChanges();
 });
 
-//Create instance of CloudStorage, to allow for upload/download tasks and tracking of its progress
-final cloudStorageProvider = ChangeNotifierProvider<CloudStorage>((ref) => CloudStorage());
-
-//user data
+//Create instance of user data, need to initialize it to retrieve user data after authentication
 final userdataProvider = ChangeNotifierProvider<UserdataProvider>((ref) {
   final firebaseAuth = ref.watch(firebaseAuthProvider);
   final String? uid = firebaseAuth.uid;
-  return UserdataProvider(uid);
+  return UserdataProvider(uid); //instance based on uid (different uid different instance)
 });
+
+//Create instance of CloudStorage, to allow for upload/download tasks and tracking of its progress
+final cloudStorageProvider = ChangeNotifierProvider<CloudStorageProvider>((ref) => CloudStorageProvider());
+
+//Create instance of initializer, to perform initialization duties (download images from cloud if not exist in local)
+final initializationProvider = ChangeNotifierProvider<InitializationProvider>((ref){
+  final cloudprovider = ref.watch(cloudStorageProvider);
+  final userprovider = ref.watch(userdataProvider);
+  final init = InitializationProvider(cloudprovider,userprovider);
+  init.initializeAndLoad();
+  return init;
+});
+
+//

@@ -20,7 +20,7 @@ Note:
   user_id/images/image_id
 - The download path (to user phone) is structured below:
   Android:
-    appDocDir/user_id/images/image_id
+    appDocDir/user_id/images/image_id (check if other user can see image)
   iOS:
     undecided
 - The reason why folder_id is not used for organizing the images, eg.
@@ -35,7 +35,7 @@ Note:
   simpler and cheaper than write/delete in cloud storage.
 */
 
-class CloudStorage with ChangeNotifier{
+class CloudStorageProvider with ChangeNotifier{
   final _cloudStorage = FirebaseStorage.instance;
   bool _isUploading = false;
   bool _isDownloading = false;
@@ -85,7 +85,8 @@ class CloudStorage with ChangeNotifier{
       .whenComplete((){
       if(!_uploadParam.containsKey(filename)){        //if filename(key) is not in _uploadParam, this means that no error occurred when uploading this file
         _uploadMap.remove(filename);                  //then safe to remove task from list
-        file.copy("${appDocDir.path}/$firebasePath"); //then move the uploaded file(original) to appDocDir for app safekeeping (same as download path)
+        File("${appDocDir.path}/${firebasePath}").createSync(recursive:true); //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image
+        file.copy("${appDocDir.path}/${firebasePath}"); //then move the uploaded file(original) to appDocDir for app safekeeping (same as download path)
       }
       if(_uploadMap.isEmpty){_isUploading = false;}   //if all upload tasks are done, then trigger _isUploading = false
       notifyListeners();
@@ -95,14 +96,15 @@ class CloudStorage with ChangeNotifier{
   Future<void> downloadImage(String firebasePath) async {           //firebasePath w/o extension, eg. user123/images/cat_image
     Directory appDocDir = await getApplicationDocumentsDirectory();
     final String filename = basename(firebasePath);                 //cat_image
-    File downloadToFile = File("${appDocDir.path}/$firebasePath");  //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image
+    File downloadToFile = File("${appDocDir.path}/${firebasePath}");  //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image
+    downloadToFile.createSync(recursive:true);
 
     _isDownloading = true;
     _downloadParam.remove(filename);      //reset
     _downloadException.remove(filename);  //reset
     notifyListeners();
 
-    final DownloadTask downloadTask = _cloudStorage.ref("$firebasePath").writeToFile(downloadToFile);
+    final DownloadTask downloadTask = _cloudStorage.ref("${firebasePath}").writeToFile(downloadToFile);
     _downloadMap[filename] = downloadTask;
     notifyListeners();
 
@@ -110,6 +112,7 @@ class CloudStorage with ChangeNotifier{
       .catchError((Object e){
       _downloadParam[filename] = {"firebasePath":firebasePath};  //to retry if needed, indicates error occurred
       _downloadException[filename] = e;       //to indicate failure and to check exception
+      downloadToFile.deleteSync();
       notifyListeners();
     })
       .whenComplete((){
@@ -156,18 +159,18 @@ class taskBox extends ConsumerWidget{
   late DownloadTask? _dtask = null;
   late String _taskName;
   late String _mode;
-  late CloudStorage _ref;
+  late CloudStorageProvider _ref;
   double height;
   double width;
 
-  taskBox.upload({Key? key, required String taskName, required UploadTask task, required CloudStorage ref, this.height = 30, this.width = 380}): super(key: key) {
+  taskBox.upload({Key? key, required String taskName, required UploadTask task, required CloudStorageProvider ref, this.height = 30, this.width = 380}): super(key: key) {
     _taskName = taskName;
     _utask = task;
     _ref = ref;
     _mode = "Upload";
   }
 
-  taskBox.download({Key? key, required String taskName, required DownloadTask task, required CloudStorage ref, this.height = 30, this.width = 380}): super(key: key) {
+  taskBox.download({Key? key, required String taskName, required DownloadTask task, required CloudStorageProvider ref, this.height = 30, this.width = 380}): super(key: key) {
     _taskName = taskName;
     _dtask = task;
     _ref = ref;
@@ -193,9 +196,9 @@ class taskBox extends ConsumerWidget{
   }
 
   @override
-  Widget build(BuildContext context, ScopedReader watch){
-    final _cloudStorageProvider = ChangeNotifierProvider<CloudStorage>((ref) => _ref);
-    final cloud = watch(_cloudStorageProvider);
+  Widget build(BuildContext context, WidgetRef ref){
+    final _cloudStorageProvider = ChangeNotifierProvider<CloudStorageProvider>((ref) => _ref);
+    final cloud = ref.watch(_cloudStorageProvider);
     return Container(
       padding: EdgeInsets.fromLTRB(0.2, 0.2, 0.2, 0.2),
       height: height,

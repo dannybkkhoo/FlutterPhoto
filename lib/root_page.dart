@@ -1,7 +1,10 @@
+import 'package:app2/app_router.dart';
+
 import 'sign_in_page.dart';
 import 'home_page.dart';
-import 'bootstrap_page.dart';
+import 'loading_page.dart';
 import 'error_page.dart';
+import 'initialization_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'top_level_providers.dart';
@@ -25,25 +28,25 @@ class RootPage extends ConsumerWidget { //Using ConsumerWidget instead of Consum
   RootPage({Key? key}):super(key:key);  //keep track of widget changes for rebuilds
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {    //ScopedReader is like a function to subscribe/listen to changes
-    final connStateChanges = watch(connProvider);             //listen to user device WiFi/Mobile/Internet conenction changes
-    final authStateChanges = watch(authStateChangesProvider); //listen to user authentication status changes
-    switch(connStateChanges.connectionStatus){
+  Widget build(BuildContext context, WidgetRef ref) {    //ScopedReader is like a function to subscribe/listen to changes
+    final connStateChanges = ref.watch(connProvider.select((conn) => conn.connectionStatus)); //listen to user device WiFi/Mobile/Internet conenction changes
+    final authStateChanges = ref.watch(authStateChangesProvider); //listen to user authentication status changes
+    switch(connStateChanges){
       case ConnStatus.connected:{       //If user device has internet connection
         return authStateChanges.when(   //Go to pages depending on user authentication status
-          data: (user) => user != null? DebugPage2(): SignInPage(), //if user instance is null, means either unauthenticated/signed out
-          loading: () => BootstrapPage(),
+          data: (user) => user != null? InitializationPage(): SignInPage(), //if user instance is null, means either unauthenticated/signed out
+          loading: () => LoadingPage(),
           error: (_, __) => ErrorPage(), //default error page
         );
       }
       case ConnStatus.notConnected:     //If user device connected or not connected to WiFi/Mobile without internet connection
       case ConnStatus.unknown:          //If connection status not checked yet
       default:{
-        // return ErrorPage(
-        //   text: Strings.noConnection,
-        //   image: Images.noConnection,
-        // );
-      return DebugPage();
+        return ErrorPage(
+          text: Strings.noConnection,
+          image: Images.noConnection,
+        );
+      //return DebugPage();
       }
     }
   }

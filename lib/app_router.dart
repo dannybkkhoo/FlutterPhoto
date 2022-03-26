@@ -5,6 +5,8 @@ import 'home_page.dart';
 import 'error_page.dart';
 import 'auth_provider.dart';
 import 'root_page.dart';
+import 'home_test.dart';
+import 'debug.dart';
 
 class AppRoutes {
   static const rootPage=  "/";
@@ -13,6 +15,7 @@ class AppRoutes {
   static const loadingPage = '/loading-page';
   static const splashPage = '/splash-page';
   static const errorPage = '/error-page';
+  static const debugPage = '/debug-page';
 }
 
 class AppRouter {
@@ -27,6 +30,8 @@ class AppRouter {
         screen = SignInPage(); break;
       case AppRoutes.homePage:
         screen = HomePage(); break;
+      case AppRoutes.debugPage:
+        screen = DebugPage(); break;
       default:
         screen = ErrorPage();
     }
