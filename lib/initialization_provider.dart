@@ -47,7 +47,6 @@ class InitializationProvider with ChangeNotifier {
   int get numOfImagesCompletedInFolder => _numOfImagesCompletedInFolder;
 
   Future<bool> initializeAndLoad() async {
-    print("LOAD");
     _status = InitStatus.retrievingUserdata;
     notifyListeners();
 

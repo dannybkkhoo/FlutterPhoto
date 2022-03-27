@@ -19,7 +19,7 @@ class AppRoutes {
 }
 
 class AppRouter {
-  static Route<dynamic>? onGenerateRoute(RouteSettings settings, AuthProvider firebaseAuth) {
+  static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     final args = settings.arguments;
     Widget screen;
 
@@ -29,7 +29,7 @@ class AppRouter {
       case AppRoutes.signInPage:
         screen = SignInPage(); break;
       case AppRoutes.homePage:
-        screen = HomePage(); break;
+        screen = Home(); break;
       case AppRoutes.debugPage:
         screen = DebugPage(); break;
       default:

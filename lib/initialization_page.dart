@@ -25,24 +25,22 @@ class InitializationPage extends ConsumerStatefulWidget {
 }
 
 class InitializationPageState extends ConsumerState<InitializationPage> {
-  late InitializationProvider _initprovider;
   late InitStatus _initstatus;
   late double _initpercent;
-  late ChangeNotifierProvider<InitializationProvider> _initprovider;
 
   @override
   void initState(){
     super.initState();
     Screen().portrait();
-    _initprovider = ref.read(initializationProvider);
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      ref.read(initializationProvider).initializeAndLoad();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     _initstatus = ref.watch(initializationProvider.select((init) => init.status));
     _initpercent = ref.watch(initializationProvider.select((init) => init.percent));
-    //_initstatus = ref.watch(_initprovider.select((value) => value.status));
-    //_initpercent = ref.watch(_initprovider.select((value) => value.percent));
 
     //Display
     switch(_initstatus){
@@ -53,10 +51,10 @@ class InitializationPageState extends ConsumerState<InitializationPage> {
         return LoadingPage("Retrieving User Data...");
       }
       case InitStatus.downloadingImage: {
-        //return LoadingPage(_initpercent.toString());
         return LoadingPage(_initpercent.toString());
       }
       case InitStatus.done: {
+        Future.microtask(() => Navigator.of(context).popAndPushNamed(AppRoutes.homePage) );
         return LoadingPage("DONE DOWNLOAD"); //goto homepage
       }
       default: {

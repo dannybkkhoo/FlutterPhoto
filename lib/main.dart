@@ -32,7 +32,7 @@ class MyApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       title: 'FlutterPhoto',
       theme: themeStateChanges.theme,
-      onGenerateRoute: (settings) => AppRouter.onGenerateRoute(settings, firebaseAuth),
+      onGenerateRoute: (settings) => AppRouter.onGenerateRoute(settings),
     );
   }
 }

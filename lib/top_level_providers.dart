@@ -40,11 +40,9 @@ final cloudStorageProvider = ChangeNotifierProvider<CloudStorageProvider>((ref) 
 
 //Create instance of initializer, to perform initialization duties (download images from cloud if not exist in local)
 final initializationProvider = ChangeNotifierProvider<InitializationProvider>((ref){
-  final cloudprovider = ref.watch(cloudStorageProvider);
-  final userprovider = ref.watch(userdataProvider);
-  final init = InitializationProvider(cloudprovider,userprovider);
-  init.initializeAndLoad();
-  return init;
+  final cloudprovider = ref.read(cloudStorageProvider);
+  final userprovider = ref.read(userdataProvider);
+  return InitializationProvider(cloudprovider,userprovider);
 });
 
 //
