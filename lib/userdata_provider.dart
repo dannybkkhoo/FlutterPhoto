@@ -9,10 +9,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'strings.dart';
+import 'package:random_string/random_string.dart';
 
 class UserdataProvider with ChangeNotifier {
   late String? _uid;
   String? _firebasePath;
+  String? _appDocDir;
   Userdata? _userdata = null;
   bool _hasRetrieved = false;
   bool _hasDownloaded = false;
@@ -21,8 +23,26 @@ class UserdataProvider with ChangeNotifier {
 
   String? get uid => _uid;
   String? get firebasePath => _firebasePath;
+  String? get appDocDir => _appDocDir;
   Userdata? get userdata => _userdata;
-  //Folderdata? get folders => _userdata.folders;  //getter setter
+  Map<String, Folderdata> get folders => _userdata?.folders??{};  //returns empty map if null
+  Map<String, Imagedata> get images => _userdata?.images??{};     //returns empty map if null
+  Map<String, String> get foldernames{  //returns a map of folder id:name
+    Map<String, String> temp = {};
+    Map<String, Folderdata> folders = _userdata?.folders??{};
+    for(MapEntry<String,Folderdata> folder in folders.entries){
+      temp[folder.key] = folder.value.name;
+    }
+    return temp;
+  }
+  Map<String, String> get imagenames{   //returns a map of image id:name
+    Map<String, String> temp = {};
+    Map<String, Imagedata> images = _userdata?.images??{};
+    for(MapEntry<String,Imagedata> image in images.entries){
+      temp[image.key] = image.value.name;
+    }
+    return temp;
+  }
   bool get hasRetrieved => _hasRetrieved;   //if retrieved userdata
   bool get hasDownloaded => _hasDownloaded; //if downloaded all image/folder
   bool get hasInitialized => _hasRetrieved&&_hasDownloaded?true:false;  //if retrieved userdata & downloaded all images already
@@ -47,6 +67,8 @@ class UserdataProvider with ChangeNotifier {
     if(_uid?.isEmpty ?? true)
       return false;
     _firebasePath = "${_uid}/images";
+    final appDocDir = await getApplicationDocumentsDirectory();
+    _appDocDir = appDocDir.path;
     late Userdata userdata;
     try{
       final Userdata? localUserdata = await readLocalUserdata();
@@ -217,5 +239,63 @@ class UserdataProvider with ChangeNotifier {
       print(e);
       return false;
     }
+  }
+
+  String firstImageInFolder(String folderid){
+    String imageid = folders[folderid]?.imagelist[0]??"";
+    return imageid;
+  }
+
+  String generateUniqueID(Map map){
+    String id;
+    do{
+      id = randomAlphaNumeric(6);
+    }while(map.containsKey(id));
+    return id;
+  }
+
+  Future<bool> updateLocalandFirestore() async{
+    bool localUpdated = false;
+    bool firestoreUpdated = false;
+    if(_userdata != null) {
+      localUpdated = await writeLocalUserdata(_userdata as Userdata);
+      firestoreUpdated = await writeFirestoreUserdata(_userdata as Userdata);
+    }
+    return localUpdated && firestoreUpdated;
+  }
+
+  Future<bool> addFolder({required String name, String description = "", String link = ""}) async {
+    bool updated = false;
+    String id = generateUniqueID(folders);
+    Folderdata folder = Folderdata(
+      id : id,
+      name : name,
+      createdAt: DateTime.now().toString(),
+      updatedAt: DateTime.now().toString(),
+      link: link,
+      description: description,
+    );
+    _userdata!.folders[id] = folder;
+    updated = await updateLocalandFirestore();
+    notifyListeners();
+    return updated;
+  }
+
+  Future<bool> deleteFolder(String id) async {
+    bool updated = false;
+    _userdata!.folders.removeWhere((key, value) => key == id);
+    updated = await updateLocalandFirestore();
+    notifyListeners();
+    return updated;
+  }
+
+  Future<bool> addImage({required String name, required String ext, String description = ""}) async {
+
+    return false;
+  }
+
+  Future<bool> deleteImage(String id) async {
+
+    return false;
   }
 }

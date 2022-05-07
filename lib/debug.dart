@@ -120,6 +120,7 @@ class DebugPage extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          ElevatedButton(onPressed: () => userdata.deleteLocalUserdata(), child: Text("Delete"))
                           //ElevatedButton(onPressed: () => upload(uid??""), child: Text("Upload")),
                           //ElevatedButton(onPressed: () => download(uid??""), child: Text("Download")),
                         ],

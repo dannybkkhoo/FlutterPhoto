@@ -77,10 +77,10 @@ class InitializationProvider with ChangeNotifier {
       for(String foldername in folders.keys) {
         _numOfImagesInFolder = folders[foldername]!.imagelist.length;
         _numOfImagesCompletedInFolder = 0;
-        for(String imagename in images.keys) {
+        for(String imagename in folders[foldername]?.imagelist??[]) {
           path = uid + "/images/" + imagename + "." + images[imagename]!.ext;
-          print(path);
-          if(!File(path).existsSync()){
+          print(appDocDir.path + "/" + path);
+          if(!File(appDocDir.path + "/" + path).existsSync()){
             await _cloudprovider.downloadImage(path);
           }
           _numOfImagesCompletedInFolder++;
@@ -100,30 +100,5 @@ class InitializationProvider with ChangeNotifier {
       notifyListeners();
       return false;
     }
-  }
-}
-
-class InitializationProgress extends ConsumerWidget {
-  double percent = 0.00;
-
-  InitializationProgress({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 30.0),
-              child: LinearPercentIndicator(
-                lineHeight: 11.0,
-                percent: percent,
-              ),
-            )
-          ],
-        )
-    );
   }
 }
