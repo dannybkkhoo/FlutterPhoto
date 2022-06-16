@@ -9,6 +9,7 @@ import 'theme_provider.dart';
 import 'cloud_storage.dart';
 import 'userdata_provider.dart';
 import 'initialization_provider.dart';
+import 'pagestatus_provider.dart';
 /*
 Create provider instances here to avoid more imports in the other files
  */
@@ -44,5 +45,8 @@ final initializationProvider = ChangeNotifierProvider<InitializationProvider>((r
   final userprovider = ref.read(userdataProvider);
   return InitializationProvider(cloudprovider,userprovider);
 });
+
+//Create instance of pagestatus, to track the status of the page when user selects items or searching items
+final pagestatusProvider = ChangeNotifierProvider<PagestatusProvider>((ref) => PagestatusProvider());
 
 //

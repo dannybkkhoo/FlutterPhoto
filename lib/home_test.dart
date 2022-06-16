@@ -1,3 +1,5 @@
+import 'package:app2/pagestate_provider.dart';
+import 'package:app2/pagestatus_provider.dart';
 import 'package:app2/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,6 +15,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'userdata_provider.dart';
 import 'screen.dart';
+import 'dart:async';
 
 class Home extends ConsumerStatefulWidget {
   @override
@@ -22,10 +25,8 @@ class Home extends ConsumerStatefulWidget {
 class _HomeState extends ConsumerState<Home> {
   List<Widget> listOfFolders = [];
 
-  void loadfolders(){
+  void loadfolders(Map<String,Folderdata> folders, Map<String,String> foldernames){
     List<Widget> list = [];
-    Map<String,Folderdata> folders = ref.read(userdataProvider).userdata?.folders??{};
-    Map<String,String> foldernames = ref.read(userdataProvider).foldernames;
     for(MapEntry<String,String> folder in foldernames.entries){
       list.add(FolderItem(id: folder.key,  height: 250, width: 200));
     }
@@ -41,8 +42,6 @@ class _HomeState extends ConsumerState<Home> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    print("2nd");
-    loadfolders();
   }
 
   @override
@@ -52,6 +51,8 @@ class _HomeState extends ConsumerState<Home> {
     final userdata = ref.watch(userdataProvider);
     Map<String,Folderdata> folders = userdata.userdata!.folders;
     Map<String,Imagedata> images = userdata.userdata!.images;
+    loadfolders(folders,userdata.foldernames);
+    ref.watch(pagestatusProvider).sorting;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       floatingActionButton: FloatingActionButton.extended(
@@ -90,6 +91,9 @@ class _HomeState extends ConsumerState<Home> {
 class FolderItem extends ConsumerWidget {
   late String _id;
   late double _height, _width;
+  bool _selectionMode = false;
+  bool _isSelected = false;
+
   FolderItem({
     Key? key,
     required String id,
@@ -100,6 +104,40 @@ class FolderItem extends ConsumerWidget {
     this._height = height;
     this._width = width;
   }
+
+  Widget? selectionIcon(bool selectionMode, bool isSelected){
+    if(selectionMode){
+      if(isSelected){
+        return GridTileBar(
+            leading: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+              ),
+              child: Icon(
+                Icons.check_circle_rounded,
+                color: Colors.green,
+              ),
+            )
+        );
+      }
+      else{
+        return GridTileBar(
+            leading: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+              ),
+              child: Icon(
+                Icons.check_circle_rounded,
+                color: Colors.black26,
+              ),
+            )
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     String uid = ref.watch(userdataProvider).uid??"";
@@ -114,6 +152,8 @@ class FolderItem extends ConsumerWidget {
       Imagedata image = ref.watch(userdataProvider.select((userdata) => userdata.images[folder.imagelist[0]] as Imagedata));
       imagepath = appDocDir + "/" + uid + "/images/" + image.id + "." + image.ext;
     }
+    _selectionMode = ref.watch(pagestatusProvider).selectionMode;
+    _isSelected = ref.watch(pagestatusProvider).selectedFolders.contains(_id);
 
     return Container(
       height: _height,
@@ -128,24 +168,26 @@ class FolderItem extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(13.0)
               ),
               child: GridTile(
-                header: GridTileBar(
-                    leading: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
-                      ),
-                      child: Icon(
-                        Icons.check_circle_rounded,
-                        color: Colors.green,
-                      ),
-                    )
-                ),
+                header: selectionIcon(_selectionMode, _isSelected),
                 child: GestureDetector(
                     onLongPress: () {
-                      print("Long press");
+                      if(_selectionMode){
+                        ref.read(pagestatusProvider).selectionMode = false;
+                      }
+                      else {
+                        ref.read(pagestatusProvider).selectionMode = true;
+                        ref.read(pagestatusProvider).addSelectedFolder(_id);
+                      }
                     },
                     onTap: () {
-                      print("Tap");
+                      if(_selectionMode) {
+                        _isSelected ?
+                        ref.read(pagestatusProvider).removeSelectedFolder(_id) :
+                        ref.read(pagestatusProvider).addSelectedFolder(_id);
+                      }
+                      else{
+                        //go into folder
+                      }
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -189,6 +231,7 @@ Future<void> addFolder(BuildContext context, UserdataProvider userdata) async {
   String name = "", description = "", link = "", errormsg = "";
   bool tapped = false, validated = false;
   Map<String,String> foldernames = userdata.foldernames;
+
   final TextTheme hintStyle = Theme.of(context).textTheme.copyWith(
     subtitle2: TextStyle(color: Color(0xFFCCCCCC)),
   );
