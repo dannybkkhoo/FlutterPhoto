@@ -1,0 +1,85 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'userdata.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+_$_Userdata _$_$_UserdataFromJson(Map<String, dynamic> json) {
+  return _$_Userdata(
+    id: json['id'] as String,
+    name: json['name'] as String,
+    createdAt: json['createdAt'] as String,
+    version: json['version'] as String,
+    theme: json['theme'] as String? ?? 'Light',
+    folders: (json['folders'] as Map<String, dynamic>?)?.map(
+          (k, e) => MapEntry(k, Folderdata.fromJson(e as Map<String, dynamic>)),
+        ) ??
+        {},
+    images: (json['images'] as Map<String, dynamic>?)?.map(
+          (k, e) => MapEntry(k, Imagedata.fromJson(e as Map<String, dynamic>)),
+        ) ??
+        {},
+  );
+}
+
+Map<String, dynamic> _$_$_UserdataToJson(_$_Userdata instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'createdAt': instance.createdAt,
+      'version': instance.version,
+      'theme': instance.theme,
+      'folders': instance.folders.map((k, e) => MapEntry(k, e.toJson())),
+      'images': instance.images.map((k, e) => MapEntry(k, e.toJson())),
+    };
+
+_$_Folderdata _$_$_FolderdataFromJson(Map<String, dynamic> json) {
+  return _$_Folderdata(
+    id: json['id'] as String,
+    name: json['name'] as String,
+    createdAt: json['createdAt'] as String,
+    updatedAt: json['updatedAt'] as String,
+    link: json['link'] as String? ?? '',
+    description: json['description'] as String? ?? '',
+    label:
+        (json['label'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+            [],
+    imagelist: (json['imagelist'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList() ??
+        [],
+  );
+}
+
+Map<String, dynamic> _$_$_FolderdataToJson(_$_Folderdata instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'createdAt': instance.createdAt,
+      'updatedAt': instance.updatedAt,
+      'link': instance.link,
+      'description': instance.description,
+      'label': instance.label,
+      'imagelist': instance.imagelist,
+    };
+
+_$_Imagedata _$_$_ImagedataFromJson(Map<String, dynamic> json) {
+  return _$_Imagedata(
+    id: json['id'] as String,
+    name: json['name'] as String,
+    createdAt: json['createdAt'] as String,
+    ext: json['ext'] as String,
+    description: json['description'] as String? ?? '',
+  );
+}
+
+Map<String, dynamic> _$_$_ImagedataToJson(_$_Imagedata instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'createdAt': instance.createdAt,
+      'ext': instance.ext,
+      'description': instance.description,
+    };

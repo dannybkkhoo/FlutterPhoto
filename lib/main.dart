@@ -1,11 +1,11 @@
-import 'package:app2/top_level_providers.dart';
+import 'providers/top_level_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'app_router.dart';
-import 'root_page.dart';
-import 'themes.dart';
+import 'screens/root_page.dart';
+import 'themes/themes.dart';
 
 void main() async {
   //Call this first to make sure we can make other system level calls safely

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'sign_in_page.dart';
-import 'home_page.dart';
-import 'error_page.dart';
-import 'auth_provider.dart';
-import 'root_page.dart';
-import 'home_test.dart';
+import 'screens/sign_in_page.dart';
+import 'screens/home_page.dart';
+import 'screens/error_page.dart';
+import 'providers/auth_provider.dart';
+import 'screens/root_page.dart';
+import 'screens/home_test.dart';
 import 'debug.dart';
 
 class AppRoutes {
