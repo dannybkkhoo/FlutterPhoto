@@ -31,8 +31,6 @@ class DebugPage extends ConsumerWidget {
     name:"ABC",
     createdAt: DateTime.now().toString(),
     updatedAt: DateTime.now().toString(),
-    link: "DEF",
-    description: "GHI",
     imagelist: ["HMMM","LOL"]
   );
 

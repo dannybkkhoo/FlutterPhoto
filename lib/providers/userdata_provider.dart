@@ -264,7 +264,22 @@ class UserdataProvider with ChangeNotifier {
     return localUpdated && firestoreUpdated;
   }
 
-  Future<bool> addFolder({required String name, String description = "", String link = ""}) async {
+  Future<bool> addFolder({
+    required String name,
+    String country = "",
+    String mintageYear = "",
+    String grade = "",
+    String serial = "",
+    String serialLink = "",
+    String purchasePrice = "",
+    String purchaseDate = "",
+    String currentsoldprice = "",
+    String status = "",
+    String storage = "",
+    String populationLink = "",
+    String remarks = "",
+    List<String> category = const []
+  }) async {
     bool updated = false;
     String id = generateUniqueID(folders);
     Folderdata folder = Folderdata(
@@ -272,8 +287,19 @@ class UserdataProvider with ChangeNotifier {
       name : name,
       createdAt: DateTime.now().toString(),
       updatedAt: DateTime.now().toString(),
-      link: link,
-      description: description,
+      country: country,
+      mintageYear: mintageYear,
+      grade: grade,
+      serial: serial,
+      serialLink: serialLink,
+      purchasePrice: purchasePrice,
+      purchaseDate: purchaseDate,
+      currentsoldprice: currentsoldprice,
+      status: status,
+      storage: storage,
+      populationLink: populationLink,
+      remarks: remarks,
+      category: category,
     );
     _userdata!.folders[id] = folder;
     updated = await updateLocalandFirestore();

@@ -1,3 +1,4 @@
+import 'package:app2/app_router.dart';
 import 'package:app2/providers/pagestate_provider.dart';
 import 'package:app2/providers/pagestatus_provider.dart';
 import '../constants/strings.dart';
@@ -16,6 +17,8 @@ import 'package:flutter/services.dart';
 import '../providers/userdata_provider.dart';
 import '../bloc/screen.dart';
 import 'dart:async';
+import '../ui_components/appBarButton.dart';
+import 'addfolder_page.dart';
 
 class Home extends ConsumerStatefulWidget {
   @override
@@ -44,7 +47,7 @@ class _HomeState extends ConsumerState<Home> {
     super.didChangeDependencies();
   }
 
-  List<Widget>? appBarButton(PagestatusProvider pageStatus, UserdataProvider userdata){
+  List<Widget>? appBarButtons(PagestatusProvider pageStatus, UserdataProvider userdata){
     bool isSelecting = pageStatus.isSelecting;
     List<Widget> buttons = [];
     if(isSelecting){
@@ -102,6 +105,65 @@ class _HomeState extends ConsumerState<Home> {
     return buttons;
   }
 
+  List<Widget>? bottomBarButtons(PagestatusProvider pageStatus, UserdataProvider userdata){
+    bool isSelecting = pageStatus.isSelecting;
+    List<Widget> buttons = [];
+    if(isSelecting){
+      //Home button
+      buttons.add(
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            IconButton(
+              icon: Icon(Icons.house_rounded),
+              onPressed: () {
+
+              },
+            ),
+            Text("Home",
+              style: Theme.of(context).textTheme.headline6,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        )
+      );
+      //Delete button
+      buttons.add(
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () {
+                userdata.deleteFolders(pageStatus.selectedFolders);
+                pageStatus.removeAllFolder();
+                pageStatus.isSelecting = false;
+              },
+            ),
+            Text("Delete",
+              style: Theme.of(context).textTheme.headline6,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        )
+      );
+      //Cancel button
+      buttons.add(
+        bottomBarButton(
+          iconLogo: Icon(Icons.cancel_outlined),
+          iconText: "Cancel",
+          onPressed: () {
+            pageStatus.removeAllFolder();
+            pageStatus.isSelecting = false;
+          },
+        )
+      );
+    }
+    return buttons;
+  }
+
   Widget? appBarTitle(PagestatusProvider pageStatus){
     bool isSelecting = pageStatus.isSelecting;
     if(isSelecting){
@@ -113,7 +175,16 @@ class _HomeState extends ConsumerState<Home> {
   PreferredSizeWidget? appBar(PagestatusProvider pageStatus, UserdataProvider userdata){
     return AppBar(
       title: appBarTitle(pageStatus),
-      actions: appBarButton(pageStatus, userdata),
+      actions: appBarButtons(pageStatus, userdata),
+    );
+  }
+
+  BottomAppBar bottomBar(PagestatusProvider pageStatus, UserdataProvider userdata){
+    return BottomAppBar(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: bottomBarButtons(pageStatus, userdata)!,
+      )
     );
   }
 
@@ -130,6 +201,7 @@ class _HomeState extends ConsumerState<Home> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: appBar(pageStatus, userdata),
+        bottomNavigationBar: bottomBar(pageStatus, userdata),
         floatingActionButton: addFolderButton(context, userdata),
         body: SafeArea(
           child: LayoutBuilder(
@@ -157,7 +229,9 @@ class _HomeState extends ConsumerState<Home> {
 }
 
 Future<void> addFolder(BuildContext context, UserdataProvider userdata) async {
-  String name = "", description = "", link = "", errormsg = "";
+  String name = "", country = "", mintageYear = "", grade = "", serial = "", serialLink = "", purchasePrice = "", purchaseDate = "";
+  String currentsoldprice = "", status = "", storage = "", populationLink = "", remarks = "", errormsg = "";
+  List<String> category = [];
   bool tapped = false, validated = false;
   Map<String,String> foldernames = userdata.foldernames;
 
@@ -238,14 +312,14 @@ Future<void> addFolder(BuildContext context, UserdataProvider userdata) async {
                               child: TextField(
                                 autofocus: true,
                                 decoration: InputDecoration(
-                                  labelText: 'DESCRIPTION:',
+                                  labelText: 'Country:',
                                   labelStyle: Theme.of(context).textTheme.subtitle1,
-                                  hintText: 'eg. Personal Photos',
+                                  hintText: 'eg. Malaysia',
                                   hintStyle: hintStyle.subtitle2,
                                 ),
-                                onChanged: (descriptionText){
+                                onChanged: (text){
                                   setState((){
-                                    description = descriptionText;
+                                    country = text;
                                   });
                                 },
                               ),
@@ -255,18 +329,103 @@ Future<void> addFolder(BuildContext context, UserdataProvider userdata) async {
                               child: TextField(
                                 autofocus: true,
                                 decoration: InputDecoration(
-                                  labelText: 'LINK:',
+                                  labelText: 'Mintage Year:',
                                   labelStyle: Theme.of(context).textTheme.subtitle1,
-                                  hintText: 'eg. www.myFolder.com',
+                                  hintText: 'eg. 1998',
                                   hintStyle: hintStyle.subtitle2,
                                 ),
-                                onChanged: (linkText){
+                                onChanged: (text){
                                   setState((){
-                                    link = linkText;
+                                    mintageYear = text;
                                   });
                                 },
                               ),
-                            )
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 0.0),
+                              child: TextField(
+                                autofocus: true,
+                                decoration: InputDecoration(
+                                  labelText: 'grade:',
+                                  labelStyle: Theme.of(context).textTheme.subtitle1,
+                                  hintText: 'eg. AAA',
+                                  hintStyle: hintStyle.subtitle2,
+                                ),
+                                onChanged: (text){
+                                  setState((){
+                                    grade = text;
+                                  });
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 0.0),
+                              child: TextField(
+                                autofocus: true,
+                                decoration: InputDecoration(
+                                  labelText: 'Serial:',
+                                  labelStyle: Theme.of(context).textTheme.subtitle1,
+                                  hintText: 'eg. 11005982',
+                                  hintStyle: hintStyle.subtitle2,
+                                ),
+                                onChanged: (text){
+                                  setState((){
+                                    serial = text;
+                                  });
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 0.0),
+                              child: TextField(
+                                autofocus: true,
+                                decoration: InputDecoration(
+                                  labelText: 'serialLink:',
+                                  labelStyle: Theme.of(context).textTheme.subtitle1,
+                                  hintText: 'eg. www.star.com',
+                                  hintStyle: hintStyle.subtitle2,
+                                ),
+                                onChanged: (text){
+                                  setState((){
+                                    serialLink = text;
+                                  });
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 0.0),
+                              child: TextField(
+                                autofocus: true,
+                                decoration: InputDecoration(
+                                  labelText: 'Purchase Price:',
+                                  labelStyle: Theme.of(context).textTheme.subtitle1,
+                                  hintText: 'eg. RM 1000',
+                                  hintStyle: hintStyle.subtitle2,
+                                ),
+                                onChanged: (text){
+                                  setState((){
+                                    purchasePrice = text;
+                                  });
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 0.0),
+                              child: TextField(
+                                autofocus: true,
+                                decoration: InputDecoration(
+                                  labelText: 'Purchase Date:',
+                                  labelStyle: Theme.of(context).textTheme.subtitle1,
+                                  hintText: 'eg. 11/5/2000',
+                                  hintStyle: hintStyle.subtitle2,
+                                ),
+                                onChanged: (text){
+                                  setState((){
+                                    purchaseDate = text;
+                                  });
+                                },
+                              ),
+                            ),
                           ],
                         ),
                       )
@@ -277,7 +436,22 @@ Future<void> addFolder(BuildContext context, UserdataProvider userdata) async {
                       child: Text("OK", style: Theme.of(context).textTheme.subtitle2),
                       onPressed: () async {
                         if(name != "" && validated){
-                          userdata.addFolder(name: name,description: description, link: link);
+                          userdata.addFolder(
+                            name: name,
+                            country: country,
+                            mintageYear: mintageYear,
+                            grade: grade,
+                            serial: serial,
+                            serialLink: serialLink,
+                            purchasePrice: purchasePrice,
+                            purchaseDate: purchaseDate,
+                            currentsoldprice: currentsoldprice,
+                            status: status,
+                            storage: storage,
+                            populationLink: populationLink,
+                            remarks: remarks,
+                            category: category
+                          );
                           Navigator.of(context).pop(null);
                         }
                         else{
@@ -341,7 +515,8 @@ Widget? addFolderButton(BuildContext context, UserdataProvider userdata){
     label: Text("New Folder", style: Theme.of(context).textTheme.bodyText2),
     backgroundColor: Theme.of(context).accentColor,
     onPressed: () {
-      addFolder(context, userdata);
+      //addFolder(context, userdata);
+      Navigator.of(context).pushNamed(AppRoutes.addFolderPage);
     },
   );
 }

@@ -1,3 +1,4 @@
+import 'package:app2/screens/addfolder_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'screens/sign_in_page.dart';
@@ -16,6 +17,7 @@ class AppRoutes {
   static const splashPage = '/splash-page';
   static const errorPage = '/error-page';
   static const debugPage = '/debug-page';
+  static const addFolderPage = '/add-folder-page';
 }
 
 class AppRouter {
@@ -32,6 +34,8 @@ class AppRouter {
         screen = Home(); break;
       case AppRoutes.debugPage:
         screen = DebugPage(); break;
+      case AppRoutes.addFolderPage:
+        screen = AddFolder(); break;
       default:
         screen = ErrorPage();
     }

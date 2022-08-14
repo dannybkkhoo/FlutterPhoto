@@ -1,5 +1,7 @@
+// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides
+// ignore_for_file: type=lint
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'userdata.dart';
 
@@ -10,52 +12,30 @@ part of 'userdata.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 Userdata _$UserdataFromJson(Map<String, dynamic> json) {
   return _Userdata.fromJson(json);
 }
 
 /// @nodoc
-class _$UserdataTearOff {
-  const _$UserdataTearOff();
-
-  _Userdata call(
-      {required String id,
-      required String name,
-      required String createdAt,
-      required String version,
-      String theme = "Light",
-      Map<String, Folderdata> folders = const {},
-      Map<String, Imagedata> images = const {}}) {
-    return _Userdata(
-      id: id,
-      name: name,
-      createdAt: createdAt,
-      version: version,
-      theme: theme,
-      folders: folders,
-      images: images,
-    );
-  }
-
-  Userdata fromJson(Map<String, Object> json) {
-    return Userdata.fromJson(json);
-  }
-}
-
-/// @nodoc
-const $Userdata = _$UserdataTearOff();
-
-/// @nodoc
 mixin _$Userdata {
   String get id => throw _privateConstructorUsedError;
+  set id(String value) => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  set name(String value) => throw _privateConstructorUsedError;
   String get createdAt => throw _privateConstructorUsedError;
+  set createdAt(String value) => throw _privateConstructorUsedError;
   String get version => throw _privateConstructorUsedError;
+  set version(String value) => throw _privateConstructorUsedError;
   String get theme => throw _privateConstructorUsedError;
+  set theme(String value) => throw _privateConstructorUsedError;
   Map<String, Folderdata> get folders => throw _privateConstructorUsedError;
+  set folders(Map<String, Folderdata> value) =>
+      throw _privateConstructorUsedError;
   Map<String, Imagedata> get images => throw _privateConstructorUsedError;
+  set images(Map<String, Imagedata> value) =>
+      throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -129,9 +109,10 @@ class _$UserdataCopyWithImpl<$Res> implements $UserdataCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$UserdataCopyWith<$Res> implements $UserdataCopyWith<$Res> {
-  factory _$UserdataCopyWith(_Userdata value, $Res Function(_Userdata) then) =
-      __$UserdataCopyWithImpl<$Res>;
+abstract class _$$_UserdataCopyWith<$Res> implements $UserdataCopyWith<$Res> {
+  factory _$$_UserdataCopyWith(
+          _$_Userdata value, $Res Function(_$_Userdata) then) =
+      __$$_UserdataCopyWithImpl<$Res>;
   @override
   $Res call(
       {String id,
@@ -144,13 +125,14 @@ abstract class _$UserdataCopyWith<$Res> implements $UserdataCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$UserdataCopyWithImpl<$Res> extends _$UserdataCopyWithImpl<$Res>
-    implements _$UserdataCopyWith<$Res> {
-  __$UserdataCopyWithImpl(_Userdata _value, $Res Function(_Userdata) _then)
-      : super(_value, (v) => _then(v as _Userdata));
+class __$$_UserdataCopyWithImpl<$Res> extends _$UserdataCopyWithImpl<$Res>
+    implements _$$_UserdataCopyWith<$Res> {
+  __$$_UserdataCopyWithImpl(
+      _$_Userdata _value, $Res Function(_$_Userdata) _then)
+      : super(_value, (v) => _then(v as _$_Userdata));
 
   @override
-  _Userdata get _value => super._value as _Userdata;
+  _$_Userdata get _value => super._value as _$_Userdata;
 
   @override
   $Res call({
@@ -162,7 +144,7 @@ class __$UserdataCopyWithImpl<$Res> extends _$UserdataCopyWithImpl<$Res>
     Object? folders = freezed,
     Object? images = freezed,
   }) {
-    return _then(_Userdata(
+    return _then(_$_Userdata(
       id: id == freezed
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -195,11 +177,10 @@ class __$UserdataCopyWithImpl<$Res> extends _$UserdataCopyWithImpl<$Res>
   }
 }
 
-@JsonSerializable()
-
 /// @nodoc
+@JsonSerializable()
 class _$_Userdata implements _Userdata {
-  const _$_Userdata(
+  _$_Userdata(
       {required this.id,
       required this.name,
       required this.createdAt,
@@ -209,78 +190,46 @@ class _$_Userdata implements _Userdata {
       this.images = const {}});
 
   factory _$_Userdata.fromJson(Map<String, dynamic> json) =>
-      _$_$_UserdataFromJson(json);
+      _$$_UserdataFromJson(json);
 
   @override
-  final String id;
+  String id;
   @override
-  final String name;
+  String name;
   @override
-  final String createdAt;
+  String createdAt;
   @override
-  final String version;
-  @JsonKey(defaultValue: "Light")
+  String version;
   @override
-  final String theme;
-  @JsonKey(defaultValue: const {})
+  @JsonKey()
+  String theme;
   @override
-  final Map<String, Folderdata> folders;
-  @JsonKey(defaultValue: const {})
+  @JsonKey()
+  Map<String, Folderdata> folders;
   @override
-  final Map<String, Imagedata> images;
+  @JsonKey()
+  Map<String, Imagedata> images;
 
   @override
   String toString() {
     return 'Userdata(id: $id, name: $name, createdAt: $createdAt, version: $version, theme: $theme, folders: $folders, images: $images)';
   }
 
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is _Userdata &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)) &&
-            (identical(other.name, name) ||
-                const DeepCollectionEquality().equals(other.name, name)) &&
-            (identical(other.createdAt, createdAt) ||
-                const DeepCollectionEquality()
-                    .equals(other.createdAt, createdAt)) &&
-            (identical(other.version, version) ||
-                const DeepCollectionEquality()
-                    .equals(other.version, version)) &&
-            (identical(other.theme, theme) ||
-                const DeepCollectionEquality().equals(other.theme, theme)) &&
-            (identical(other.folders, folders) ||
-                const DeepCollectionEquality()
-                    .equals(other.folders, folders)) &&
-            (identical(other.images, images) ||
-                const DeepCollectionEquality().equals(other.images, images)));
-  }
-
-  @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(id) ^
-      const DeepCollectionEquality().hash(name) ^
-      const DeepCollectionEquality().hash(createdAt) ^
-      const DeepCollectionEquality().hash(version) ^
-      const DeepCollectionEquality().hash(theme) ^
-      const DeepCollectionEquality().hash(folders) ^
-      const DeepCollectionEquality().hash(images);
-
   @JsonKey(ignore: true)
   @override
-  _$UserdataCopyWith<_Userdata> get copyWith =>
-      __$UserdataCopyWithImpl<_Userdata>(this, _$identity);
+  _$$_UserdataCopyWith<_$_Userdata> get copyWith =>
+      __$$_UserdataCopyWithImpl<_$_Userdata>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$_$_UserdataToJson(this);
+    return _$$_UserdataToJson(
+      this,
+    );
   }
 }
 
 abstract class _Userdata implements Userdata {
-  const factory _Userdata(
+  factory _Userdata(
       {required String id,
       required String name,
       required String createdAt,
@@ -292,22 +241,29 @@ abstract class _Userdata implements Userdata {
   factory _Userdata.fromJson(Map<String, dynamic> json) = _$_Userdata.fromJson;
 
   @override
-  String get id => throw _privateConstructorUsedError;
+  String get id;
+  set id(String value);
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
+  set name(String value);
   @override
-  String get createdAt => throw _privateConstructorUsedError;
+  String get createdAt;
+  set createdAt(String value);
   @override
-  String get version => throw _privateConstructorUsedError;
+  String get version;
+  set version(String value);
   @override
-  String get theme => throw _privateConstructorUsedError;
+  String get theme;
+  set theme(String value);
   @override
-  Map<String, Folderdata> get folders => throw _privateConstructorUsedError;
+  Map<String, Folderdata> get folders;
+  set folders(Map<String, Folderdata> value);
   @override
-  Map<String, Imagedata> get images => throw _privateConstructorUsedError;
+  Map<String, Imagedata> get images;
+  set images(Map<String, Imagedata> value);
   @override
   @JsonKey(ignore: true)
-  _$UserdataCopyWith<_Userdata> get copyWith =>
+  _$$_UserdataCopyWith<_$_Userdata> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -316,48 +272,52 @@ Folderdata _$FolderdataFromJson(Map<String, dynamic> json) {
 }
 
 /// @nodoc
-class _$FolderdataTearOff {
-  const _$FolderdataTearOff();
-
-  _Folderdata call(
-      {required String id,
-      required String name,
-      required String createdAt,
-      required String updatedAt,
-      String link = "",
-      String description = "",
-      List<String> label = const [],
-      List<String> imagelist = const []}) {
-    return _Folderdata(
-      id: id,
-      name: name,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-      link: link,
-      description: description,
-      label: label,
-      imagelist: imagelist,
-    );
-  }
-
-  Folderdata fromJson(Map<String, Object> json) {
-    return Folderdata.fromJson(json);
-  }
-}
-
-/// @nodoc
-const $Folderdata = _$FolderdataTearOff();
-
-/// @nodoc
 mixin _$Folderdata {
   String get id => throw _privateConstructorUsedError;
+  set id(String value) => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  set name(String value) => throw _privateConstructorUsedError;
   String get createdAt => throw _privateConstructorUsedError;
+  set createdAt(String value) => throw _privateConstructorUsedError;
   String get updatedAt => throw _privateConstructorUsedError;
-  String get link => throw _privateConstructorUsedError;
-  String get description => throw _privateConstructorUsedError;
-  List<String> get label => throw _privateConstructorUsedError; //multiple label
+  set updatedAt(String value) => throw _privateConstructorUsedError;
+  String get country => throw _privateConstructorUsedError;
+  set country(String value) => throw _privateConstructorUsedError;
+  String get mintageYear => throw _privateConstructorUsedError;
+  set mintageYear(String value) => throw _privateConstructorUsedError;
+  String get grade => throw _privateConstructorUsedError;
+  set grade(String value) => throw _privateConstructorUsedError;
+  String get serial => throw _privateConstructorUsedError;
+  set serial(String value) => throw _privateConstructorUsedError; //110002020
+  String get serialLink => throw _privateConstructorUsedError; //110002020
+  set serialLink(String value) =>
+      throw _privateConstructorUsedError; //https//etc
+  String get purchasePrice => throw _privateConstructorUsedError; //https//etc
+  set purchasePrice(String value) =>
+      throw _privateConstructorUsedError; //currency set by main setting, just numerical, total price of all images
+  String get purchaseDate =>
+      throw _privateConstructorUsedError; //currency set by main setting, just numerical, total price of all images
+  set purchaseDate(String value) => throw _privateConstructorUsedError;
+  String get currentsoldprice => throw _privateConstructorUsedError;
+  set currentsoldprice(String value) => throw _privateConstructorUsedError;
+  String get status => throw _privateConstructorUsedError;
+  set status(String value) =>
+      throw _privateConstructorUsedError; //under auction sold bought?
+  String get storage =>
+      throw _privateConstructorUsedError; //under auction sold bought?
+  set storage(String value) =>
+      throw _privateConstructorUsedError; //where it is stored
+  String get populationLink =>
+      throw _privateConstructorUsedError; //where it is stored
+  set populationLink(String value) =>
+      throw _privateConstructorUsedError; //mapped to a table/link
+  String get remarks =>
+      throw _privateConstructorUsedError; //mapped to a table/link
+  set remarks(String value) => throw _privateConstructorUsedError;
+  List<String> get category => throw _privateConstructorUsedError;
+  set category(List<String> value) => throw _privateConstructorUsedError;
   List<String> get imagelist => throw _privateConstructorUsedError;
+  set imagelist(List<String> value) => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -375,9 +335,19 @@ abstract class $FolderdataCopyWith<$Res> {
       String name,
       String createdAt,
       String updatedAt,
-      String link,
-      String description,
-      List<String> label,
+      String country,
+      String mintageYear,
+      String grade,
+      String serial,
+      String serialLink,
+      String purchasePrice,
+      String purchaseDate,
+      String currentsoldprice,
+      String status,
+      String storage,
+      String populationLink,
+      String remarks,
+      List<String> category,
       List<String> imagelist});
 }
 
@@ -395,9 +365,19 @@ class _$FolderdataCopyWithImpl<$Res> implements $FolderdataCopyWith<$Res> {
     Object? name = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
-    Object? link = freezed,
-    Object? description = freezed,
-    Object? label = freezed,
+    Object? country = freezed,
+    Object? mintageYear = freezed,
+    Object? grade = freezed,
+    Object? serial = freezed,
+    Object? serialLink = freezed,
+    Object? purchasePrice = freezed,
+    Object? purchaseDate = freezed,
+    Object? currentsoldprice = freezed,
+    Object? status = freezed,
+    Object? storage = freezed,
+    Object? populationLink = freezed,
+    Object? remarks = freezed,
+    Object? category = freezed,
     Object? imagelist = freezed,
   }) {
     return _then(_value.copyWith(
@@ -417,17 +397,57 @@ class _$FolderdataCopyWithImpl<$Res> implements $FolderdataCopyWith<$Res> {
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as String,
-      link: link == freezed
-          ? _value.link
-          : link // ignore: cast_nullable_to_non_nullable
+      country: country == freezed
+          ? _value.country
+          : country // ignore: cast_nullable_to_non_nullable
               as String,
-      description: description == freezed
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
+      mintageYear: mintageYear == freezed
+          ? _value.mintageYear
+          : mintageYear // ignore: cast_nullable_to_non_nullable
               as String,
-      label: label == freezed
-          ? _value.label
-          : label // ignore: cast_nullable_to_non_nullable
+      grade: grade == freezed
+          ? _value.grade
+          : grade // ignore: cast_nullable_to_non_nullable
+              as String,
+      serial: serial == freezed
+          ? _value.serial
+          : serial // ignore: cast_nullable_to_non_nullable
+              as String,
+      serialLink: serialLink == freezed
+          ? _value.serialLink
+          : serialLink // ignore: cast_nullable_to_non_nullable
+              as String,
+      purchasePrice: purchasePrice == freezed
+          ? _value.purchasePrice
+          : purchasePrice // ignore: cast_nullable_to_non_nullable
+              as String,
+      purchaseDate: purchaseDate == freezed
+          ? _value.purchaseDate
+          : purchaseDate // ignore: cast_nullable_to_non_nullable
+              as String,
+      currentsoldprice: currentsoldprice == freezed
+          ? _value.currentsoldprice
+          : currentsoldprice // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: status == freezed
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
+      storage: storage == freezed
+          ? _value.storage
+          : storage // ignore: cast_nullable_to_non_nullable
+              as String,
+      populationLink: populationLink == freezed
+          ? _value.populationLink
+          : populationLink // ignore: cast_nullable_to_non_nullable
+              as String,
+      remarks: remarks == freezed
+          ? _value.remarks
+          : remarks // ignore: cast_nullable_to_non_nullable
+              as String,
+      category: category == freezed
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
               as List<String>,
       imagelist: imagelist == freezed
           ? _value.imagelist
@@ -438,31 +458,42 @@ class _$FolderdataCopyWithImpl<$Res> implements $FolderdataCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$FolderdataCopyWith<$Res> implements $FolderdataCopyWith<$Res> {
-  factory _$FolderdataCopyWith(
-          _Folderdata value, $Res Function(_Folderdata) then) =
-      __$FolderdataCopyWithImpl<$Res>;
+abstract class _$$_FolderdataCopyWith<$Res>
+    implements $FolderdataCopyWith<$Res> {
+  factory _$$_FolderdataCopyWith(
+          _$_Folderdata value, $Res Function(_$_Folderdata) then) =
+      __$$_FolderdataCopyWithImpl<$Res>;
   @override
   $Res call(
       {String id,
       String name,
       String createdAt,
       String updatedAt,
-      String link,
-      String description,
-      List<String> label,
+      String country,
+      String mintageYear,
+      String grade,
+      String serial,
+      String serialLink,
+      String purchasePrice,
+      String purchaseDate,
+      String currentsoldprice,
+      String status,
+      String storage,
+      String populationLink,
+      String remarks,
+      List<String> category,
       List<String> imagelist});
 }
 
 /// @nodoc
-class __$FolderdataCopyWithImpl<$Res> extends _$FolderdataCopyWithImpl<$Res>
-    implements _$FolderdataCopyWith<$Res> {
-  __$FolderdataCopyWithImpl(
-      _Folderdata _value, $Res Function(_Folderdata) _then)
-      : super(_value, (v) => _then(v as _Folderdata));
+class __$$_FolderdataCopyWithImpl<$Res> extends _$FolderdataCopyWithImpl<$Res>
+    implements _$$_FolderdataCopyWith<$Res> {
+  __$$_FolderdataCopyWithImpl(
+      _$_Folderdata _value, $Res Function(_$_Folderdata) _then)
+      : super(_value, (v) => _then(v as _$_Folderdata));
 
   @override
-  _Folderdata get _value => super._value as _Folderdata;
+  _$_Folderdata get _value => super._value as _$_Folderdata;
 
   @override
   $Res call({
@@ -470,12 +501,22 @@ class __$FolderdataCopyWithImpl<$Res> extends _$FolderdataCopyWithImpl<$Res>
     Object? name = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
-    Object? link = freezed,
-    Object? description = freezed,
-    Object? label = freezed,
+    Object? country = freezed,
+    Object? mintageYear = freezed,
+    Object? grade = freezed,
+    Object? serial = freezed,
+    Object? serialLink = freezed,
+    Object? purchasePrice = freezed,
+    Object? purchaseDate = freezed,
+    Object? currentsoldprice = freezed,
+    Object? status = freezed,
+    Object? storage = freezed,
+    Object? populationLink = freezed,
+    Object? remarks = freezed,
+    Object? category = freezed,
     Object? imagelist = freezed,
   }) {
-    return _then(_Folderdata(
+    return _then(_$_Folderdata(
       id: id == freezed
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -492,17 +533,57 @@ class __$FolderdataCopyWithImpl<$Res> extends _$FolderdataCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as String,
-      link: link == freezed
-          ? _value.link
-          : link // ignore: cast_nullable_to_non_nullable
+      country: country == freezed
+          ? _value.country
+          : country // ignore: cast_nullable_to_non_nullable
               as String,
-      description: description == freezed
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
+      mintageYear: mintageYear == freezed
+          ? _value.mintageYear
+          : mintageYear // ignore: cast_nullable_to_non_nullable
               as String,
-      label: label == freezed
-          ? _value.label
-          : label // ignore: cast_nullable_to_non_nullable
+      grade: grade == freezed
+          ? _value.grade
+          : grade // ignore: cast_nullable_to_non_nullable
+              as String,
+      serial: serial == freezed
+          ? _value.serial
+          : serial // ignore: cast_nullable_to_non_nullable
+              as String,
+      serialLink: serialLink == freezed
+          ? _value.serialLink
+          : serialLink // ignore: cast_nullable_to_non_nullable
+              as String,
+      purchasePrice: purchasePrice == freezed
+          ? _value.purchasePrice
+          : purchasePrice // ignore: cast_nullable_to_non_nullable
+              as String,
+      purchaseDate: purchaseDate == freezed
+          ? _value.purchaseDate
+          : purchaseDate // ignore: cast_nullable_to_non_nullable
+              as String,
+      currentsoldprice: currentsoldprice == freezed
+          ? _value.currentsoldprice
+          : currentsoldprice // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: status == freezed
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
+      storage: storage == freezed
+          ? _value.storage
+          : storage // ignore: cast_nullable_to_non_nullable
+              as String,
+      populationLink: populationLink == freezed
+          ? _value.populationLink
+          : populationLink // ignore: cast_nullable_to_non_nullable
+              as String,
+      remarks: remarks == freezed
+          ? _value.remarks
+          : remarks // ignore: cast_nullable_to_non_nullable
+              as String,
+      category: category == freezed
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
               as List<String>,
       imagelist: imagelist == freezed
           ? _value.imagelist
@@ -512,133 +593,191 @@ class __$FolderdataCopyWithImpl<$Res> extends _$FolderdataCopyWithImpl<$Res>
   }
 }
 
-@JsonSerializable()
-
 /// @nodoc
+@JsonSerializable()
 class _$_Folderdata extends _Folderdata {
-  const _$_Folderdata(
+  _$_Folderdata(
       {required this.id,
       required this.name,
       required this.createdAt,
       required this.updatedAt,
-      this.link = "",
-      this.description = "",
-      this.label = const [],
+      this.country = "",
+      this.mintageYear = "",
+      this.grade = "",
+      this.serial = "",
+      this.serialLink = "",
+      this.purchasePrice = "",
+      this.purchaseDate = "",
+      this.currentsoldprice = "",
+      this.status = "",
+      this.storage = "",
+      this.populationLink = "",
+      this.remarks = "",
+      this.category = const [],
       this.imagelist = const []})
       : super._();
 
   factory _$_Folderdata.fromJson(Map<String, dynamic> json) =>
-      _$_$_FolderdataFromJson(json);
+      _$$_FolderdataFromJson(json);
 
   @override
-  final String id;
+  String id;
   @override
-  final String name;
+  String name;
   @override
-  final String createdAt;
+  String createdAt;
   @override
-  final String updatedAt;
-  @JsonKey(defaultValue: "")
+  String updatedAt;
   @override
-  final String link;
-  @JsonKey(defaultValue: "")
+  @JsonKey()
+  String country;
   @override
-  final String description;
-  @JsonKey(defaultValue: const [])
+  @JsonKey()
+  String mintageYear;
   @override
-  final List<String> label;
-  @JsonKey(defaultValue: const [])
-  @override //multiple label
-  final List<String> imagelist;
+  @JsonKey()
+  String grade;
+  @override
+  @JsonKey()
+  String serial;
+//110002020
+  @override
+  @JsonKey()
+  String serialLink;
+//https//etc
+  @override
+  @JsonKey()
+  String purchasePrice;
+//currency set by main setting, just numerical, total price of all images
+  @override
+  @JsonKey()
+  String purchaseDate;
+  @override
+  @JsonKey()
+  String currentsoldprice;
+  @override
+  @JsonKey()
+  String status;
+//under auction sold bought?
+  @override
+  @JsonKey()
+  String storage;
+//where it is stored
+  @override
+  @JsonKey()
+  String populationLink;
+//mapped to a table/link
+  @override
+  @JsonKey()
+  String remarks;
+  @override
+  @JsonKey()
+  List<String> category;
+  @override
+  @JsonKey()
+  List<String> imagelist;
 
   @override
   String toString() {
-    return 'Folderdata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, link: $link, description: $description, label: $label, imagelist: $imagelist)';
+    return 'Folderdata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, country: $country, mintageYear: $mintageYear, grade: $grade, serial: $serial, serialLink: $serialLink, purchasePrice: $purchasePrice, purchaseDate: $purchaseDate, currentsoldprice: $currentsoldprice, status: $status, storage: $storage, populationLink: $populationLink, remarks: $remarks, category: $category, imagelist: $imagelist)';
   }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is _Folderdata &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)) &&
-            (identical(other.name, name) ||
-                const DeepCollectionEquality().equals(other.name, name)) &&
-            (identical(other.createdAt, createdAt) ||
-                const DeepCollectionEquality()
-                    .equals(other.createdAt, createdAt)) &&
-            (identical(other.updatedAt, updatedAt) ||
-                const DeepCollectionEquality()
-                    .equals(other.updatedAt, updatedAt)) &&
-            (identical(other.link, link) ||
-                const DeepCollectionEquality().equals(other.link, link)) &&
-            (identical(other.description, description) ||
-                const DeepCollectionEquality()
-                    .equals(other.description, description)) &&
-            (identical(other.label, label) ||
-                const DeepCollectionEquality().equals(other.label, label)) &&
-            (identical(other.imagelist, imagelist) ||
-                const DeepCollectionEquality()
-                    .equals(other.imagelist, imagelist)));
-  }
-
-  @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(id) ^
-      const DeepCollectionEquality().hash(name) ^
-      const DeepCollectionEquality().hash(createdAt) ^
-      const DeepCollectionEquality().hash(updatedAt) ^
-      const DeepCollectionEquality().hash(link) ^
-      const DeepCollectionEquality().hash(description) ^
-      const DeepCollectionEquality().hash(label) ^
-      const DeepCollectionEquality().hash(imagelist);
 
   @JsonKey(ignore: true)
   @override
-  _$FolderdataCopyWith<_Folderdata> get copyWith =>
-      __$FolderdataCopyWithImpl<_Folderdata>(this, _$identity);
+  _$$_FolderdataCopyWith<_$_Folderdata> get copyWith =>
+      __$$_FolderdataCopyWithImpl<_$_Folderdata>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$_$_FolderdataToJson(this);
+    return _$$_FolderdataToJson(
+      this,
+    );
   }
 }
 
 abstract class _Folderdata extends Folderdata {
-  const factory _Folderdata(
+  factory _Folderdata(
       {required String id,
       required String name,
       required String createdAt,
       required String updatedAt,
-      String link,
-      String description,
-      List<String> label,
+      String country,
+      String mintageYear,
+      String grade,
+      String serial,
+      String serialLink,
+      String purchasePrice,
+      String purchaseDate,
+      String currentsoldprice,
+      String status,
+      String storage,
+      String populationLink,
+      String remarks,
+      List<String> category,
       List<String> imagelist}) = _$_Folderdata;
-  const _Folderdata._() : super._();
+  _Folderdata._() : super._();
 
   factory _Folderdata.fromJson(Map<String, dynamic> json) =
       _$_Folderdata.fromJson;
 
   @override
-  String get id => throw _privateConstructorUsedError;
+  String get id;
+  set id(String value);
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
+  set name(String value);
   @override
-  String get createdAt => throw _privateConstructorUsedError;
+  String get createdAt;
+  set createdAt(String value);
   @override
-  String get updatedAt => throw _privateConstructorUsedError;
+  String get updatedAt;
+  set updatedAt(String value);
   @override
-  String get link => throw _privateConstructorUsedError;
+  String get country;
+  set country(String value);
   @override
-  String get description => throw _privateConstructorUsedError;
+  String get mintageYear;
+  set mintageYear(String value);
   @override
-  List<String> get label => throw _privateConstructorUsedError;
-  @override //multiple label
-  List<String> get imagelist => throw _privateConstructorUsedError;
+  String get grade;
+  set grade(String value);
+  @override
+  String get serial;
+  set serial(String value);
+  @override //110002020
+  String get serialLink; //110002020
+  set serialLink(String value);
+  @override //https//etc
+  String get purchasePrice; //https//etc
+  set purchasePrice(String value);
+  @override //currency set by main setting, just numerical, total price of all images
+  String
+      get purchaseDate; //currency set by main setting, just numerical, total price of all images
+  set purchaseDate(String value);
+  @override
+  String get currentsoldprice;
+  set currentsoldprice(String value);
+  @override
+  String get status;
+  set status(String value);
+  @override //under auction sold bought?
+  String get storage; //under auction sold bought?
+  set storage(String value);
+  @override //where it is stored
+  String get populationLink; //where it is stored
+  set populationLink(String value);
+  @override //mapped to a table/link
+  String get remarks; //mapped to a table/link
+  set remarks(String value);
+  @override
+  List<String> get category;
+  set category(List<String> value);
+  @override
+  List<String> get imagelist;
+  set imagelist(List<String> value);
   @override
   @JsonKey(ignore: true)
-  _$FolderdataCopyWith<_Folderdata> get copyWith =>
+  _$$_FolderdataCopyWith<_$_Folderdata> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -647,39 +786,17 @@ Imagedata _$ImagedataFromJson(Map<String, dynamic> json) {
 }
 
 /// @nodoc
-class _$ImagedataTearOff {
-  const _$ImagedataTearOff();
-
-  _Imagedata call(
-      {required String id,
-      required String name,
-      required String createdAt,
-      required String ext,
-      String description = ""}) {
-    return _Imagedata(
-      id: id,
-      name: name,
-      createdAt: createdAt,
-      ext: ext,
-      description: description,
-    );
-  }
-
-  Imagedata fromJson(Map<String, Object> json) {
-    return Imagedata.fromJson(json);
-  }
-}
-
-/// @nodoc
-const $Imagedata = _$ImagedataTearOff();
-
-/// @nodoc
 mixin _$Imagedata {
   String get id => throw _privateConstructorUsedError;
+  set id(String value) => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  set name(String value) => throw _privateConstructorUsedError;
   String get createdAt => throw _privateConstructorUsedError;
+  set createdAt(String value) => throw _privateConstructorUsedError;
   String get ext => throw _privateConstructorUsedError;
+  set ext(String value) => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
+  set description(String value) => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -741,10 +858,10 @@ class _$ImagedataCopyWithImpl<$Res> implements $ImagedataCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$ImagedataCopyWith<$Res> implements $ImagedataCopyWith<$Res> {
-  factory _$ImagedataCopyWith(
-          _Imagedata value, $Res Function(_Imagedata) then) =
-      __$ImagedataCopyWithImpl<$Res>;
+abstract class _$$_ImagedataCopyWith<$Res> implements $ImagedataCopyWith<$Res> {
+  factory _$$_ImagedataCopyWith(
+          _$_Imagedata value, $Res Function(_$_Imagedata) then) =
+      __$$_ImagedataCopyWithImpl<$Res>;
   @override
   $Res call(
       {String id,
@@ -755,13 +872,14 @@ abstract class _$ImagedataCopyWith<$Res> implements $ImagedataCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$ImagedataCopyWithImpl<$Res> extends _$ImagedataCopyWithImpl<$Res>
-    implements _$ImagedataCopyWith<$Res> {
-  __$ImagedataCopyWithImpl(_Imagedata _value, $Res Function(_Imagedata) _then)
-      : super(_value, (v) => _then(v as _Imagedata));
+class __$$_ImagedataCopyWithImpl<$Res> extends _$ImagedataCopyWithImpl<$Res>
+    implements _$$_ImagedataCopyWith<$Res> {
+  __$$_ImagedataCopyWithImpl(
+      _$_Imagedata _value, $Res Function(_$_Imagedata) _then)
+      : super(_value, (v) => _then(v as _$_Imagedata));
 
   @override
-  _Imagedata get _value => super._value as _Imagedata;
+  _$_Imagedata get _value => super._value as _$_Imagedata;
 
   @override
   $Res call({
@@ -771,7 +889,7 @@ class __$ImagedataCopyWithImpl<$Res> extends _$ImagedataCopyWithImpl<$Res>
     Object? ext = freezed,
     Object? description = freezed,
   }) {
-    return _then(_Imagedata(
+    return _then(_$_Imagedata(
       id: id == freezed
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -796,11 +914,10 @@ class __$ImagedataCopyWithImpl<$Res> extends _$ImagedataCopyWithImpl<$Res>
   }
 }
 
-@JsonSerializable()
-
 /// @nodoc
+@JsonSerializable()
 class _$_Imagedata implements _Imagedata {
-  const _$_Imagedata(
+  _$_Imagedata(
       {required this.id,
       required this.name,
       required this.createdAt,
@@ -808,65 +925,40 @@ class _$_Imagedata implements _Imagedata {
       this.description = ""});
 
   factory _$_Imagedata.fromJson(Map<String, dynamic> json) =>
-      _$_$_ImagedataFromJson(json);
+      _$$_ImagedataFromJson(json);
 
   @override
-  final String id;
+  String id;
   @override
-  final String name;
+  String name;
   @override
-  final String createdAt;
+  String createdAt;
   @override
-  final String ext;
-  @JsonKey(defaultValue: "")
+  String ext;
   @override
-  final String description;
+  @JsonKey()
+  String description;
 
   @override
   String toString() {
     return 'Imagedata(id: $id, name: $name, createdAt: $createdAt, ext: $ext, description: $description)';
   }
 
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is _Imagedata &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)) &&
-            (identical(other.name, name) ||
-                const DeepCollectionEquality().equals(other.name, name)) &&
-            (identical(other.createdAt, createdAt) ||
-                const DeepCollectionEquality()
-                    .equals(other.createdAt, createdAt)) &&
-            (identical(other.ext, ext) ||
-                const DeepCollectionEquality().equals(other.ext, ext)) &&
-            (identical(other.description, description) ||
-                const DeepCollectionEquality()
-                    .equals(other.description, description)));
-  }
-
-  @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(id) ^
-      const DeepCollectionEquality().hash(name) ^
-      const DeepCollectionEquality().hash(createdAt) ^
-      const DeepCollectionEquality().hash(ext) ^
-      const DeepCollectionEquality().hash(description);
-
   @JsonKey(ignore: true)
   @override
-  _$ImagedataCopyWith<_Imagedata> get copyWith =>
-      __$ImagedataCopyWithImpl<_Imagedata>(this, _$identity);
+  _$$_ImagedataCopyWith<_$_Imagedata> get copyWith =>
+      __$$_ImagedataCopyWithImpl<_$_Imagedata>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$_$_ImagedataToJson(this);
+    return _$$_ImagedataToJson(
+      this,
+    );
   }
 }
 
 abstract class _Imagedata implements Imagedata {
-  const factory _Imagedata(
+  factory _Imagedata(
       {required String id,
       required String name,
       required String createdAt,
@@ -877,17 +969,22 @@ abstract class _Imagedata implements Imagedata {
       _$_Imagedata.fromJson;
 
   @override
-  String get id => throw _privateConstructorUsedError;
+  String get id;
+  set id(String value);
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
+  set name(String value);
   @override
-  String get createdAt => throw _privateConstructorUsedError;
+  String get createdAt;
+  set createdAt(String value);
   @override
-  String get ext => throw _privateConstructorUsedError;
+  String get ext;
+  set ext(String value);
   @override
-  String get description => throw _privateConstructorUsedError;
+  String get description;
+  set description(String value);
   @override
   @JsonKey(ignore: true)
-  _$ImagedataCopyWith<_Imagedata> get copyWith =>
+  _$$_ImagedataCopyWith<_$_Imagedata> get copyWith =>
       throw _privateConstructorUsedError;
 }

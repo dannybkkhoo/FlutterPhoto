@@ -14,9 +14,9 @@ Note: Must manually add build.yaml file to configure "explicit_to_json: true"
 for json_serializable due to having nested dataclasses. References here:
 https://github.com/rrousselGit/freezed/issues/86
 */
-@freezed
+@unfreezed
 abstract class Userdata with _$Userdata {
-  const factory Userdata({
+  factory Userdata({
     required String id,
     required String name,
     required String createdAt,
@@ -32,18 +32,36 @@ abstract class Userdata with _$Userdata {
 // cause issues when decoding from json, as both key with same name appear in
 // the json data, thus renamed as "imagelist" to better reflect the datatype
 // and also to workaround this issue
-@freezed
+@unfreezed
 abstract class Folderdata with _$Folderdata {
-  const Folderdata._();
+  Folderdata._();
 
-  const factory Folderdata({
+  //Status
+  //-Monitor; to buy but not purchased yet
+  //-Purchased; already paid but haven't receive
+  //-Owned; paid and received
+  //-For Sale; to be sold
+  //-Received Sale Payment; before shipped
+  //-Sold;  done receive payment and shipped
+
+  factory Folderdata({
     required String id,
     required String name,
     required String createdAt,
     required String updatedAt,
-    @Default("") String link,
-    @Default("") String description,
-    @Default([]) List<String> label,  //multiple label
+    @Default("") String country,
+    @Default("") String mintageYear,
+    @Default("") String grade,
+    @Default("") String serial, //110002020
+    @Default("") String serialLink, //https//etc
+    @Default("") String purchasePrice,  //currency set by main setting, just numerical, total price of all images
+    @Default("") String purchaseDate,
+    @Default("") String currentsoldprice,
+    @Default("") String status, //under auction sold bought?
+    @Default("") String storage,  //where it is stored
+    @Default("") String populationLink, //mapped to a table/link
+    @Default("") String remarks,
+    @Default([]) List<String> category,
     @Default([]) List<String> imagelist,
   }) = _Folderdata;
 
@@ -52,17 +70,15 @@ abstract class Folderdata with _$Folderdata {
     return {
       'name': name,
       'updatedAt': updatedAt,
-      'label': label,
-      'description': description,
     };
   }
 
   factory Folderdata.fromJson(Map<String,dynamic> json) => _$FolderdataFromJson(json);
 }
 
-@freezed
+@unfreezed
 abstract class Imagedata with _$Imagedata {
-  const factory Imagedata({
+  factory Imagedata({
     required String id,
     required String name,
     required String createdAt,
