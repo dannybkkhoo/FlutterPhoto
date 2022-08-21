@@ -9,35 +9,7 @@ import '../providers/userdata_provider.dart';
 
 //create addfolder page with tabs (for each detail for user to fill)
 
-Widget detailTab({required BuildContext context, required String labelText, required String hintText, String? errorText = null, List<TextInputFormatter>? inputFormatters = null, Function(String)? onChanged}) {
 
-  final TextTheme hintStyle = Theme.of(context).textTheme.copyWith(
-    subtitle2: TextStyle(color: Color(0xFFCCCCCC)),
-  );
-  final TextTheme errorStyle = Theme.of(context).textTheme.copyWith(
-    subtitle2: TextStyle(color: Colors.red),
-  );
-
-  return Align(
-    alignment: Alignment.topCenter,
-    child: Container(
-      padding: const EdgeInsets.fromLTRB(3.0,0.0,3.0,0.0),
-      child: TextField(
-        autofocus: true,
-        decoration: InputDecoration(
-          labelText: labelText,
-          labelStyle: Theme.of(context).textTheme.subtitle1,
-          hintText: hintText,
-          hintStyle: hintStyle.subtitle2,
-          errorText: errorText,
-          errorStyle: errorStyle.subtitle2,
-        ),
-        inputFormatters: inputFormatters,
-        onChanged: onChanged,
-      ),
-    ),
-  );
-}
 
 class AddFolder extends ConsumerStatefulWidget {
   @override
@@ -47,6 +19,114 @@ class AddFolder extends ConsumerStatefulWidget {
 class _AddFolderState extends ConsumerState<AddFolder> {
   List<String> category = [];
   late ScrollController _scrollController;
+  String temp = "A";
+
+  PreferredSizeWidget? appBar(){
+    return PreferredSize(
+      preferredSize: Size(
+        MediaQuery.of(context).size.width,
+        MediaQuery.of(context).size.height*0.07 //same as bottom appbar (also same as constraints.maxHeight*0.07)
+      ),
+      child: AppBar(
+          automaticallyImplyLeading: false,
+          titleSpacing: 10.0, //same as detailTab
+          title: Text("Create new folder...", style: Theme.of(context).textTheme.headline6),
+          actions: [
+            Padding(
+              padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).dividerColor,
+                  elevation: 10.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(3.0)),
+                  )
+                ),
+                child: Text("Reset", style: Theme.of(context).textTheme.headline6),
+                onPressed: () => print("Hello"),
+              ),
+            )
+          ]
+      ),
+    );
+  }
+
+  Widget detailTab({required BuildContext context, required String labelText, required String hintText, String? errorText = null, List<TextInputFormatter>? inputFormatters = null, Function(String)? onChanged}) {
+
+    final TextTheme hintStyle = Theme.of(context).textTheme.copyWith(
+      subtitle2: TextStyle(color: Color(0xFFCCCCCC)),
+    );
+    final TextTheme errorStyle = Theme.of(context).textTheme.copyWith(
+      subtitle2: TextStyle(color: Colors.red),
+    );
+
+    return Align(
+      alignment: Alignment.topCenter,
+      child: Container(
+        height: MediaQuery.of(context).size.height*0.07,
+        padding: const EdgeInsets.fromLTRB(10.0,0.0,10.0,0.0),
+        child: TextField(
+          autofocus: true,
+          decoration: InputDecoration(
+            labelText: labelText,
+            labelStyle: Theme.of(context).textTheme.subtitle1,
+            hintText: hintText,
+            hintStyle: hintStyle.subtitle2,
+            errorText: errorText,
+            errorStyle: errorStyle.subtitle2,
+          ),
+          inputFormatters: inputFormatters,
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+
+  BottomAppBar bottomAppBar(){
+    return BottomAppBar(
+      color: Theme.of(context).primaryColor,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Container(
+            height: constraints.maxHeight*0.07,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Theme.of(context).dividerColor,
+                      elevation: 10.0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3.0))
+                      )
+                    ),
+                    child: Text("Done", style: Theme.of(context).textTheme.headline6),
+                    onPressed: () => print("Hello"),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Theme.of(context).dividerColor,
+                      elevation: 10.0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3.0))
+                      )
+                    ),
+                    child: Text("Cancel", style: Theme.of(context).textTheme.headline6),
+                    onPressed: () => print("Hello"),
+                  ),
+                )
+              ],
+            ),
+          );
+        }
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -70,9 +150,8 @@ class _AddFolderState extends ConsumerState<AddFolder> {
         return true;
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        //appBar: reset button,
-        //bottomNavigationBar: OK and cancel button,
+        appBar: appBar(),
+        bottomNavigationBar: bottomAppBar(),
         body: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -87,7 +166,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                     children: [
                       detailTab(
                         context: context,
-                        labelText: "FOLDER NAME:",
+                        labelText: "Folder Name:",
                         hintText: "eg. myFolder",
                         errorText: (tapped & !validated) ? errormsg: null,
                         inputFormatters: [FilteringTextInputFormatter(RegExp("[a-zA-Z0-9_]"), allow: true)],
@@ -112,13 +191,33 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                       ),
                       detailTab(
                         context: context,
-                        labelText: "Country:",
+                        labelText: "Country Grouping:",
                         hintText: "eg. Malaysia",
                         onChanged: (text) {
                           setState(() {
                             tempFolder.country = text;
                           });
                         }
+                      ),
+                      detailTab(
+                          context: context,
+                          labelText: "Country Or Type:",
+                          hintText: "eg. US-Half Cents",
+                          onChanged: (text) {
+                            setState(() {
+                              tempFolder.country = text;
+                            });
+                          }
+                      ),
+                      detailTab(
+                          context: context,
+                          labelText: "Denomination:",
+                          hintText: "eg. CENT",
+                          onChanged: (text) {
+                            setState(() {
+                              tempFolder.mintageYear = text;
+                            });
+                          }
                       ),
                       detailTab(
                         context: context,
@@ -139,6 +238,143 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                             tempFolder.grade = text;
                           });
                         }
+                      ),
+                      detailTab(
+                          context: context,
+                          labelText: "Serial:",
+                          hintText: "eg. 110002020",
+                          onChanged: (text) {
+                            setState(() {
+                              tempFolder.mintageYear = text;
+                            });
+                          }
+                      ),
+                      detailTab(
+                          context: context,
+                          labelText: "Serial Link:",
+                          hintText: "eg. https://www.ngccoin.com/world/malaya-and-malaysia/sc-207/cent/",
+                          onChanged: (text) {
+                            setState(() {
+                              tempFolder.mintageYear = text;
+                            });
+                          }
+                      ),
+                      detailTab(
+                          context: context,
+                          labelText: "Purchase Price:",
+                          hintText: "eg. USD 100",
+                          onChanged: (text) {
+                            setState(() {
+                              tempFolder.mintageYear = text;
+                            });
+                          }
+                      ),
+                      detailTab(
+                          context: context,
+                          labelText: "Purchase Date",
+                          hintText: "eg. 12/8/2021",
+                          onChanged: (text) {
+                            setState(() {
+                              tempFolder.mintageYear = text;
+                            });
+                          }
+                      ),
+                      detailTab(
+                          context: context,
+                          labelText: "Current Price/Sold Price:",
+                          hintText: "eg. USD 200",
+                          onChanged: (text) {
+                            setState(() {
+                              tempFolder.mintageYear = text;
+                            });
+                          }
+                      ),
+                      detailTab(
+                          context: context,
+                          labelText: "Sold Date:",
+                          hintText: "eg. 31/8/2021",
+                          onChanged: (text) {
+                            setState(() {
+                              tempFolder.mintageYear = text;
+                            });
+                          }
+                      ),
+                      detailTab(
+                          context: context,
+                          labelText: "Status:",
+                          hintText: "eg. Owned",
+                          onChanged: (text) {
+                            setState(() {
+                              tempFolder.mintageYear = text;
+                            });
+                          }
+                      ),
+                      detailTab(
+                          context: context,
+                          labelText: "Storage:",
+                          hintText: "eg. Where it is stored (in Safe)",
+                          onChanged: (text) {
+                            setState(() {
+                              tempFolder.mintageYear = text;
+                            });
+                          }
+                      ),
+                      detailTab(
+                          context: context,
+                          labelText: "Population Link:",
+                          hintText: "eg. https://www.pmgnotes.com/population-report/malaya-and-malaysia/malaysia/1000-ringgit/",
+                          onChanged: (text) {
+                            setState(() {
+                              tempFolder.mintageYear = text;
+                            });
+                          }
+                      ),
+                      detailTab(
+                          context: context,
+                          labelText: "Remarks:",
+                          hintText: "eg. To be sent out",
+                          onChanged: (text) {
+                            setState(() {
+                              tempFolder.mintageYear = text;
+                            });
+                          }
+                      ),
+                      Container(
+                        height: constraints.maxHeight*0.07,
+                        width: constraints.maxWidth,
+                        child: Row(
+                          children: [
+                            // detailTab(
+                            //     context: context,
+                            //     labelText: "Testing:",
+                            //     hintText: "Testing also",
+                            //     onChanged: (text) {
+                            //       setState(() {
+                            //
+                            //       });
+                            //     }
+                            // ),
+                            Container(
+                              height: constraints.maxHeight*0.07,
+                              width: constraints.maxWidth*0.07,
+                              child: DropdownButton<String>(
+                                isExpanded: true,
+                                icon: Icon(Icons.arrow_drop_down),
+                                value: temp,
+                                items: [
+                                  DropdownMenuItem(child: Text("A"), value: "A"),
+                                  DropdownMenuItem(child: Text("B"), value: "B"),
+                                  DropdownMenuItem(child: Text("C"), value: "C")
+                                ],
+                                  onChanged: (String? selection) {
+                                    setState(() {
+
+                                    });
+                                  }
+                              ),
+                            )
+                          ]
+                        ),
                       )
                     ]
                   )
