@@ -32,7 +32,7 @@ class InitializationPageState extends ConsumerState<InitializationPage> {
   void initState(){
     super.initState();
     Screen().portrait();
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ref.read(initializationProvider).initializeAndLoad();
     });
   }
