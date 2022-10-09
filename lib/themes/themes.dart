@@ -115,6 +115,7 @@ class AppTheme {
         secondaryContainer: shift(accent1, .1),
         background: bg1,
         surface: surface1,
+        inverseSurface: surface2,
         onBackground: mainTextColor,
         onSurface: mainTextColor,
         onError: mainTextColor,

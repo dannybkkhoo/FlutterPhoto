@@ -1,326 +1,253 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-//Originally from dropdownfield 1.0.3, library not updated/supported anymore, https://pub.dev/packages/dropdownfield/versions
-///DropDownField has customized autocomplete text field functionality
-///
-///Parameters
-///
-///value - dynamic - Optional value to be set into the Dropdown field by default when this field renders
-///
-///icon - Widget - Optional icon to be shown to the left of the Dropdown field
-///
-///hintText - String - Optional Hint text to be shown
-///
-///hintStyle - TextStyle - Optional styling for Hint text. Default is normal, gray colored font of size 18.0
-///
-///labelText - String - Optional Label text to be shown
-///
-///labelStyle - TextStyle - Optional styling for Label text. Default is normal, gray colored font of size 18.0
-///
-///required - bool - True will validate that this field has a non-null/non-empty value. Default is false
-///
-///enabled - bool - False will disable the field. You can unset this to use the Dropdown field as a read only form field. Default is true
-///
-///items - List<dynamic> - List of items to be shown as suggestions in the Dropdown. Typically a list of String values.
-///You can supply a static list of values or pass in a dynamic list using a FutureBuilder
-///
-///textStyle - TextStyle - Optional styling for text shown in the Dropdown. Default is bold, black colored font of size 14.0
-///
-///inputFormatters - List<TextInputFormatter> - Optional list of TextInputFormatter to format the text field
-///
-///setter - FormFieldSetter<dynamic> - Optional implementation of your setter method. Will be called internally by Form.save() method
-///
-///onValueChanged - ValueChanged<dynamic> - Optional implementation of code that needs to be executed when the value in the Dropdown
-///field is changed
-///
-///strict - bool - True will validate if the value in this dropdown is amongst those suggestions listed.
-///False will let user type in new values as well. Default is true
-///
-///itemsVisibleInDropdown - int - Number of suggestions to be shown by default in the Dropdown after which the list scrolls. Defaults to 3
-class DropDownField extends FormField<String> {
-  final dynamic value;
-  final Widget? icon;
-  final String? hintText;
-  final TextStyle hintStyle;
-  final String? labelText;
-  final TextStyle labelStyle;
-  final String? errorText;
-  final TextStyle errorStyle;
-  final TextStyle textStyle;
-  final bool required;
-  final bool enabled;
-  final List<dynamic> items;
+class DropDownField extends StatefulWidget {
+  final String initialValue;              //To define default filled in value of dropdownfield    [default: ""]
+  final Widget? icon;                     //Icon in front of the tab                              [default: null]
+  final TextStyle? labelStyle;
+  final String labelText;
+  final TextStyle? hintStyle;
+  final String hintText;
+  final TextStyle? errorStyle;
+  final String errorText;
+  final TextInputType keyboardType;       //To define the type of keyboard the user can use       [default: TextInputType.text]
+  final bool enabled;                     //To define if the dropdownfield is enabled or not      [default: true]
+  final bool required;                    //To define if the dropdownfield is required to fill in [default: false]
+  final bool strict;                      //To define if user must only select from dropdownlist  [default: false]
+  final int? maxItemsVisibleInDropdown;   //Max number of items visible in dropdown               [default: 3]
+  final double normalHeight;              //Height of dropdownTab when dropdown is not shown
+  final List<String> items;               //By default will have empty string list                [default: []]
   final List<TextInputFormatter>? inputFormatters;
-  final FormFieldSetter<dynamic>? setter;
-  final ValueChanged<dynamic>? onValueChanged;
-  final bool strict;
-  final int itemsVisibleInDropdown;
-
-  /// Controls the text being edited.
-  ///
-  /// If null, this widget will create its own [TextEditingController] and
-  /// initialize its [TextEditingController.text] with [initialValue].
-  TextEditingController? controller;
+  final FormFieldSetter<String>? onSaved; //To save the value in the textformfield to a variable  [default: null]
+  final bool Function(String)? validator; //To define the validator when user input text          [default: null]
 
   DropDownField(
-      {Key? key,
-        this.controller,
-        this.value,
-        this.required: false,
+      {
+        Key? key,
+        this.initialValue = "",
         this.icon,
-        this.hintText,
-        this.hintStyle: const TextStyle(fontWeight: FontWeight.normal, color: Colors.grey, fontSize: 18.0),
-        this.labelText,
-        this.labelStyle: const TextStyle(fontWeight: FontWeight.normal, color: Colors.grey, fontSize: 18.0),
-        this.errorText,
-        this.errorStyle: const TextStyle(fontWeight: FontWeight.normal, color: Colors.red, fontSize: 18.0),
+        this.labelStyle = const TextStyle(fontWeight: FontWeight.normal, color: Colors.grey, fontSize: 18.0),
+        this.labelText = "",
+        this.hintStyle = const TextStyle(fontWeight: FontWeight.normal, color: Colors.grey, fontSize: 18.0),
+        this.hintText = "",
+        this.errorStyle = const TextStyle(fontWeight: FontWeight.normal, color: Colors.red, fontSize: 18.0),
+        this.errorText = "",
+        this.keyboardType = TextInputType.text,
+        this.enabled = true,
+        this.required = false,
+        this.strict = false,
+        this.maxItemsVisibleInDropdown,
+        this.normalHeight = 100,
+        this.items = const <String>[],
         this.inputFormatters,
-        this.items: const <String>[], //By default will have an empty string list
-        this.textStyle: const TextStyle(fontWeight: FontWeight.normal, color: Colors.grey, fontSize: 18.0),
-        this.setter,
-        this.onValueChanged,
-        this.itemsVisibleInDropdown: 3,
-        this.enabled: true,
-        this.strict: true
+        this.onSaved = null,
+        this.validator = null,
       }
-    ) :
-    super(
-      key: key,
-      autovalidateMode: AutovalidateMode.disabled,
-      initialValue: controller != null ? controller.text : (value ?? ''),
-      onSaved: setter,
-      builder: (DropDownFieldState field) {
-        final DropDownFieldState state = field;
-        final ScrollController _scrollController = ScrollController();
-        final InputDecoration effectiveDecoration = InputDecoration(
-          border: InputBorder.none,
-          fillColor: Colors.white,
-          filled: true,
-          icon: icon,
-          suffixIcon: IconButton(
-            icon: Icon(Icons.arrow_drop_down, size: 30.0, color: Colors.black),
-            onPressed: () {
-              FocusManager.instance.primaryFocus?.unfocus();
-              //SystemChannels.textInput.invokeMethod('TextInput.hide');
-              state.setState(() {
-                state._showdropdown = !state._showdropdown;
-              });
-            }),
-          hintStyle: hintStyle,
-          labelStyle: labelStyle,
-          hintText: hintText,
-          labelText: labelText,
-          errorStyle: errorStyle,
-          errorText: errorText,
-        );
-
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: TextFormField(
-                    onChanged: (text) {
-                      print("HMM");
-                    },
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    controller: state._effectiveController,
-                    decoration: effectiveDecoration.copyWith(
-                        errorText: field.errorText,
-                        counterText: ""
-                    ),
-                    style: textStyle,
-                    textAlign: TextAlign.start,
-                    autofocus: false,
-                    obscureText: false,
-                    maxLength: 30,
-                    maxLengthEnforcement: MaxLengthEnforcement.truncateAfterCompositionEnds,
-                    maxLines: 1,
-                    validator: (String newValue) {
-                      if (required) {
-                        if (newValue == null || newValue.isEmpty)
-                          return 'This field cannot be empty!';
-                      }
-
-                      //Items null check added since there could be an initial brief period of time
-                      //when the dropdown items will not have been loaded
-                      if (items != null) {
-                        if (strict &&
-                            newValue.isNotEmpty &&
-                            !items.contains(newValue))
-                          return 'Invalid value in this field!';
-                      }
-
-                      return null;
-                    },
-                    onSaved: setter,
-                    enabled: enabled,
-                    inputFormatters: inputFormatters,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () {
-                    if (!enabled) return;
-                    state.clearValue();
-                    state.setState(() {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      //SystemChannels.textInput.invokeMethod('TextInput.hide');
-                      state._showdropdown = !state._showdropdown;
-                    });
-                  },
-                )
-              ],
-            ),
-            !state._showdropdown
-              ? Container()
-              : Container(
-                alignment: Alignment.topLeft,
-                height: itemsVisibleInDropdown * 48.0, //limit to default 3 items in dropdownlist view and then remaining scrolls
-                width: MediaQuery.of(field.context).size.width,
-                child: ListView(
-                  cacheExtent: 0.0,
-                  scrollDirection: Axis.vertical,
-                  controller: _scrollController,
-                  padding: EdgeInsets.only(left: 20.0),
-                  children: items.isNotEmpty
-                    ? ListTile.divideTiles(
-                    context: field.context,
-                    tiles: state._getChildren(state._items))
-                    .toList()
-                    : <String>[],
-            ),
-            ),
-          ],
-        );
-      },
-  );
+      ) : super(key: key);
 
   @override
-  DropDownFieldState createState() => DropDownFieldState();
+  _DropDownFieldState createState() => _DropDownFieldState();
 }
 
-class DropDownFieldState extends FormFieldState<String> {
-  late TextEditingController _controller;
+class _DropDownFieldState extends State<DropDownField> {
   bool _showdropdown = false;
-  bool _isSearching = true;
-  String _searchText = "";
+  bool _hasError = false;
+  String _errorText = "";
+  int _itemsVisibleInDropdown = 0;
+  TextEditingController _textController = TextEditingController();
+  List test = <String>[];
 
-  @override
-  //DropDownField get widget => super.widget;
-  FormField<String> get widget => super.widget;
-  TextEditingController get _effectiveController => widget.controller ?? _controller;
-
-  List<String> get _items => widget.items.map((dynamic item) => item as String).toList();
-
-  void toggleDropDownVisibility() {}
-
-  void clearValue() {
-    setState(() {
-      _effectiveController.text = '';
-    });
+  ListTile _getListTile(String text) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      dense: true,
+      title: Text(
+        text,
+        style: widget.labelStyle,
+      ),
+      onTap: () {
+        setState(() {
+          _textController.text = text;
+          _showdropdown = false;
+        });
+      },
+      focusColor: Colors.blue,
+    );
   }
 
-  @override
-  void didUpdateWidget(DropDownField oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.controller != oldWidget.controller) {
-      oldWidget.controller?.removeListener(_handleControllerChanged);
-      widget.controller?.addListener(_handleControllerChanged);
+  ListTile _notFoundTile() {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      dense: true,
+      title: Text(
+        "No match found...",
+        style: widget.errorStyle,
+      ),
+    );
+  }
 
-      if (oldWidget.controller != null && widget.controller == null)
-        _controller =
-            TextEditingController.fromValue(oldWidget.controller.value);
-      if (widget.controller != null) {
-        setValue(widget.controller.text);
-        if (oldWidget.controller == null) _controller = null;
+  List<ListTile> _getChildren(List<String> items) {
+    List<ListTile> childItems = [];
+    for (var item in items) {
+      if (_textController.text.isNotEmpty) {
+        if (item.toUpperCase().contains(_textController.text.toUpperCase())) {
+          childItems.add(_getListTile(item));
+        }
+      }
+      else {
+        childItems.add(_getListTile(item));
       }
     }
+
+    if(childItems.isEmpty) {
+      childItems.add(_notFoundTile());
+    }
+
+    _itemsVisibleInDropdown = childItems.length;
+    return childItems;
   }
 
   @override
   void dispose() {
-    widget.controller?.removeListener(_handleControllerChanged);
+    _textController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    _isSearching = false;
-    if (widget.controller == null) {
-      _controller = TextEditingController(text: widget.initialValue);
-    }
+    _textController.text = widget.initialValue;
+    _textController.addListener((){
+      setState(() {
 
-    _effectiveController.addListener(_handleControllerChanged);
-
-    _searchText = _effectiveController.text;
-  }
-
-  @override
-  void reset() {
-    super.reset();
-    setState(() {
-      _effectiveController.text = widget.initialValue;
+      });
     });
   }
 
-  List<ListTile> _getChildren(List<String> items) {
-    List<ListTile> childItems = [];
-    for (var item in items) {
-      if (_searchText.isNotEmpty) {
-        if (item.toUpperCase().contains(_searchText.toUpperCase()))
-          childItems.add(_getListTile(item));
-      } else {
-        childItems.add(_getListTile(item));
-      }
-    }
-    //_isSearching ? childItems : List();
-    return childItems;
-  }
+  @override
+  Widget build(BuildContext context) {
+    final ScrollController _scrollController = ScrollController();
+    return SafeArea(
+      child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Theme.of(context).colorScheme.inverseSurface),
+                borderRadius: BorderRadius.all(Radius.circular(13.0)),
+                color: Theme.of(context).colorScheme.surface,
+              ),
+              margin: EdgeInsets.fromLTRB(3.0, 1.0, 3.0, 1.0),
+              child: Column(
+                children: [
+                  TextFormField(
+                    autofocus: false,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    controller: _textController,
+                    decoration: InputDecoration(
+                        counterText: "",
+                        contentPadding: EdgeInsets.only(left: 10.0),
+                        errorText: _hasError?_errorText:null,
+                        errorStyle: widget.errorStyle,
+                        enabledBorder: UnderlineInputBorder(
+                            borderRadius: BorderRadius.circular(13.0),
+                            borderSide: BorderSide(color: Theme.of(context).colorScheme.inverseSurface, width: 3.0)
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                            borderRadius: BorderRadius.circular(13.0),
+                            borderSide: BorderSide(color: Theme.of(context).colorScheme.inverseSurface, width: 3.0)
+                        ),
+                        hintText: widget.hintText,
+                        hintStyle: widget.hintStyle,
+                        icon: widget.icon,
+                        isDense: true,
+                        labelText: widget.labelText,
+                        labelStyle: widget.labelStyle,
+                        suffixIcon: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              color: Theme.of(context).colorScheme.inverseSurface,
+                              icon: Icon(Icons.arrow_drop_down, size: 30.0),
+                              onPressed: () {
+                                setState(() {
+                                  _showdropdown = !_showdropdown;
+                                });
+                              },
+                            ),
+                            IconButton(
+                              color: Theme.of(context).colorScheme.inverseSurface,
+                              icon: Icon(Icons.close, size: 30.0),
+                              onPressed: () {
+                                setState(() {
+                                  _textController.text = "";
+                                });
+                              },
+                            ),
+                          ],
+                        )
+                    ),
+                    inputFormatters: widget.inputFormatters,
+                    keyboardType: widget.keyboardType,
+                    onSaved: widget.onSaved,
+                    validator: (String? text) {
+                      //If user states "Required", check if field is empty or not
+                      if (widget.required) {
+                        if (text == null || text.isEmpty) {
+                          _hasError = true;
+                          _errorText = "This field must not be empty!";
+                          return _errorText;
+                        }
+                      }
 
-  ListTile _getListTile(String text) {
-    return ListTile(
-      dense: true,
-      title: Text(
-        text,
+                      //Items null check added since there could be an initial brief period of time when the dropdown items will not have been loaded
+                      if (widget.items != null) {
+                        if (widget.strict && text != null && text.isNotEmpty && !widget.items.contains(text)) {
+                          _hasError = true;
+                          _errorText = "Invalid value in this field!";
+                          return _errorText;
+                        }
+                      }
+
+                      //If user defined a validator, check against it
+                      if (widget.validator != null) {
+                        if (!widget.validator!(text!)){
+                          _hasError = true;
+                          _errorText = widget.errorText;
+                          return _errorText;
+                        }
+                      }
+
+                      //If all validator passed, return null
+                      _hasError = false;
+                      _errorText = "";
+                      return null;
+                    },
+                  ),
+                  if(_showdropdown) ... [
+                    Container(
+                      alignment: Alignment.center,
+                      child: Scrollbar(
+                        child: ListView(
+                          cacheExtent: 0.0,
+                          children: _getChildren(widget.items),
+                          controller: _scrollController,
+                          padding: EdgeInsets.only(left:20.0),
+                          scrollDirection: Axis.vertical,
+                        ),
+                        controller: _scrollController,
+                        thickness: 3.0,
+                        thumbVisibility: true,
+                      ),
+                      height: _itemsVisibleInDropdown * widget.normalHeight * 0.85,
+                      width: constraints.maxWidth,
+                      padding: EdgeInsets.only(right: 3.0),
+                    )
+                  ]
+                ],
+              ),
+            );
+          }
       ),
-      onTap: () {
-        setState(() {
-          _effectiveController.text = text;
-          _handleControllerChanged();
-          _showdropdown = false;
-          _isSearching = false;
-          if (widget.onValueChanged != null) widget.onValueChanged(text);
-        });
-      },
     );
-  }
-
-  void _handleControllerChanged() {
-    // Suppress changes that originated from within this class.
-    //
-    // In the case where a controller has been passed in to this widget, we
-    // register this change listener. In these cases, we'll also receive change
-    // notifications for changes originating from within this class -- for
-    // example, the reset() method. In such cases, the FormField value will
-    // already have been set.
-    if (_effectiveController.text != value)
-      didChange(_effectiveController.text);
-
-    if (_effectiveController.text.isEmpty) {
-      setState(() {
-        _isSearching = false;
-        _searchText = "";
-      });
-    } else {
-      setState(() {
-        _isSearching = true;
-        _searchText = _effectiveController.text;
-        _showdropdown = true;
-      });
-    }
   }
 }

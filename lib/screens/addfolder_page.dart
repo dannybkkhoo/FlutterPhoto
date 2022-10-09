@@ -7,7 +7,7 @@ import '../bloc/userdata.dart';
 import '../providers/top_level_providers.dart';
 import '../providers/auth_provider.dart';
 import '../providers/userdata_provider.dart';
-import '../ui_components/dropdown_button2.dart';
+import '../ui_components/dropdown_button.dart';
 
 //create addfolder page with tabs (for each detail for user to fill)
 
@@ -65,6 +65,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
     return Align(
       alignment: Alignment.topCenter,
       child: Container(
+        color: Theme.of(context).colorScheme.surface,
         height: MediaQuery.of(context).size.height*0.07,
         padding: const EdgeInsets.fromLTRB(10.0,0.0,10.0,0.0),
         child: TextField(
@@ -84,7 +85,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
     );
   }
 
-  Widget dropdownTab({required BuildContext context, required String labelText, required String hintText, String? errorText = null, String? value = "", List<TextInputFormatter>? inputFormatters = null, Function(String)? onChanged, List<dynamic>? items = null}) {
+  Widget dropdownTab({required BuildContext context, required String labelText, required String hintText, String errorText = "", String value = "", List<TextInputFormatter>? inputFormatters = null, Function(String)? onChanged, List<String> items = const []}) {
     final TextTheme hintStyle = Theme.of(context).textTheme.copyWith(
       subtitle2: TextStyle(color: Color(0xFFCCCCCC)),
     );
@@ -92,17 +93,22 @@ class _AddFolderState extends ConsumerState<AddFolder> {
       subtitle2: TextStyle(color: Colors.red),
     );
 
-    return Container(
-      color: Colors.white,
-      child: DropDownField(
-        labelText: labelText,
-        labelStyle: Theme.of(context).textTheme.subtitle1,
-        hintText: hintText,
-        hintStyle: hintStyle.subtitle2,
-        errorText: errorText,
-        errorStyle: errorStyle.subtitle2,
-        initialValue: value,
-        items: items,
+    return Align(
+      alignment: Alignment.topCenter,
+      child: Container(
+        // color: Theme.of(context).colorScheme.inverseSurface,
+        padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+        child: DropDownField(
+          labelText: labelText,
+          labelStyle: Theme.of(context).textTheme.subtitle1,
+          hintText: hintText,
+          hintStyle: hintStyle.subtitle2,
+          errorText: errorText,
+          errorStyle: errorStyle.subtitle2,
+          initialValue: value,
+          items: items,
+          normalHeight: MediaQuery.of(context).size.height*0.07,
+        ),
       ),
     );
   }
@@ -383,44 +389,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           "M",
                           "US",
                         ]
-                      )
-                      // Container(
-                      //   height: constraints.maxHeight*0.07,
-                      //   width: constraints.maxWidth,
-                      //   child: Row(
-                      //     children: [
-                      //       detailTab(
-                      //           context: context,
-                      //           labelText: "Testing:",
-                      //           hintText: "Testing also",
-                      //           onChanged: (text) {
-                      //             setState(() {
-                      //
-                      //             });
-                      //           }
-                      //       ),
-                      //       Container(
-                      //         height: constraints.maxHeight*0.07,
-                      //         width: constraints.maxWidth*0.07,
-                      //         child: DropdownButton<String>(
-                      //           isExpanded: true,
-                      //           icon: Icon(Icons.arrow_drop_down),
-                      //           value: temp,
-                      //           items: [
-                      //             DropdownMenuItem(child: Text("A"), value: "A"),
-                      //             DropdownMenuItem(child: Text("B"), value: "B"),
-                      //             DropdownMenuItem(child: Text("C"), value: "C")
-                      //           ],
-                      //             onChanged: (String? selection) {
-                      //               setState(() {
-                      //
-                      //               });
-                      //             }
-                      //         ),
-                      //       )
-                      //     ]
-                      //   ),
-                      // ),
+                      ),
                     ]
                   )
                 ),
