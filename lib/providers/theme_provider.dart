@@ -6,7 +6,7 @@ class ThemeProvider with ChangeNotifier {
   ThemeType _type;
   ThemeData _theme = ThemeData();         //initialize as normal ThemeData just to avoid _theme == null
 
-  ThemeProvider([this._type = ThemeType.Light]){
+  ThemeProvider([this._type = ThemeType.LightPurple]){
     _theme = AppTheme.fromType(_type).toThemeData();
   }
 

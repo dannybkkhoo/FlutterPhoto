@@ -110,9 +110,10 @@ class DebugPage extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.Light), child: Text("Light")),
-                          ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.Dark), child: Text("Dark")),
-                          ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.Purple), child: Text("Purple"))
+                          ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.LightBlue), child: Text("LightBlue")),
+                          ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.DarkBlue), child: Text("DarkBlue")),
+                          ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.LightPurple), child: Text("LightPurple")),
+                          ElevatedButton(onPressed: () => theme.changeTheme(ThemeType.DarkPurple), child: Text("DarkPurple"))
                         ],
                       ),
                       Row(

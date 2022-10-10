@@ -10,9 +10,6 @@ import '../providers/userdata_provider.dart';
 import '../ui_components/dropdown_button.dart';
 
 //create addfolder page with tabs (for each detail for user to fill)
-
-
-
 class AddFolder extends ConsumerStatefulWidget {
   @override
   _AddFolderState createState() => _AddFolderState();
@@ -21,8 +18,6 @@ class AddFolder extends ConsumerStatefulWidget {
 class _AddFolderState extends ConsumerState<AddFolder> {
   List<String> category = [];
   late ScrollController _scrollController;
-  String temp = "A";
-
   PreferredSizeWidget? appBar(){
     return PreferredSize(
       preferredSize: Size(
@@ -30,92 +25,33 @@ class _AddFolderState extends ConsumerState<AddFolder> {
         MediaQuery.of(context).size.height*0.07 //same as bottom appbar (also same as constraints.maxHeight*0.07)
       ),
       child: AppBar(
-          automaticallyImplyLeading: false,
-          titleSpacing: 10.0, //same as detailTab
-          title: Text("Create new folder...", style: Theme.of(context).textTheme.headline6),
-          actions: [
-            Padding(
-              padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).dividerColor,
-                  elevation: 10.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(3.0)),
-                  )
-                ),
-                child: Text("Reset", style: Theme.of(context).textTheme.headline6),
-                onPressed: () => print("Hello"),
+        automaticallyImplyLeading: false,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        titleSpacing: 10.0, //same as detailTab
+        title: Text("Create new folder...", style: Theme.of(context).textTheme.headline6),
+        actions: [
+          Padding(
+            padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Theme.of(context).colorScheme.tertiary,
+                elevation: 10.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(3.0)),
+                )
               ),
-            )
-          ]
-      ),
-    );
-  }
-
-  Widget detailTab({required BuildContext context, required String labelText, required String hintText, String? errorText = null, List<TextInputFormatter>? inputFormatters = null, Function(String)? onChanged}) {
-
-    final TextTheme hintStyle = Theme.of(context).textTheme.copyWith(
-      subtitle2: TextStyle(color: Color(0xFFCCCCCC)),
-    );
-    final TextTheme errorStyle = Theme.of(context).textTheme.copyWith(
-      subtitle2: TextStyle(color: Colors.red),
-    );
-
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Container(
-        color: Theme.of(context).colorScheme.surface,
-        height: MediaQuery.of(context).size.height*0.07,
-        padding: const EdgeInsets.fromLTRB(10.0,0.0,10.0,0.0),
-        child: TextField(
-          autofocus: false,
-          decoration: InputDecoration(
-            labelText: labelText,
-            labelStyle: Theme.of(context).textTheme.subtitle1,
-            hintText: hintText,
-            hintStyle: hintStyle.subtitle2,
-            errorText: errorText,
-            errorStyle: errorStyle.subtitle2,
-          ),
-          inputFormatters: inputFormatters,
-          onChanged: onChanged,
-        ),
-      ),
-    );
-  }
-
-  Widget dropdownTab({required BuildContext context, required String labelText, required String hintText, String errorText = "", String value = "", List<TextInputFormatter>? inputFormatters = null, Function(String)? onChanged, List<String> items = const []}) {
-    final TextTheme hintStyle = Theme.of(context).textTheme.copyWith(
-      subtitle2: TextStyle(color: Color(0xFFCCCCCC)),
-    );
-    final TextTheme errorStyle = Theme.of(context).textTheme.copyWith(
-      subtitle2: TextStyle(color: Colors.red),
-    );
-
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Container(
-        // color: Theme.of(context).colorScheme.inverseSurface,
-        padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
-        child: DropDownField(
-          labelText: labelText,
-          labelStyle: Theme.of(context).textTheme.subtitle1,
-          hintText: hintText,
-          hintStyle: hintStyle.subtitle2,
-          errorText: errorText,
-          errorStyle: errorStyle.subtitle2,
-          initialValue: value,
-          items: items,
-          normalHeight: MediaQuery.of(context).size.height*0.07,
-        ),
+              child: Text("Reset", style: Theme.of(context).textTheme.headline6),
+              onPressed: () => print("Hello"),
+            ),
+          )
+        ]
       ),
     );
   }
 
   BottomAppBar bottomAppBar(){
     return BottomAppBar(
-      color: Theme.of(context).primaryColor,
+      color: Theme.of(context).colorScheme.primary,
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Container(
@@ -127,7 +63,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                   padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).dividerColor,
+                      primary: Theme.of(context).colorScheme.tertiary,
                       elevation: 10.0,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(3.0))
@@ -141,7 +77,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                   padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).dividerColor,
+                      primary: Theme.of(context).colorScheme.tertiary,
                       elevation: 10.0,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(3.0))
@@ -171,10 +107,11 @@ class _AddFolderState extends ConsumerState<AddFolder> {
     final user = ref.watch(firebaseAuthProvider);
     final uid = user.firebaseUser?.uid;
     final userdata = ref.watch(userdataProvider);
+    final _formKey = GlobalKey<FormState>();
     final Map<String,String> foldernames = userdata.foldernames;
     Folderdata tempFolder = Folderdata(id:"",name:"",createdAt:"",updatedAt:"");
-    bool tapped = false, validated = false;
-    String errormsg = "";
+    String _errormsg = "";
+
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pop();
@@ -186,212 +123,158 @@ class _AddFolderState extends ConsumerState<AddFolder> {
         body: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
+              final _tabHeight = constraints.maxHeight*0.1;
               return Container(
                 height: constraints.maxHeight,
                 width: constraints.maxWidth,
-                child: Scrollbar(
-                  thumbVisibility: false,
-                  controller: _scrollController,
-                  child: ListView(
+                padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 3.0),
+                child: Form(
+                  child: Scrollbar(
+                    thumbVisibility: true,
                     controller: _scrollController,
-                    children: [
-                      detailTab(
-                        context: context,
-                        labelText: "Folder Name:",
-                        hintText: "eg. myFolder",
-                        errorText: (tapped & !validated) ? errormsg: null,
-                        inputFormatters: [FilteringTextInputFormatter(RegExp("[a-zA-Z0-9_]"), allow: true)],
-                        onChanged: (text) {
-                          if (foldernames.containsValue(text)) {
-                            setState((){
-                              tapped = true;
-                              validated = false;
-                              tempFolder.name = text;
-                              errormsg = tempFolder.name + " already exists";
-                            });
-                          }
-                          else {
-                            setState((){
-                              tapped = true;
-                              validated = true;
-                              tempFolder.name = text;
-                              errormsg = "";
-                            });
-                          }
-                        },
-                      ),
-                      detailTab(
-                        context: context,
-                        labelText: "Country Grouping:",
-                        hintText: "eg. Malaysia",
-                        onChanged: (text) {
-                          setState(() {
-                            tempFolder.country = text;
-                          });
-                        }
-                      ),
-                      detailTab(
-                          context: context,
-                          labelText: "Country Or Type:",
-                          hintText: "eg. US-Half Cents",
-                          onChanged: (text) {
-                            setState(() {
-                              tempFolder.country = text;
-                            });
-                          }
-                      ),
-                      detailTab(
-                          context: context,
-                          labelText: "Denomination:",
-                          hintText: "eg. CENT",
-                          onChanged: (text) {
-                            setState(() {
-                              tempFolder.mintageYear = text;
-                            });
-                          }
-                      ),
-                      detailTab(
-                        context: context,
-                        labelText: "Mintage Year:",
-                        hintText: "eg. 1998",
-                        onChanged: (text) {
-                          setState(() {
-                            tempFolder.mintageYear = text;
-                          });
-                        }
-                      ),
-                      detailTab(
-                        context: context,
-                        labelText: "Grade:",
-                        hintText: "eg. 72",
-                        onChanged: (text) {
-                          setState(() {
-                            tempFolder.grade = text;
-                          });
-                        }
-                      ),
-                      detailTab(
-                          context: context,
-                          labelText: "Serial:",
+                    child: ListView(
+                      controller: _scrollController,
+                      children: [
+                        DropDownButton(
+                          labelText: "Folder Name",
+                          hintText: "eg. myFolder",
+                          errorText: 'This folder already exists!',
+                          // errorText: _errormsg,
+                          enableDropdown: false,
+                          required: true,
+                          buttonHeight: _tabHeight,
+                          inputFormatters: [FilteringTextInputFormatter(RegExp("[a-zA-Z0-9_]"), allow: true)],
+                          validator: (String text) {
+                            if(foldernames.containsValue(text)) {
+                              // _errormsg = "${text} already exists!";
+                              return false;
+                            }
+                            else {
+                              // _errormsg = "";
+                              return true;
+                            }
+                          },
+                        ),
+                        DropDownButton(
+                          labelText: "Category",
+                          hintText: "eg. Coin",
+                          errorText: 'Must be "Coin" or "Notes" only!',
+                          required: true,
+                          strict: true,
+                          buttonHeight: _tabHeight,
+                          items: [
+                            "Coin",
+                            "Notes",
+                          ],
+                        ),
+                        DropDownButton(
+                          labelText: "Country Grouping",
+                          hintText: "eg. US",
+                          errorText: 'Select from provided country grouping only',
+                          strict: true,
+                          buttonHeight: _tabHeight,
+                          items: [
+                            "M",
+                            "US",
+                          ]
+                        ),
+                        DropDownButton(
+                          labelText: "Country Or Type",
+                          hintText: "eg. US - Half Cents",
+                          errorText: 'Select from provided country grouping only',
+                          strict: true,
+                          buttonHeight: _tabHeight,
+                          items: [
+                            "M - Malaysia",
+                            "US - Half Cents",
+                            "US - Cents",
+                            "US - Two Cents",
+                          ],
+                        ),
+                        DropDownButton(
+                          labelText: "Denomination",
+                          hintText: "eg. 20C",
+                          enableDropdown: false,
+                          buttonHeight: _tabHeight,
+                        ),
+                        DropDownButton(
+                          labelText: "Mintage Year",
+                          hintText: "eg. 1967",
+                          enableDropdown: false,
+                          buttonHeight: _tabHeight,
+                        ),
+                        DropDownButton(
+                          labelText: "Grade",
+                          hintText: "eg. 72",
+                          enableDropdown: false,
+                          buttonHeight: _tabHeight,
+                        ),
+                        DropDownButton(
+                          labelText: "Serial",
                           hintText: "eg. 110002020",
-                          onChanged: (text) {
-                            setState(() {
-                              tempFolder.mintageYear = text;
-                            });
-                          }
-                      ),
-                      detailTab(
-                          context: context,
-                          labelText: "Serial Link:",
+                          enableDropdown: false,
+                          buttonHeight: _tabHeight,
+                        ),
+                        DropDownButton(
+                          labelText: "Serial Link",
                           hintText: "eg. https://www.ngccoin.com/world/malaya-and-malaysia/sc-207/cent/",
-                          onChanged: (text) {
-                            setState(() {
-                              tempFolder.mintageYear = text;
-                            });
-                          }
-                      ),
-                      detailTab(
-                          context: context,
-                          labelText: "Purchase Price:",
+                          enableDropdown: false,
+                          buttonHeight: _tabHeight,
+                        ),
+                        DropDownButton(
+                          labelText: "Purchase Price",
                           hintText: "eg. USD 100",
-                          onChanged: (text) {
-                            setState(() {
-                              tempFolder.mintageYear = text;
-                            });
-                          }
-                      ),
-                      detailTab(
-                          context: context,
+                          keyboardType: TextInputType.number,
+                          enableDropdown: false,
+                          buttonHeight: _tabHeight,
+                        ),
+                        DropDownButton(
                           labelText: "Purchase Date",
                           hintText: "eg. 12/8/2021",
-                          onChanged: (text) {
-                            setState(() {
-                              tempFolder.mintageYear = text;
-                            });
-                          }
-                      ),
-                      detailTab(
-                          context: context,
-                          labelText: "Current Price/Sold Price:",
-                          hintText: "eg. USD 200",
-                          onChanged: (text) {
-                            setState(() {
-                              tempFolder.mintageYear = text;
-                            });
-                          }
-                      ),
-                      detailTab(
-                          context: context,
-                          labelText: "Sold Date:",
-                          hintText: "eg. 31/8/2021",
-                          onChanged: (text) {
-                            setState(() {
-                              tempFolder.mintageYear = text;
-                            });
-                          }
-                      ),
-                      detailTab(
-                          context: context,
-                          labelText: "Status:",
-                          hintText: "eg. Owned",
-                          onChanged: (text) {
-                            setState(() {
-                              tempFolder.mintageYear = text;
-                            });
-                          }
-                      ),
-                      detailTab(
-                          context: context,
-                          labelText: "Storage:",
-                          hintText: "eg. Where it is stored (in Safe)",
-                          onChanged: (text) {
-                            setState(() {
-                              tempFolder.mintageYear = text;
-                            });
-                          }
-                      ),
-                      detailTab(
-                          context: context,
-                          labelText: "Population Link:",
-                          hintText: "eg. https://www.pmgnotes.com/population-report/malaya-and-malaysia/malaysia/1000-ringgit/",
-                          onChanged: (text) {
-                            setState(() {
-                              tempFolder.mintageYear = text;
-                            });
-                          }
-                      ),
-                      detailTab(
-                          context: context,
-                          labelText: "Remarks:",
+                          keyboardType: TextInputType.datetime,
+                          enableDropdown: false,
+                          buttonHeight: _tabHeight,
+                        ),
+                        DropDownButton(
+                          labelText: "Current Price/Sold Price",
+                          hintText: "eg. USD 50",
+                          keyboardType: TextInputType.number,
+                          enableDropdown: false,
+                          buttonHeight: _tabHeight,
+                        ),
+                        DropDownButton(
+                          labelText: "Sold Date",
+                          hintText: "eg. 12/8/2021",
+                          keyboardType: TextInputType.datetime,
+                          enableDropdown: false,
+                          buttonHeight: _tabHeight,
+                        ),
+                        DropDownButton(
+                          labelText: "Status",
+                          hintText: "eg. Sold",
+                          buttonHeight: _tabHeight,
+                          items: [
+                            "Sold",
+                            "Owned",
+                            "In Process",
+                            "Storage",
+                          ],
+                        ),
+                        DropDownButton( //to be updated with functions
+                          labelText: "Population Link",
+                          hintText: "eg. eg. https://www.pmgnotes.com/population-report/malaya-and-malaysia/malaysia/1000-ringgit/",
+                          enableDropdown: false,
+                          buttonHeight: _tabHeight,
+                        ),
+                        DropDownButton(
+                          labelText: "Remarks",
                           hintText: "eg. To be sent out",
-                          onChanged: (text) {
-                            setState(() {
-                              tempFolder.mintageYear = text;
-                            });
-                          }
-                      ),
-                      dropdownTab(
-                        context: context,
-                        labelText: "Category",
-                        hintText: "eg. Coin",
-                        items: <String>[
-                          "Coin",
-                          "Notes",
-                          "Others"
-                        ]
-                      ),
-                      dropdownTab(
-                        context: context,
-                        labelText: "Country Grouping",
-                        hintText: "eg. M, US",
-                        value: "M",
-                        items: <String>[
-                          "M",
-                          "US",
-                        ]
-                      ),
-                    ]
-                  )
+                          enableDropdown: false,
+                          buttonHeight: _tabHeight,
+                        )
+                      ],
+                    )
+                  ),
                 ),
               );
             }
@@ -399,6 +282,5 @@ class _AddFolderState extends ConsumerState<AddFolder> {
         )
       )
     );
-    throw UnimplementedError();
   }
 }

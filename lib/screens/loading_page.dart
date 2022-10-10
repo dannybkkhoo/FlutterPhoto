@@ -21,7 +21,7 @@ class LoadingPage extends StatelessWidget {
     else {
       return Scaffold(
         body: Container(
-          color: Colors.amber,
+          color: Theme.of(context).colorScheme.primary,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,

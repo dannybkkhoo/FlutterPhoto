@@ -54,7 +54,7 @@ class _HomeState extends ConsumerState<Home> {
       //Delete button
       buttons.add(
         IconButton(
-          icon: Icon(Icons.delete),
+          icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.inverseSurface,),
           onPressed: () {
             userdata.deleteFolders(pageStatus.selectedFolders);
             pageStatus.removeAllFolder();
@@ -65,7 +65,7 @@ class _HomeState extends ConsumerState<Home> {
       //Share button
       buttons.add(
           IconButton(
-            icon: Icon(Icons.share),
+            icon: Icon(Icons.share, color: Theme.of(context).colorScheme.inverseSurface,),
             onPressed: () {
 
             },
@@ -74,7 +74,7 @@ class _HomeState extends ConsumerState<Home> {
       //Cancel button
       buttons.add(
           IconButton(
-            icon: Icon(Icons.cancel_outlined),
+            icon: Icon(Icons.cancel_outlined, color: Theme.of(context).colorScheme.inverseSurface,),
             onPressed: () {
               pageStatus.removeAllFolder();
               pageStatus.isSelecting = false;
@@ -86,7 +86,7 @@ class _HomeState extends ConsumerState<Home> {
       //Search button
       buttons.add(
           IconButton(
-            icon: Icon(Icons.search),
+            icon: Icon(Icons.search, color: Theme.of(context).colorScheme.inverseSurface,),
             onPressed: () {
 
             },
@@ -95,7 +95,7 @@ class _HomeState extends ConsumerState<Home> {
       //Sort button
       buttons.add(
           IconButton(
-            icon: Icon(Icons.sort_by_alpha),
+            icon: Icon(Icons.sort_by_alpha, color: Theme.of(context).colorScheme.inverseSurface,),
             onPressed: () {
               //print(userdata.folders.);
             },
@@ -115,7 +115,7 @@ class _HomeState extends ConsumerState<Home> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             IconButton(
-              icon: Icon(Icons.house_rounded),
+              icon: Icon(Icons.house_rounded, color: Theme.of(context).colorScheme.inverseSurface,),
               onPressed: () {
 
               },
@@ -134,7 +134,7 @@ class _HomeState extends ConsumerState<Home> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             IconButton(
-              icon: Icon(Icons.delete),
+              icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.inverseSurface,),
               onPressed: () {
                 userdata.deleteFolders(pageStatus.selectedFolders);
                 pageStatus.removeAllFolder();
@@ -152,7 +152,7 @@ class _HomeState extends ConsumerState<Home> {
       //Cancel button
       buttons.add(
         bottomBarButton(
-          iconLogo: Icon(Icons.cancel_outlined),
+          iconLogo: Icon(Icons.cancel_outlined, color: Theme.of(context).colorScheme.inverseSurface,),
           iconText: "Cancel",
           onPressed: () {
             pageStatus.removeAllFolder();
@@ -176,11 +176,13 @@ class _HomeState extends ConsumerState<Home> {
     return AppBar(
       title: appBarTitle(pageStatus),
       actions: appBarButtons(pageStatus, userdata),
+      backgroundColor: Theme.of(context).colorScheme.primary,
     );
   }
 
   BottomAppBar bottomBar(PagestatusProvider pageStatus, UserdataProvider userdata){
     return BottomAppBar(
+      color: Theme.of(context).colorScheme.primary,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: bottomBarButtons(pageStatus, userdata)!,
@@ -511,9 +513,9 @@ Widget? selectionIcon(bool selectionMode, bool isSelected){
 
 Widget? addFolderButton(BuildContext context, UserdataProvider userdata){
   return FloatingActionButton.extended(
-    icon: Icon(Icons.add, color: Theme.of(context).backgroundColor),
+    icon: Icon(Icons.add, color: Theme.of(context).colorScheme.inverseSurface),
     label: Text("New Folder", style: Theme.of(context).textTheme.bodyText2),
-    backgroundColor: Theme.of(context).accentColor,
+    backgroundColor: Theme.of(context).colorScheme.tertiary,
     onPressed: () {
       //addFolder(context, userdata);
       Navigator.of(context).pushNamed(AppRoutes.addFolderPage);
@@ -580,7 +582,7 @@ class FolderItem extends ConsumerWidget {
                     },
                     child: Card(
                       elevation: 10.0,
-                      color: Theme.of(context).accentColor,
+                      color: Theme.of(context).colorScheme.tertiary,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(13.0)
                       ),
