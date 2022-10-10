@@ -12,6 +12,7 @@ class DropDownField extends StatefulWidget {
   final String errorText;
   final TextInputType keyboardType;       //To define the type of keyboard the user can use       [default: TextInputType.text]
   final bool enabled;                     //To define if the dropdownfield is enabled or not      [default: true]
+  final bool enableDropdown;              //To define if the dropdown button is enabled or not    [default: false]
   final bool required;                    //To define if the dropdownfield is required to fill in [default: false]
   final bool strict;                      //To define if user must only select from dropdownlist  [default: false]
   final int? maxItemsVisibleInDropdown;   //Max number of items visible in dropdown               [default: 3]
@@ -34,6 +35,7 @@ class DropDownField extends StatefulWidget {
         this.errorText = "",
         this.keyboardType = TextInputType.text,
         this.enabled = true,
+        this.enableDropdown = false,
         this.required = false,
         this.strict = false,
         this.maxItemsVisibleInDropdown,
@@ -165,15 +167,17 @@ class _DropDownFieldState extends State<DropDownField> {
                         suffixIcon: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            IconButton(
-                              color: Theme.of(context).colorScheme.inverseSurface,
-                              icon: Icon(Icons.arrow_drop_down, size: 30.0),
-                              onPressed: () {
-                                setState(() {
-                                  _showdropdown = !_showdropdown;
-                                });
-                              },
-                            ),
+                            if(widget.enableDropdown) ... [
+                              IconButton(
+                                color: Theme.of(context).colorScheme.inverseSurface,
+                                icon: Icon(Icons.arrow_drop_down, size: 30.0),
+                                onPressed: () {
+                                  setState(() {
+                                    _showdropdown = !_showdropdown;
+                                  });
+                                },
+                              )
+                            ],
                             IconButton(
                               color: Theme.of(context).colorScheme.inverseSurface,
                               icon: Icon(Icons.close, size: 30.0),
