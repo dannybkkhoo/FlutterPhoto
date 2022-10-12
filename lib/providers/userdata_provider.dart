@@ -266,7 +266,9 @@ class UserdataProvider with ChangeNotifier {
 
   Future<bool> addFolder({
     required String name,
-    String country = "",
+    String countrygroup = "",
+    String countrytype = "",
+    String denomination = "",
     String mintageYear = "",
     String grade = "",
     String serial = "",
@@ -274,11 +276,13 @@ class UserdataProvider with ChangeNotifier {
     String purchasePrice = "",
     String purchaseDate = "",
     String currentsoldprice = "",
+    String solddate = "",
     String status = "",
     String storage = "",
     String populationLink = "",
     String remarks = "",
-    List<String> category = const []
+    List<String> category = const [],
+    List<String> imageList = const []
   }) async {
     bool updated = false;
     String id = generateUniqueID(folders);
@@ -287,7 +291,8 @@ class UserdataProvider with ChangeNotifier {
       name : name,
       createdAt: DateTime.now().toString(),
       updatedAt: DateTime.now().toString(),
-      country: country,
+      countrygroup: countrygroup,
+      countrytype: countrytype,
       mintageYear: mintageYear,
       grade: grade,
       serial: serial,
@@ -295,12 +300,24 @@ class UserdataProvider with ChangeNotifier {
       purchasePrice: purchasePrice,
       purchaseDate: purchaseDate,
       currentsoldprice: currentsoldprice,
+      solddate: solddate,
       status: status,
       storage: storage,
       populationLink: populationLink,
       remarks: remarks,
       category: category,
+      imagelist: imageList,
     );
+    _userdata!.folders[id] = folder;
+    updated = await updateLocalandFirestore();
+    notifyListeners();
+    return updated;
+  }
+
+  Future<bool> addFolderdata(Folderdata newFolder) async {
+    bool updated = false;
+    String id = generateUniqueID(folders);
+    Folderdata folder = newFolder;
     _userdata!.folders[id] = folder;
     updated = await updateLocalandFirestore();
     notifyListeners();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../ui_components/sign_in_button.dart';
+import '../ui_components/signin_button.dart';
 import '../screens/loading_page.dart';
 import '../providers/top_level_providers.dart';
 import '../bloc/screen.dart';

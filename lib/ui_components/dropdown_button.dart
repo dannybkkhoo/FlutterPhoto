@@ -57,13 +57,13 @@ class _DropDownButtonState extends State<DropDownButton> {
   late TextStyle? labelStyle;
   late TextStyle? hintStyle;
   late TextStyle? errorStyle;
+  late TextEditingController _textController;
   late double buttonHeight;
   late double dropdownHeight;
   bool _hasError = false;
   bool _showdropdown = false;
   int _itemsVisibleInDropdown = 0;
   String _errorText = "";
-  TextEditingController _textController = TextEditingController();
 
   ListTile _getListTile(String text) {
     return ListTile(
@@ -126,7 +126,7 @@ class _DropDownButtonState extends State<DropDownButton> {
   @override
   void initState() {
     super.initState();
-    _textController.text = widget.initialValue;
+    _textController = TextEditingController(text: widget.initialValue);
     _textController.addListener((){
       setState(() {
 
@@ -140,7 +140,6 @@ class _DropDownButtonState extends State<DropDownButton> {
     labelStyle = widget.labelStyle??Theme.of(context).textTheme.bodyText1?.copyWith(color: Theme.of(context).colorScheme.inverseSurface);
     hintStyle = widget.hintStyle??Theme.of(context).textTheme.bodyText1?.copyWith(color: Theme.of(context).colorScheme.surfaceTint);
     errorStyle = widget.errorStyle??Theme.of(context).textTheme.bodyText1?.copyWith(color: Theme.of(context).colorScheme.error);
-    // buttonHeight = widget.buttonHeight??Theme.of(context).textTheme.bodyText1?.fontSize??48.0;
     if(widget.buttonHeight != null) {
       buttonHeight = widget.buttonHeight!;
     }
@@ -163,8 +162,6 @@ class _DropDownButtonState extends State<DropDownButton> {
 
   @override
   Widget build(BuildContext context) {
-    print(buttonHeight);
-    print(dropdownHeight);
     final ScrollController _scrollController = ScrollController();
     return SafeArea(
       child: LayoutBuilder(
@@ -237,7 +234,7 @@ class _DropDownButtonState extends State<DropDownButton> {
 
                     //Items null check added since there could be an initial brief period of time when the dropdown items will not have been loaded
                     if (widget.items != null) {
-                      if (widget.strict && text != null && text.isNotEmpty && !widget.items.contains(text)) {
+                      if (widget.strict && text != null && text.isEmpty && !widget.items.contains(text)) {
                         _hasError = true;
                         _errorText = "Invalid value in this field!";
                         return _errorText;

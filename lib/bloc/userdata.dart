@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -15,7 +16,7 @@ for json_serializable due to having nested dataclasses. References here:
 https://github.com/rrousselGit/freezed/issues/86
 */
 @unfreezed
-abstract class Userdata with _$Userdata {
+class Userdata with _$Userdata {
   factory Userdata({
     required String id,
     required String name,
@@ -33,7 +34,7 @@ abstract class Userdata with _$Userdata {
 // the json data, thus renamed as "imagelist" to better reflect the datatype
 // and also to workaround this issue
 @unfreezed
-abstract class Folderdata with _$Folderdata {
+class Folderdata with _$Folderdata {
   Folderdata._();
 
   //Status
@@ -49,7 +50,9 @@ abstract class Folderdata with _$Folderdata {
     required String name,
     required String createdAt,
     required String updatedAt,
-    @Default("") String country,
+    @Default("") String countrygroup,
+    @Default("") String countrytype,
+    @Default("") String denomination,
     @Default("") String mintageYear,
     @Default("") String grade,
     @Default("") String serial, //110002020
@@ -57,6 +60,7 @@ abstract class Folderdata with _$Folderdata {
     @Default("") String purchasePrice,  //currency set by main setting, just numerical, total price of all images
     @Default("") String purchaseDate,
     @Default("") String currentsoldprice,
+    @Default("") String solddate,
     @Default("") String status, //under auction sold bought?
     @Default("") String storage,  //where it is stored
     @Default("") String populationLink, //mapped to a table/link
@@ -77,7 +81,7 @@ abstract class Folderdata with _$Folderdata {
 }
 
 @unfreezed
-abstract class Imagedata with _$Imagedata {
+class Imagedata with _$Imagedata {
   factory Imagedata({
     required String id,
     required String name,

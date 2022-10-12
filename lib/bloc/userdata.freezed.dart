@@ -281,8 +281,12 @@ mixin _$Folderdata {
   set createdAt(String value) => throw _privateConstructorUsedError;
   String get updatedAt => throw _privateConstructorUsedError;
   set updatedAt(String value) => throw _privateConstructorUsedError;
-  String get country => throw _privateConstructorUsedError;
-  set country(String value) => throw _privateConstructorUsedError;
+  String get countrygroup => throw _privateConstructorUsedError;
+  set countrygroup(String value) => throw _privateConstructorUsedError;
+  String get countrytype => throw _privateConstructorUsedError;
+  set countrytype(String value) => throw _privateConstructorUsedError;
+  String get denomination => throw _privateConstructorUsedError;
+  set denomination(String value) => throw _privateConstructorUsedError;
   String get mintageYear => throw _privateConstructorUsedError;
   set mintageYear(String value) => throw _privateConstructorUsedError;
   String get grade => throw _privateConstructorUsedError;
@@ -300,6 +304,8 @@ mixin _$Folderdata {
   set purchaseDate(String value) => throw _privateConstructorUsedError;
   String get currentsoldprice => throw _privateConstructorUsedError;
   set currentsoldprice(String value) => throw _privateConstructorUsedError;
+  String get solddate => throw _privateConstructorUsedError;
+  set solddate(String value) => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
   set status(String value) =>
       throw _privateConstructorUsedError; //under auction sold bought?
@@ -335,7 +341,9 @@ abstract class $FolderdataCopyWith<$Res> {
       String name,
       String createdAt,
       String updatedAt,
-      String country,
+      String countrygroup,
+      String countrytype,
+      String denomination,
       String mintageYear,
       String grade,
       String serial,
@@ -343,6 +351,7 @@ abstract class $FolderdataCopyWith<$Res> {
       String purchasePrice,
       String purchaseDate,
       String currentsoldprice,
+      String solddate,
       String status,
       String storage,
       String populationLink,
@@ -365,7 +374,9 @@ class _$FolderdataCopyWithImpl<$Res> implements $FolderdataCopyWith<$Res> {
     Object? name = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
-    Object? country = freezed,
+    Object? countrygroup = freezed,
+    Object? countrytype = freezed,
+    Object? denomination = freezed,
     Object? mintageYear = freezed,
     Object? grade = freezed,
     Object? serial = freezed,
@@ -373,6 +384,7 @@ class _$FolderdataCopyWithImpl<$Res> implements $FolderdataCopyWith<$Res> {
     Object? purchasePrice = freezed,
     Object? purchaseDate = freezed,
     Object? currentsoldprice = freezed,
+    Object? solddate = freezed,
     Object? status = freezed,
     Object? storage = freezed,
     Object? populationLink = freezed,
@@ -397,9 +409,17 @@ class _$FolderdataCopyWithImpl<$Res> implements $FolderdataCopyWith<$Res> {
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as String,
-      country: country == freezed
-          ? _value.country
-          : country // ignore: cast_nullable_to_non_nullable
+      countrygroup: countrygroup == freezed
+          ? _value.countrygroup
+          : countrygroup // ignore: cast_nullable_to_non_nullable
+              as String,
+      countrytype: countrytype == freezed
+          ? _value.countrytype
+          : countrytype // ignore: cast_nullable_to_non_nullable
+              as String,
+      denomination: denomination == freezed
+          ? _value.denomination
+          : denomination // ignore: cast_nullable_to_non_nullable
               as String,
       mintageYear: mintageYear == freezed
           ? _value.mintageYear
@@ -428,6 +448,10 @@ class _$FolderdataCopyWithImpl<$Res> implements $FolderdataCopyWith<$Res> {
       currentsoldprice: currentsoldprice == freezed
           ? _value.currentsoldprice
           : currentsoldprice // ignore: cast_nullable_to_non_nullable
+              as String,
+      solddate: solddate == freezed
+          ? _value.solddate
+          : solddate // ignore: cast_nullable_to_non_nullable
               as String,
       status: status == freezed
           ? _value.status
@@ -469,7 +493,9 @@ abstract class _$$_FolderdataCopyWith<$Res>
       String name,
       String createdAt,
       String updatedAt,
-      String country,
+      String countrygroup,
+      String countrytype,
+      String denomination,
       String mintageYear,
       String grade,
       String serial,
@@ -477,6 +503,7 @@ abstract class _$$_FolderdataCopyWith<$Res>
       String purchasePrice,
       String purchaseDate,
       String currentsoldprice,
+      String solddate,
       String status,
       String storage,
       String populationLink,
@@ -501,7 +528,9 @@ class __$$_FolderdataCopyWithImpl<$Res> extends _$FolderdataCopyWithImpl<$Res>
     Object? name = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
-    Object? country = freezed,
+    Object? countrygroup = freezed,
+    Object? countrytype = freezed,
+    Object? denomination = freezed,
     Object? mintageYear = freezed,
     Object? grade = freezed,
     Object? serial = freezed,
@@ -509,6 +538,7 @@ class __$$_FolderdataCopyWithImpl<$Res> extends _$FolderdataCopyWithImpl<$Res>
     Object? purchasePrice = freezed,
     Object? purchaseDate = freezed,
     Object? currentsoldprice = freezed,
+    Object? solddate = freezed,
     Object? status = freezed,
     Object? storage = freezed,
     Object? populationLink = freezed,
@@ -533,9 +563,17 @@ class __$$_FolderdataCopyWithImpl<$Res> extends _$FolderdataCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as String,
-      country: country == freezed
-          ? _value.country
-          : country // ignore: cast_nullable_to_non_nullable
+      countrygroup: countrygroup == freezed
+          ? _value.countrygroup
+          : countrygroup // ignore: cast_nullable_to_non_nullable
+              as String,
+      countrytype: countrytype == freezed
+          ? _value.countrytype
+          : countrytype // ignore: cast_nullable_to_non_nullable
+              as String,
+      denomination: denomination == freezed
+          ? _value.denomination
+          : denomination // ignore: cast_nullable_to_non_nullable
               as String,
       mintageYear: mintageYear == freezed
           ? _value.mintageYear
@@ -564,6 +602,10 @@ class __$$_FolderdataCopyWithImpl<$Res> extends _$FolderdataCopyWithImpl<$Res>
       currentsoldprice: currentsoldprice == freezed
           ? _value.currentsoldprice
           : currentsoldprice // ignore: cast_nullable_to_non_nullable
+              as String,
+      solddate: solddate == freezed
+          ? _value.solddate
+          : solddate // ignore: cast_nullable_to_non_nullable
               as String,
       status: status == freezed
           ? _value.status
@@ -601,7 +643,9 @@ class _$_Folderdata extends _Folderdata {
       required this.name,
       required this.createdAt,
       required this.updatedAt,
-      this.country = "",
+      this.countrygroup = "",
+      this.countrytype = "",
+      this.denomination = "",
       this.mintageYear = "",
       this.grade = "",
       this.serial = "",
@@ -609,6 +653,7 @@ class _$_Folderdata extends _Folderdata {
       this.purchasePrice = "",
       this.purchaseDate = "",
       this.currentsoldprice = "",
+      this.solddate = "",
       this.status = "",
       this.storage = "",
       this.populationLink = "",
@@ -630,7 +675,13 @@ class _$_Folderdata extends _Folderdata {
   String updatedAt;
   @override
   @JsonKey()
-  String country;
+  String countrygroup;
+  @override
+  @JsonKey()
+  String countrytype;
+  @override
+  @JsonKey()
+  String denomination;
   @override
   @JsonKey()
   String mintageYear;
@@ -657,6 +708,9 @@ class _$_Folderdata extends _Folderdata {
   String currentsoldprice;
   @override
   @JsonKey()
+  String solddate;
+  @override
+  @JsonKey()
   String status;
 //under auction sold bought?
   @override
@@ -679,7 +733,7 @@ class _$_Folderdata extends _Folderdata {
 
   @override
   String toString() {
-    return 'Folderdata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, country: $country, mintageYear: $mintageYear, grade: $grade, serial: $serial, serialLink: $serialLink, purchasePrice: $purchasePrice, purchaseDate: $purchaseDate, currentsoldprice: $currentsoldprice, status: $status, storage: $storage, populationLink: $populationLink, remarks: $remarks, category: $category, imagelist: $imagelist)';
+    return 'Folderdata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, countrygroup: $countrygroup, countrytype: $countrytype, denomination: $denomination, mintageYear: $mintageYear, grade: $grade, serial: $serial, serialLink: $serialLink, purchasePrice: $purchasePrice, purchaseDate: $purchaseDate, currentsoldprice: $currentsoldprice, solddate: $solddate, status: $status, storage: $storage, populationLink: $populationLink, remarks: $remarks, category: $category, imagelist: $imagelist)';
   }
 
   @JsonKey(ignore: true)
@@ -701,7 +755,9 @@ abstract class _Folderdata extends Folderdata {
       required String name,
       required String createdAt,
       required String updatedAt,
-      String country,
+      String countrygroup,
+      String countrytype,
+      String denomination,
       String mintageYear,
       String grade,
       String serial,
@@ -709,6 +765,7 @@ abstract class _Folderdata extends Folderdata {
       String purchasePrice,
       String purchaseDate,
       String currentsoldprice,
+      String solddate,
       String status,
       String storage,
       String populationLink,
@@ -733,8 +790,14 @@ abstract class _Folderdata extends Folderdata {
   String get updatedAt;
   set updatedAt(String value);
   @override
-  String get country;
-  set country(String value);
+  String get countrygroup;
+  set countrygroup(String value);
+  @override
+  String get countrytype;
+  set countrytype(String value);
+  @override
+  String get denomination;
+  set denomination(String value);
   @override
   String get mintageYear;
   set mintageYear(String value);
@@ -757,6 +820,9 @@ abstract class _Folderdata extends Folderdata {
   @override
   String get currentsoldprice;
   set currentsoldprice(String value);
+  @override
+  String get solddate;
+  set solddate(String value);
   @override
   String get status;
   set status(String value);

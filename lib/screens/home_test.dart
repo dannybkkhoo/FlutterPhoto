@@ -440,7 +440,7 @@ Future<void> addFolder(BuildContext context, UserdataProvider userdata) async {
                         if(name != "" && validated){
                           userdata.addFolder(
                             name: name,
-                            country: country,
+                            countrygroup: country,
                             mintageYear: mintageYear,
                             grade: grade,
                             serial: serial,

@@ -8,6 +8,7 @@ import '../providers/top_level_providers.dart';
 import '../providers/auth_provider.dart';
 import '../providers/userdata_provider.dart';
 import '../ui_components/dropdown_button.dart';
+import '../ui_components/confirmation_popup.dart';
 
 //create addfolder page with tabs (for each detail for user to fill)
 class AddFolder extends ConsumerStatefulWidget {
@@ -16,8 +17,21 @@ class AddFolder extends ConsumerStatefulWidget {
 }
 
 class _AddFolderState extends ConsumerState<AddFolder> {
-  List<String> category = [];
+  final _formKey = new GlobalKey<FormState>();
   late ScrollController _scrollController;
+  Folderdata tempFolder = Folderdata(id:"",name:"",createdAt:"",updatedAt:"");
+
+  SnackBar folderStatus(String text, {Duration duration = const Duration(seconds:1)}) {
+    return SnackBar(
+      backgroundColor: Theme.of(context).colorScheme.secondary,
+      content: Text(text, style: Theme.of(context).textTheme.subtitle1,),
+      duration: duration,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(13.0))
+      ),
+    );
+  }
+
   PreferredSizeWidget? appBar(){
     return PreferredSize(
       preferredSize: Size(
@@ -30,20 +44,20 @@ class _AddFolderState extends ConsumerState<AddFolder> {
         titleSpacing: 10.0, //same as detailTab
         title: Text("Create new folder...", style: Theme.of(context).textTheme.headline6),
         actions: [
-          Padding(
-            padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Theme.of(context).colorScheme.tertiary,
-                elevation: 10.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(3.0)),
-                )
-              ),
-              child: Text("Reset", style: Theme.of(context).textTheme.headline6),
-              onPressed: () => print("Hello"),
-            ),
-          )
+          // Padding( //disabled for now, might enable in the future
+          //   padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
+          //   child: ElevatedButton(
+          //     style: ElevatedButton.styleFrom(
+          //       primary: Theme.of(context).colorScheme.tertiary,
+          //       elevation: 10.0,
+          //       shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.all(Radius.circular(3.0)),
+          //       )
+          //     ),
+          //     child: Text("Reset", style: Theme.of(context).textTheme.headline6),
+          //     onPressed: () => print("Hello"),
+          //   ),
+          // )
         ]
       ),
     );
@@ -70,7 +84,24 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                       )
                     ),
                     child: Text("Done", style: Theme.of(context).textTheme.headline6),
-                    onPressed: () => print("Hello"),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        ScaffoldMessenger.of(context).showSnackBar(folderStatus("Creating new folder...", duration: Duration(days: 365)));
+
+                        final userdata = ref.watch(userdataProvider);
+                        userdata.addFolderdata(tempFolder).then( (bool addSuccess) {
+                          ScaffoldMessenger.of(context).clearSnackBars();
+                          if(addSuccess) {
+                            Navigator.of(context).pop();
+                            ScaffoldMessenger.of(context).showSnackBar(folderStatus("New folder '${tempFolder.name}' created!"));
+                          }
+                          else {
+                            ScaffoldMessenger.of(context).showSnackBar(folderStatus("Failed to create new folder, please try again..."));
+                          }
+                        });
+                      }
+                    },
                   ),
                 ),
                 Padding(
@@ -84,7 +115,12 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                       )
                     ),
                     child: Text("Cancel", style: Theme.of(context).textTheme.headline6),
-                    onPressed: () => print("Hello"),
+                    onPressed: () async {
+                      if(await confirmationPopUp(context,content: "Stop creating new folder?")) {
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(folderStatus("Cancelled folder creation..."));
+                      };
+                    },
                   ),
                 )
               ],
@@ -104,17 +140,12 @@ class _AddFolderState extends ConsumerState<AddFolder> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(firebaseAuthProvider);
-    final uid = user.firebaseUser?.uid;
     final userdata = ref.watch(userdataProvider);
-    final _formKey = GlobalKey<FormState>();
     final Map<String,String> foldernames = userdata.foldernames;
-    Folderdata tempFolder = Folderdata(id:"",name:"",createdAt:"",updatedAt:"");
-    String _errormsg = "";
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(true);
         return true;
       },
       child: Scaffold(
@@ -129,6 +160,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                 width: constraints.maxWidth,
                 padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 3.0),
                 child: Form(
+                  key: _formKey,
                   child: Scrollbar(
                     thumbVisibility: true,
                     controller: _scrollController,
@@ -139,18 +171,19 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           labelText: "Folder Name",
                           hintText: "eg. myFolder",
                           errorText: 'This folder already exists!',
-                          // errorText: _errormsg,
                           enableDropdown: false,
                           required: true,
                           buttonHeight: _tabHeight,
                           inputFormatters: [FilteringTextInputFormatter(RegExp("[a-zA-Z0-9_]"), allow: true)],
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.name = text!;
+                          },
                           validator: (String text) {
                             if(foldernames.containsValue(text)) {
-                              // _errormsg = "${text} already exists!";
                               return false;
                             }
                             else {
-                              // _errormsg = "";
                               return true;
                             }
                           },
@@ -166,6 +199,10 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                             "Coin",
                             "Notes",
                           ],
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.category = [text!];  //to expand on functionality to have multiple categories together in a list
+                          },
                         ),
                         DropDownButton(
                           labelText: "Country Grouping",
@@ -176,7 +213,11 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           items: [
                             "M",
                             "US",
-                          ]
+                          ],
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.countrygroup = text!;
+                          },
                         ),
                         DropDownButton(
                           labelText: "Country Or Type",
@@ -190,36 +231,60 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                             "US - Cents",
                             "US - Two Cents",
                           ],
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.countrytype = text!;
+                          },
                         ),
                         DropDownButton(
                           labelText: "Denomination",
                           hintText: "eg. 20C",
                           enableDropdown: false,
                           buttonHeight: _tabHeight,
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.denomination = text!;
+                          },
                         ),
                         DropDownButton(
                           labelText: "Mintage Year",
                           hintText: "eg. 1967",
                           enableDropdown: false,
                           buttonHeight: _tabHeight,
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.mintageYear = text!;
+                          },
                         ),
                         DropDownButton(
                           labelText: "Grade",
                           hintText: "eg. 72",
                           enableDropdown: false,
                           buttonHeight: _tabHeight,
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.grade = text!;
+                          },
                         ),
                         DropDownButton(
                           labelText: "Serial",
                           hintText: "eg. 110002020",
                           enableDropdown: false,
                           buttonHeight: _tabHeight,
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.serial = text!;
+                          },
                         ),
                         DropDownButton(
                           labelText: "Serial Link",
                           hintText: "eg. https://www.ngccoin.com/world/malaya-and-malaysia/sc-207/cent/",
                           enableDropdown: false,
                           buttonHeight: _tabHeight,
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.serialLink = text!;
+                          },
                         ),
                         DropDownButton(
                           labelText: "Purchase Price",
@@ -227,6 +292,10 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           keyboardType: TextInputType.number,
                           enableDropdown: false,
                           buttonHeight: _tabHeight,
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.purchasePrice = text!;
+                          },
                         ),
                         DropDownButton(
                           labelText: "Purchase Date",
@@ -234,6 +303,10 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           keyboardType: TextInputType.datetime,
                           enableDropdown: false,
                           buttonHeight: _tabHeight,
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.purchaseDate = text!;
+                          },
                         ),
                         DropDownButton(
                           labelText: "Current Price/Sold Price",
@@ -241,6 +314,10 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           keyboardType: TextInputType.number,
                           enableDropdown: false,
                           buttonHeight: _tabHeight,
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.currentsoldprice = text!;
+                          },
                         ),
                         DropDownButton(
                           labelText: "Sold Date",
@@ -248,6 +325,10 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           keyboardType: TextInputType.datetime,
                           enableDropdown: false,
                           buttonHeight: _tabHeight,
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.solddate = text!;
+                          },
                         ),
                         DropDownButton(
                           labelText: "Status",
@@ -259,18 +340,30 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                             "In Process",
                             "Storage",
                           ],
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.status = text!;
+                          },
                         ),
                         DropDownButton( //to be updated with functions
                           labelText: "Population Link",
                           hintText: "eg. eg. https://www.pmgnotes.com/population-report/malaya-and-malaysia/malaysia/1000-ringgit/",
                           enableDropdown: false,
                           buttonHeight: _tabHeight,
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.populationLink = text!;
+                          },
                         ),
                         DropDownButton(
                           labelText: "Remarks",
                           hintText: "eg. To be sent out",
                           enableDropdown: false,
                           buttonHeight: _tabHeight,
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempFolder.remarks = text!;
+                          },
                         )
                       ],
                     )
