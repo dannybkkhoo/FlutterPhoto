@@ -17,7 +17,7 @@
 #
 # This file contains the analysis options used by Flutter tools, such as IntelliJ,
 # Android Studio, and the `flutter analyze` command.
-include: all_lint_rules.yaml
+include: package:very_good_analysis/analysis_options.yaml
 
 analyzer:
   strong-mode:
@@ -49,6 +49,7 @@ analyzer:
     # see https://github.com/dart-lang/sdk/issues/28463
     - "lib/i18n/messages_*.dart"
     - "lib/src/http/**"
+    - "lib/**.g.dart"
 
 linter:
   rules:

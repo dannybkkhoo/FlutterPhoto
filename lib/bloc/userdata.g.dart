@@ -59,11 +59,11 @@ _$_Folderdata _$$_FolderdataFromJson(Map<String, dynamic> json) =>
       category: (json['category'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
-          const [],
+          const <String>[],
       imagelist: (json['imagelist'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
-          const [],
+          const <String>[],
     );
 
 Map<String, dynamic> _$$_FolderdataToJson(_$_Folderdata instance) =>

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -65,17 +64,9 @@ class Folderdata with _$Folderdata {
     @Default("") String storage,  //where it is stored
     @Default("") String populationLink, //mapped to a table/link
     @Default("") String remarks,
-    @Default([]) List<String> category,
-    @Default([]) List<String> imagelist,
+    @Default(<String>[]) List<String> category,
+    @Default(<String>[]) List<String> imagelist,
   }) = _Folderdata;
-
-  //Mapping sortable/searchable properties
-  Map<String, dynamic> _toMap() {
-    return {
-      'name': name,
-      'updatedAt': updatedAt,
-    };
-  }
 
   factory Folderdata.fromJson(Map<String,dynamic> json) => _$FolderdataFromJson(json);
 }

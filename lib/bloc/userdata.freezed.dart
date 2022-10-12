@@ -658,8 +658,8 @@ class _$_Folderdata extends _Folderdata {
       this.storage = "",
       this.populationLink = "",
       this.remarks = "",
-      this.category = const [],
-      this.imagelist = const []})
+      this.category = const <String>[],
+      this.imagelist = const <String>[]})
       : super._();
 
   factory _$_Folderdata.fromJson(Map<String, dynamic> json) =>
