@@ -80,7 +80,7 @@ class _DropDownButtonState extends State<DropDownButton> {
         text,
         style: labelStyle,
       ),
-      visualDensity: VisualDensity(vertical: -3),
+      visualDensity: const VisualDensity(vertical: -3),
     );
   }
 
@@ -92,7 +92,7 @@ class _DropDownButtonState extends State<DropDownButton> {
         "No match found...",
         style: errorStyle,
       ),
-      visualDensity: VisualDensity(vertical: -3),
+      visualDensity: const VisualDensity(vertical: -3),
     );
   }
 
@@ -175,7 +175,7 @@ class _DropDownButtonState extends State<DropDownButton> {
                   controller: _textController,
                   decoration: InputDecoration(
                     counterText: "",
-                    contentPadding: EdgeInsets.only(left: 10.0),
+                    contentPadding: const EdgeInsets.only(left: 10.0),
                     errorText: _hasError?_errorText:null,
                     errorStyle: errorStyle,
                     enabledBorder: UnderlineInputBorder(
@@ -267,16 +267,16 @@ class _DropDownButtonState extends State<DropDownButton> {
                         cacheExtent: 0.0,
                         children: _getChildren(widget.items),
                         controller: _scrollController,
-                        padding: EdgeInsets.only(left:20.0),
+                        padding: const EdgeInsets.only(left:20.0),
                         scrollDirection: Axis.vertical,
                       ),
                       controller: _scrollController,
-                      thickness: 3.0,
+                      thickness: 6.0,
                       thumbVisibility: true,
                     ),
                     height: (_itemsVisibleInDropdown < widget.maxItemsVisibleInDropdown? _itemsVisibleInDropdown:widget.maxItemsVisibleInDropdown) * dropdownHeight,
                     width: constraints.maxWidth,
-                    padding: EdgeInsets.only(right: 3.0),
+                    padding: const EdgeInsets.only(right: 3.0),
                   )
                 ]
               ],
@@ -286,10 +286,10 @@ class _DropDownButtonState extends State<DropDownButton> {
             ),
             decoration: BoxDecoration(
               border: Border.all(color: Theme.of(context).colorScheme.inverseSurface),
-              borderRadius: BorderRadius.all(Radius.circular(13.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(13.0)),
               color: Theme.of(context).colorScheme.surface,
             ),
-            margin: EdgeInsets.fromLTRB(3.0, 1.0, 3.0, 1.0),
+            margin: const EdgeInsets.fromLTRB(3.0, 1.0, 3.0, 1.0),
           );
         }
       ),

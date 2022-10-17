@@ -55,5 +55,4 @@ class PagestatusProvider with ChangeNotifier {
     _selectedFolders.clear();
     notifyListeners();
   }
-
 }
