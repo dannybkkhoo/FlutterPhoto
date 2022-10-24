@@ -61,7 +61,7 @@ class _DropDownButtonState extends State<DropDownButton> {
   late double buttonHeight;
   late double dropdownHeight;
   bool _hasError = false;
-  bool _showdropdown = false;
+  bool _showDropdown = false;
   int _itemsVisibleInDropdown = 0;
   String _errorText = "";
 
@@ -73,7 +73,7 @@ class _DropDownButtonState extends State<DropDownButton> {
         FocusManager.instance.primaryFocus?.unfocus();
         setState(() {
           _textController.text = text;
-          _showdropdown = false;
+          _showDropdown = false;
         });
       },
       title: Text(
@@ -162,7 +162,7 @@ class _DropDownButtonState extends State<DropDownButton> {
 
   @override
   Widget build(BuildContext context) {
-    final ScrollController _scrollController = ScrollController();
+    final ScrollController scrollController = ScrollController();
     return SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -179,12 +179,12 @@ class _DropDownButtonState extends State<DropDownButton> {
                     errorText: _hasError?_errorText:null,
                     errorStyle: errorStyle,
                     enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(13.0),
-                        borderSide: BorderSide(color: Theme.of(context).colorScheme.inverseSurface, width: 3.0)
+                      borderRadius: BorderRadius.circular(13.0),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.inverseSurface, width: 3.0),
                     ),
                     focusedBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(13.0),
-                        borderSide: BorderSide(color: Theme.of(context).colorScheme.inverseSurface, width: 3.0)
+                      borderRadius: BorderRadius.circular(13.0),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.inverseSurface, width: 3.0),
                     ),
                     hintText: widget.hintText,
                     hintStyle: hintStyle,
@@ -198,17 +198,17 @@ class _DropDownButtonState extends State<DropDownButton> {
                         if(widget.enableDropdown) ... [
                           IconButton(
                             color: Theme.of(context).colorScheme.inverseSurface,
-                            icon: Icon(Icons.arrow_drop_down, size: 30.0),
+                            icon: const Icon(Icons.arrow_drop_down, size: 30.0),
                             onPressed: () {
                               setState(() {
-                                _showdropdown = !_showdropdown;
+                                _showDropdown = !_showDropdown;
                               });
                             },
                           )
                         ],
                         IconButton(
                           color: Theme.of(context).colorScheme.inverseSurface,
-                          icon: Icon(Icons.close, size: 30.0),
+                          icon: const Icon(Icons.close, size: 30.0),
                           onPressed: () {
                             FocusManager.instance.primaryFocus?.unfocus();
                             setState(() {
@@ -217,7 +217,7 @@ class _DropDownButtonState extends State<DropDownButton> {
                           },
                         ),
                       ],
-                    )
+                    ),
                   ),
                   inputFormatters: widget.inputFormatters,
                   keyboardType: widget.keyboardType,
@@ -227,8 +227,7 @@ class _DropDownButtonState extends State<DropDownButton> {
                     if (widget.required) {
                       if (text == null || text.isEmpty) {
                         _hasError = true;
-                        _errorText = "This field is required, must not be empty!";
-                        return _errorText;
+                        return _errorText = "This field is required, must not be empty!";
                       }
                     }
 
@@ -236,8 +235,7 @@ class _DropDownButtonState extends State<DropDownButton> {
                     if (widget.items != null) {
                       if (widget.strict && text != null && text.isEmpty && !widget.items.contains(text)) {
                         _hasError = true;
-                        _errorText = "Invalid value in this field!";
-                        return _errorText;
+                        return _errorText = "Invalid value in this field!";
                       }
                     }
 
@@ -245,8 +243,7 @@ class _DropDownButtonState extends State<DropDownButton> {
                     if (widget.validator != null) {
                       if (!widget.validator!(text!)){
                         _hasError = true;
-                        _errorText = widget.errorText;
-                        return _errorText;
+                        return _errorText = widget.errorText;
                       }
                     }
 
@@ -256,7 +253,7 @@ class _DropDownButtonState extends State<DropDownButton> {
                     return null;
                   },
                 ),
-                if(_showdropdown) ... [
+                if(_showDropdown) ... [
                   Container(
                     constraints: BoxConstraints(
                       maxHeight: widget.maxItemsVisibleInDropdown * buttonHeight
@@ -266,11 +263,11 @@ class _DropDownButtonState extends State<DropDownButton> {
                       child: ListView(
                         cacheExtent: 0.0,
                         children: _getChildren(widget.items),
-                        controller: _scrollController,
+                        controller: scrollController,
                         padding: const EdgeInsets.only(left:20.0),
                         scrollDirection: Axis.vertical,
                       ),
-                      controller: _scrollController,
+                      controller: scrollController,
                       thickness: 6.0,
                       thumbVisibility: true,
                     ),

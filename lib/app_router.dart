@@ -6,7 +6,7 @@ import 'screens/home_page.dart';
 import 'screens/error_page.dart';
 import 'providers/auth_provider.dart';
 import 'screens/root_page.dart';
-import 'screens/home_test.dart';
+import 'screens/collection_page.dart';
 import 'debug.dart';
 
 class AppRoutes {
@@ -31,7 +31,7 @@ class AppRouter {
       case AppRoutes.signInPage:
         screen = SignInPage(); break;
       case AppRoutes.homePage:
-        screen = Home(); break;
+        screen = Collection(); break;
       case AppRoutes.debugPage:
         screen = DebugPage(); break;
       case AppRoutes.addFolderPage:

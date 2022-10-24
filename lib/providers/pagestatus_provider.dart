@@ -12,23 +12,48 @@ import 'package:intl/intl.dart';
 import '../constants/strings.dart';
 import 'package:random_string/random_string.dart';
 
+enum SortType {
+  AtoZ,
+  ZtoA,
+}
+
 class PagestatusProvider with ChangeNotifier {
   bool _isSelecting = false;
+  String _searchKeyword = "";         //searching keyword
+  SortType _sortType = SortType.AtoZ;   //shared preferences
   List<String> _selectedFolders = [];
   List<String> _selectedImages = [];
-  String sorting = "A-Z";  //shared preferences
 
   PagestatusProvider();
 
   bool get isSelecting => _isSelecting;
+  bool get isSearching => _searchKeyword != "";
+  String get searchKeyword => _searchKeyword;
+  SortType get sortType => _sortType;
   List<String> get selectedFolders => _selectedFolders;
   List<String> get selectedImages => _selectedImages;
 
   set isSelecting(bool selectionmode){
-    _isSelecting = selectionmode;
-    _selectedFolders = [];
-    _selectedImages = [];
-    notifyListeners();
+    if(_isSelecting != selectionmode) {
+      _isSelecting = selectionmode;
+      _selectedFolders = [];
+      _selectedImages = [];
+      notifyListeners();
+    }
+  }
+
+  set searchKeyword(String keyword){
+    if(_searchKeyword != keyword) {
+      _searchKeyword = keyword;
+      notifyListeners();
+    }
+  }
+
+  set sortType(SortType sortType){
+    if(_sortType != sortType) {
+      _sortType = sortType;
+      notifyListeners();
+    }
   }
 
   void addSelectedFolder(String folderid){
@@ -54,5 +79,22 @@ class PagestatusProvider with ChangeNotifier {
   void removeAllFolder(){
     _selectedFolders.clear();
     notifyListeners();
+  }
+
+  List<String> sortAZ(List<String> nameList) {
+    nameList.sort((a,b) => a.toString().toLowerCase().compareTo(b.toString().toLowerCase()));
+    return nameList;
+  }
+
+  List<String> sortZA(List<String> nameList) {
+    nameList.sort((a,b) => b.toString().toLowerCase().compareTo(a.toString().toLowerCase()));
+    return nameList;
+  }
+
+  List<String> sort(List<String> nameList) {
+    switch(_sortType) {
+      case SortType.AtoZ: return sortAZ(nameList);
+      case SortType.ZtoA: return sortZA(nameList);
+    }
   }
 }

@@ -12,7 +12,7 @@ import '../providers/connection_provider.dart';
 import '../constants/strings.dart';
 import '../constants/images.dart';
 import '../debug.dart';
-import 'home_test.dart';
+import 'collection_page.dart';
 
 /*
 This page is the base of the app, on the highest level of the widget tree just

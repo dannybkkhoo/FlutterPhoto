@@ -35,11 +35,27 @@ class UserdataProvider with ChangeNotifier {
     }
     return temp;
   }
+  Map<String, String> get folderids{  //returns a map of folder id:name
+    Map<String, String> temp = {};
+    Map<String, Folderdata> folders = _userdata?.folders??{};
+    for(MapEntry<String,Folderdata> folder in folders.entries){
+      temp[folder.value.name] = folder.key;
+    }
+    return temp;
+  }
   Map<String, String> get imagenames{   //returns a map of image id:name
     Map<String, String> temp = {};
     Map<String, Imagedata> images = _userdata?.images??{};
     for(MapEntry<String,Imagedata> image in images.entries){
       temp[image.key] = image.value.name;
+    }
+    return temp;
+  }
+  Map<String, String> get imageids{   //returns a map of image id:name
+    Map<String, String> temp = {};
+    Map<String, Imagedata> images = _userdata?.images??{};
+    for(MapEntry<String,Imagedata> image in images.entries){
+      temp[image.value.name] = image.key;
     }
     return temp;
   }
@@ -316,9 +332,8 @@ class UserdataProvider with ChangeNotifier {
 
   Future<bool> addFolderdata(Folderdata newFolder) async {
     bool updated = false;
-    String id = generateUniqueID(folders);
-    Folderdata folder = newFolder;
-    _userdata!.folders[id] = folder;
+    newFolder.id = generateUniqueID(folders);
+    _userdata!.folders[newFolder.id] = newFolder;
     updated = await updateLocalandFirestore();
     notifyListeners();
     return updated;

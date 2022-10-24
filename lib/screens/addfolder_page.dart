@@ -17,7 +17,7 @@ class AddFolder extends ConsumerStatefulWidget {
 }
 
 class _AddFolderState extends ConsumerState<AddFolder> {
-  final _formKey = new GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   late ScrollController _scrollController;
   Folderdata tempFolder = Folderdata(id:"",name:"",createdAt:"",updatedAt:"");
 
@@ -26,8 +26,8 @@ class _AddFolderState extends ConsumerState<AddFolder> {
       backgroundColor: Theme.of(context).colorScheme.secondary,
       content: Text(text, style: Theme.of(context).textTheme.subtitle1,),
       duration: duration,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(13.0))
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(13.0)),
       ),
     );
   }
@@ -77,17 +77,17 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                   padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).colorScheme.tertiary,
+                      backgroundColor: Theme.of(context).colorScheme.tertiary,
                       elevation: 10.0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(3.0))
-                      )
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3.0)),
+                      ),
                     ),
                     child: Text("Done", style: Theme.of(context).textTheme.headline6),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
-                        ScaffoldMessenger.of(context).showSnackBar(folderStatus("Creating new folder...", duration: Duration(days: 365)));
+                        ScaffoldMessenger.of(context).showSnackBar(folderStatus("Creating new folder...", duration: const Duration(days: 365)));
 
                         final userdata = ref.watch(userdataProvider);
                         userdata.addFolderdata(tempFolder).then( (bool addSuccess) {
@@ -108,11 +108,11 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                   padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).colorScheme.tertiary,
+                      backgroundColor: Theme.of(context).colorScheme.tertiary,
                       elevation: 10.0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(3.0))
-                      )
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3.0)),
+                      ),
                     ),
                     child: Text("Cancel", style: Theme.of(context).textTheme.headline6),
                     onPressed: () async {
@@ -154,11 +154,11 @@ class _AddFolderState extends ConsumerState<AddFolder> {
         body: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final _tabHeight = constraints.maxHeight*0.1;
+              final tabHeight = constraints.maxHeight*0.1;
               return Container(
                 height: constraints.maxHeight,
                 width: constraints.maxWidth,
-                padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 3.0),
+                padding: const EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 3.0),
                 child: Form(
                   key: _formKey,
                   child: Scrollbar(
@@ -173,7 +173,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           errorText: 'This folder already exists!',
                           enableDropdown: false,
                           required: true,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           inputFormatters: [FilteringTextInputFormatter(RegExp("[a-zA-Z0-9_]"), allow: true)],
                           onSaved: (String? text) {
                             assert(text != null);
@@ -194,7 +194,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           errorText: 'Must be "Coin" or "Notes" only!',
                           required: true,
                           strict: true,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           items: [
                             "Coin",
                             "Notes",
@@ -209,7 +209,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           hintText: "eg. US",
                           errorText: 'Select from provided country grouping only',
                           strict: true,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           items: [
                             "M",
                             "US",
@@ -224,7 +224,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           hintText: "eg. US - Half Cents",
                           errorText: 'Select from provided country grouping only',
                           strict: true,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           items: [
                             "M - Malaysia",
                             "US - Half Cents",
@@ -240,7 +240,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           labelText: "Denomination",
                           hintText: "eg. 20C",
                           enableDropdown: false,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           onSaved: (String? text) {
                             assert(text != null);
                             tempFolder.denomination = text!;
@@ -250,7 +250,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           labelText: "Mintage Year",
                           hintText: "eg. 1967",
                           enableDropdown: false,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           onSaved: (String? text) {
                             assert(text != null);
                             tempFolder.mintageYear = text!;
@@ -260,7 +260,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           labelText: "Grade",
                           hintText: "eg. 72",
                           enableDropdown: false,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           onSaved: (String? text) {
                             assert(text != null);
                             tempFolder.grade = text!;
@@ -270,7 +270,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           labelText: "Serial",
                           hintText: "eg. 110002020",
                           enableDropdown: false,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           onSaved: (String? text) {
                             assert(text != null);
                             tempFolder.serial = text!;
@@ -280,7 +280,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           labelText: "Serial Link",
                           hintText: "eg. https://www.ngccoin.com/world/malaya-and-malaysia/sc-207/cent/",
                           enableDropdown: false,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           onSaved: (String? text) {
                             assert(text != null);
                             tempFolder.serialLink = text!;
@@ -291,7 +291,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           hintText: "eg. USD 100",
                           keyboardType: TextInputType.number,
                           enableDropdown: false,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           onSaved: (String? text) {
                             assert(text != null);
                             tempFolder.purchasePrice = text!;
@@ -302,7 +302,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           hintText: "eg. 12/8/2021",
                           keyboardType: TextInputType.datetime,
                           enableDropdown: false,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           onSaved: (String? text) {
                             assert(text != null);
                             tempFolder.purchaseDate = text!;
@@ -313,7 +313,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           hintText: "eg. USD 50",
                           keyboardType: TextInputType.number,
                           enableDropdown: false,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           onSaved: (String? text) {
                             assert(text != null);
                             tempFolder.currentsoldprice = text!;
@@ -324,7 +324,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           hintText: "eg. 12/8/2021",
                           keyboardType: TextInputType.datetime,
                           enableDropdown: false,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           onSaved: (String? text) {
                             assert(text != null);
                             tempFolder.solddate = text!;
@@ -333,7 +333,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                         DropDownButton(
                           labelText: "Status",
                           hintText: "eg. Sold",
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           items: [
                             "Sold",
                             "Owned",
@@ -349,7 +349,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           labelText: "Population Link",
                           hintText: "eg. eg. https://www.pmgnotes.com/population-report/malaya-and-malaysia/malaysia/1000-ringgit/",
                           enableDropdown: false,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           onSaved: (String? text) {
                             assert(text != null);
                             tempFolder.populationLink = text!;
@@ -359,7 +359,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                           labelText: "Remarks",
                           hintText: "eg. To be sent out",
                           enableDropdown: false,
-                          buttonHeight: _tabHeight,
+                          buttonHeight: tabHeight,
                           onSaved: (String? text) {
                             assert(text != null);
                             tempFolder.remarks = text!;
