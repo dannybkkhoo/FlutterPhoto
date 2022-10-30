@@ -13,35 +13,52 @@ import '../bloc/screen.dart';
 import '../ui_components/confirmation_popup.dart';
 import '../ui_components/searchBar.dart';
 import '../ui_components/item_card.dart';
+import '../app_router.dart';
 import '../ui_components/styled_buttons.dart';
 
-class CollectionPage extends ConsumerStatefulWidget {
+class FolderPage extends ConsumerStatefulWidget {
+  late String folderid;
+
+  FolderPage(this.folderid);
+
   @override
-  _CollectionPageState createState() => _CollectionPageState();
+  _FolderPageState createState() => _FolderPageState();
 }
 
-class _CollectionPageState extends ConsumerState<CollectionPage> {
-  List<Widget> listOfFolders = [];
+class _FolderPageState extends ConsumerState<FolderPage> {
+  String foldername = "?";
+  List<Widget> listOfImages = [];
+  Map<String,String> imageNames = {};
+  Map<String,String> imageIds = {};
 
-  void loadFolders(UserdataProvider userdataProvider, PagestatusProvider pagestatusProvider){
-    final Map<String, Folderdata> folders = userdataProvider.userdata!.folders;
-    final Map<String, String> folderNames = userdataProvider.foldernames; //folderid:foldername
-    final Map<String, String> folderIds = userdataProvider.folderids;     //foldername:folderid
+  void loadImages(UserdataProvider userdataProvider, PagestatusProvider pagestatusProvider){
+    final Map<String, Imagedata> images = userdataProvider.userdata!.images;                    //map of all images under the user
+    final List<String> imageList = userdataProvider.folderData(widget.folderid)?.imagelist??[]; //list of imageids under this folder
     List<String> nameList = [];
     List<Widget> list = [];
-    listOfFolders = []; //reset the list
+    listOfImages = [];  //reset the list
+    imageNames = {};
+    imageIds = {};
+
+    for (String imageid in imageList) {
+      if(images.containsKey(imageid)){
+        listOfImages.add(ItemCard(id: imageid, type: ItemType.image,));
+        imageNames[imageid] = images[imageid]?.name??"?"; //imageid:imagename
+        imageIds[imageNames[imageid]!] = imageid;          //imagename:imageid
+      }
+    }
 
     //Filter according to search
     if(pagestatusProvider.isSearching) {
       final String searchKeyword = pagestatusProvider.searchKeyword;
-      for(String name in folderNames.values) {  //search through folder name only
+      for(String name in imageNames.values) {  //search through image name only
         if(name.toLowerCase().contains(searchKeyword.toLowerCase())){
           nameList.add(name);
         }
       }
     }
     else {
-      nameList = folderNames.values.toList();
+      nameList = imageNames.values.toList();
     }
 
     //Filter according to user selection (category/tag/date etc)
@@ -50,10 +67,10 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
     nameList = pagestatusProvider.sort(nameList);
 
     //Load and display all leftover folders
-    for(String folderName in nameList) {
-      list.add(ItemCard(id: folderIds[folderName]!, type: ItemType.folder));
+    for(String imageName in nameList) {
+      list.add(ItemCard(id: imageIds[imageName]!, type: ItemType.image,));
     }
-    listOfFolders = list;
+    listOfImages = list;
   }
 
   SnackBar sortStatus(String text, {Duration duration = const Duration(seconds:1)}) {
@@ -69,6 +86,7 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
 
   PreferredSizeWidget? appBar(PagestatusProvider pageStatus, UserdataProvider userdata){
     final bool isSelecting = pageStatus.isSelecting;
+    final Folderdata? folder = userdata.folderData(widget.folderid);
     return PreferredSize(
       preferredSize: Size(double.infinity ,MediaQuery.of(context).size.height*0.07*1.5),
       child: SafeArea(
@@ -81,31 +99,6 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    alignment: Alignment.bottomLeft,
-                    child: Text(isSelecting?
-                    "${pageStatus.selectedFolders.length} folder${pageStatus.selectedFolders.length>1?'s':''} selected"
-                        :
-                    "My Collections (${listOfFolders.length} folder${listOfFolders.length>1?'s':''})",
-                      style: Theme.of(context).textTheme.headline6,
-                      textAlign: TextAlign.start,
-                    ),
-                    height: constraints.maxHeight*0.4,
-                    padding: const EdgeInsets.only(bottom: 6.0, left: 3.0),
-                    width: constraints.maxWidth,
-                  ),
-                  Container(
-                    alignment: Alignment.bottomLeft,
-                    child: SearchBar(pageStatus: pageStatus),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Theme.of(context).colorScheme.inverseSurface),
-                      borderRadius: const BorderRadius.all(Radius.circular(13.0)),
-                      color: Theme.of(context).colorScheme.surface,
-                    ),
-                    height: constraints.maxHeight*0.5,
-                    padding: EdgeInsets.zero,
-                    width: constraints.maxWidth,
-                  ),
                 ],
               ),
             );
@@ -145,7 +138,7 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
                     onPressed: () {
                       Navigator.of(context).pushNamed(AppRoutes.addFolderPage);
                     },
-                    text: "Add Folder",
+                    text: "Add Image",
                   ),
                   vIconButton(
                     context: context,
@@ -201,7 +194,7 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
                 ]
               ],
             );
-          }
+          },
         ),
       ),
     );
@@ -222,9 +215,12 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
   Widget build(BuildContext context) {
     final userdata = ref.watch(userdataProvider);
     final pageStatus = ref.watch(pagestatusProvider);
-    loadFolders(userdata,pageStatus);
+    loadImages(userdata,pageStatus);
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async {
+        unawaited(Navigator.popAndPushNamed(context, AppRoutes.collectionsPage));
+        return true;
+      },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: appBar(pageStatus, userdata),
@@ -232,7 +228,7 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
         body: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints){
-              if(listOfFolders.isNotEmpty) {
+              if(listOfImages.isNotEmpty) {
                 return Container(
                   padding: const EdgeInsets.all(3.0),
                   height: constraints.maxHeight,
@@ -244,12 +240,12 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
                         FocusManager.instance.primaryFocus?.unfocus();
                       },
                       child: AlignedGridView.count(
-                        itemCount: listOfFolders.length,
+                        itemCount: listOfImages.length,
                         crossAxisCount: 3,
                         mainAxisSpacing: 9.0,
                         crossAxisSpacing: 9.0,
                         itemBuilder: (context, index){
-                          return listOfFolders[index];
+                          return listOfImages[index];
                         },
                       ),
                     ),
@@ -269,17 +265,17 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.folder_off_rounded, size: constraints.maxHeight*0.2),
+                        Icon(Icons.hide_image_rounded, size: constraints.maxHeight*0.2),
                         SizedBox(height: constraints.maxHeight*0.02,),
-                        Text("No Folder Found...", style: Theme.of(context).textTheme.headline6,)
+                        Text("No Image Found...", style: Theme.of(context).textTheme.headline6,)
                       ],
                     ),
                   ),
                 );
               }
-            }
-          )
-        )
+            },
+          ),
+        ),
       ),
     );
   }

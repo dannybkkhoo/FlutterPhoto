@@ -75,6 +75,21 @@ class UserdataProvider with ChangeNotifier {
     return 0;
   }
 
+  String foldername(String folderid){
+    Map<String,Folderdata> folders = _userdata?.folders??{};
+    return folders[folderid]?.name??"";
+  }
+  String imagename(String imageid){
+    Map<String,Imagedata> images = _userdata?.images??{};
+    return images[imageid]?.name??"";
+  }
+  Folderdata? folderData(String folderid){
+    return folders[folderid];
+  }
+  Imagedata? imageData(String imageid){
+    return images[imageid];
+  }
+
   set hasDownloaded(bool downloaded){
     _hasDownloaded = downloaded;
   }
