@@ -5,18 +5,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../bloc/screen.dart';
 import '../bloc/userdata.dart';
 import '../providers/top_level_providers.dart';
-import '../providers/auth_provider.dart';
-import '../providers/userdata_provider.dart';
 import '../ui_components/dropdown_button.dart';
 import '../ui_components/confirmation_popup.dart';
 
 //create addfolder page with tabs (for each detail for user to fill)
-class AddFolder extends ConsumerStatefulWidget {
+class AddFolderPage extends ConsumerStatefulWidget {
   @override
-  _AddFolderState createState() => _AddFolderState();
+  _AddFolderPageState createState() => _AddFolderPageState();
 }
 
-class _AddFolderState extends ConsumerState<AddFolder> {
+class _AddFolderPageState extends ConsumerState<AddFolderPage> {
   final _formKey = GlobalKey<FormState>();
   late ScrollController _scrollController;
   Folderdata tempFolder = Folderdata(id:"",name:"",createdAt:"",updatedAt:"");
@@ -74,7 +72,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Padding(
-                  padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
+                  padding: const EdgeInsets.all(10.0),  //make button slightly smaller than appbar
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.tertiary,
@@ -105,7 +103,7 @@ class _AddFolderState extends ConsumerState<AddFolder> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
+                  padding: const EdgeInsets.all(10.0),  //make button slightly smaller than appbar
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.tertiary,

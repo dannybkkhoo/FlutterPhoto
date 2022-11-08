@@ -30,3 +30,27 @@ Widget vIconButton({required BuildContext context,required BoxConstraints constr
     ),
   );
 }
+
+Widget roundedIconButton({required BuildContext context, required BoxConstraints constraints, required IconData icon, required VoidCallback? onPressed, String text = "",}) {
+  return Container(
+    padding: const EdgeInsets.all(3.0),
+    child: ElevatedButton.icon(
+      icon: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Icon(icon, color: Theme.of(context).colorScheme.inverseSurface,size: constraints.maxHeight*0.07),
+          Text(text, style: Theme.of(context).textTheme.headline6,)
+        ],
+      ),
+      label: Container(),
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        elevation: 5.0,
+        padding: const EdgeInsets.only(left:3.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(13.0),
+        ),
+      ),
+    ),
+  );
+}

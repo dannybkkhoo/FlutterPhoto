@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
@@ -19,25 +18,36 @@ enum SortType {
 
 class PagestatusProvider with ChangeNotifier {
   bool _isSelecting = false;
+  bool _isFolderDropdown = false;
   String _searchKeyword = "";         //searching keyword
   SortType _sortType = SortType.AtoZ;   //shared preferences
   List<String> _selectedFolders = [];
   List<String> _selectedImages = [];
+  File? _imageFile;
 
   PagestatusProvider();
 
   bool get isSelecting => _isSelecting;
   bool get isSearching => _searchKeyword != "";
+  bool get isFolderDropdown => _isFolderDropdown;
   String get searchKeyword => _searchKeyword;
   SortType get sortType => _sortType;
   List<String> get selectedFolders => _selectedFolders;
   List<String> get selectedImages => _selectedImages;
+  File? get imageFile => _imageFile;
 
   set isSelecting(bool selectionmode){
     if(_isSelecting != selectionmode) {
       _isSelecting = selectionmode;
       _selectedFolders = [];
       _selectedImages = [];
+      notifyListeners();
+    }
+  }
+
+  set isFolderDropdown(bool dropdownmode){
+    if(_isFolderDropdown != dropdownmode) {
+      _isFolderDropdown = dropdownmode;
       notifyListeners();
     }
   }
@@ -52,6 +62,13 @@ class PagestatusProvider with ChangeNotifier {
   set sortType(SortType sortType){
     if(_sortType != sortType) {
       _sortType = sortType;
+      notifyListeners();
+    }
+  }
+
+  set imageFile(File? image){
+    if(_imageFile != image) {
+      _imageFile = image;
       notifyListeners();
     }
   }

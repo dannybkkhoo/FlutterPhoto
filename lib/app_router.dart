@@ -8,6 +8,7 @@ import 'providers/auth_provider.dart';
 import 'screens/root_page.dart';
 import 'screens/collection_page.dart';
 import 'screens/folder_page.dart';
+import 'screens/addimage_page.dart';
 import 'debug.dart';
 
 class AppRoutes {
@@ -40,9 +41,11 @@ class AppRouter {
       case AppRoutes.collectionsPage:
         screen = CollectionPage(); break;
       case AppRoutes.addFolderPage:
-        screen = AddFolder(); break;
+        screen = AddFolderPage(); break;
       case AppRoutes.folderPage:
         screen = FolderPage(args?['folderid']??""); break;
+      case AppRoutes.addImagePage:
+        screen = AddImagePage(args?['folderid']??""); break;
       case AppRoutes.debugPage:
         screen = DebugPage(); break;
       default:

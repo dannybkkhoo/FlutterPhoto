@@ -5,7 +5,7 @@ Future<bool> confirmationPopUp(BuildContext context, {String? title, String? con
     backgroundColor: Theme.of(context).colorScheme.surfaceTint,
     elevation: 10.0,
     padding: EdgeInsets.zero,
-    shape: RoundedRectangleBorder(
+    shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(13.0))
     )
   );
@@ -41,15 +41,15 @@ Future<bool> confirmationPopUp(BuildContext context, {String? title, String? con
                     actionsAlignment: MainAxisAlignment.spaceEvenly,
                     alignment: Alignment.center,
                     backgroundColor: Theme.of(context).colorScheme.secondary,
-                    buttonPadding: EdgeInsets.only(left: 13.0, right: 13.0),
+                    buttonPadding: const EdgeInsets.only(left: 13.0, right: 13.0),
                     content: content !=null ? Center(child: Text(content, style: Theme.of(context).textTheme.headline5, textAlign: TextAlign.center,),):null,
-                    contentPadding: EdgeInsets.fromLTRB(13.0, 13.0, 13.0, 0.0),
+                    contentPadding: const EdgeInsets.fromLTRB(13.0, 13.0, 13.0, 0.0),
                     elevation: 10.0,
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(13.0)),
                     ),
                     title: title !=null ? Text(title, style: Theme.of(context).textTheme.subtitle1, textAlign: TextAlign.center,):null,
-                    titlePadding: EdgeInsets.fromLTRB(13.0, 13.0, 13.0, 0.0),
+                    titlePadding: const EdgeInsets.fromLTRB(13.0, 13.0, 13.0, 0.0),
                   ),
                 ],
               ),

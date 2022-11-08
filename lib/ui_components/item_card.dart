@@ -127,7 +127,7 @@ class ItemCard extends ConsumerWidget {
                   else{
                     //go into folder
                     if (_type == ItemType.folder) {
-                      Navigator.popAndPushNamed(context, AppRoutes.folderPage, arguments: {"folderid":_id});
+                      Navigator.of(context).popAndPushNamed(AppRoutes.folderPage, arguments: {"folderid":_id});
                     }
                     else {
 

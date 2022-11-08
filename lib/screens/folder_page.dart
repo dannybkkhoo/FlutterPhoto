@@ -30,6 +30,7 @@ class _FolderPageState extends ConsumerState<FolderPage> {
   List<Widget> listOfImages = [];
   Map<String,String> imageNames = {};
   Map<String,String> imageIds = {};
+  late ScrollController _scrollController;
 
   void loadImages(UserdataProvider userdataProvider, PagestatusProvider pagestatusProvider){
     final Map<String, Imagedata> images = userdataProvider.userdata!.images;                    //map of all images under the user
@@ -84,21 +85,140 @@ class _FolderPageState extends ConsumerState<FolderPage> {
     );
   }
 
+  Widget detailContainer(String text, BoxConstraints constraints) {
+    return Container(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.headline6,
+        textAlign: TextAlign.start,
+      ),
+      height: constraints.maxHeight*0.31,
+      width: constraints.maxWidth * 0.87,
+    );
+  }
+
   PreferredSizeWidget? appBar(PagestatusProvider pageStatus, UserdataProvider userdata){
     final bool isSelecting = pageStatus.isSelecting;
     final Folderdata? folder = userdata.folderData(widget.folderid);
+    final double detailHeight =  (MediaQuery.of(context).size.height*0.07*2.1)*0.31;  //unexpanded folder appbar height * 0.31
+
+    Widget detailContainer(String text, BoxConstraints constraints) {
+      return Container(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          text,
+          style: Theme.of(context).textTheme.headline6,
+          textAlign: TextAlign.start,
+        ),
+        height: detailHeight,
+        width: constraints.maxWidth * 0.87,
+      );
+    }
+
     return PreferredSize(
-      preferredSize: Size(double.infinity ,MediaQuery.of(context).size.height*0.07*1.5),
+      preferredSize: Size(double.infinity ,MediaQuery.of(context).size.height*0.07*(pageStatus.isFolderDropdown?6.3:2.1)),
       child: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
             return Container(
+              height: constraints.maxHeight,
+              width: constraints.maxWidth,
               padding: const EdgeInsets.all(3.0),
               color: Theme.of(context).colorScheme.primary,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Container(
+                    height: constraints.maxHeight,
+                    width: constraints.maxWidth * 0.90 - 6, //-6 for left + right padding
+                    child: pageStatus.isFolderDropdown?
+                      Scrollbar(
+                        controller: _scrollController,
+                        child: ListView(
+                          controller: _scrollController,
+                          children: [
+                            detailContainer("Folder: ${folder?.name??'?'}", constraints),
+                            detailContainer("Created At: ${folder?.createdAt??'?'}", constraints),
+                            detailContainer("Updated At: ${folder?.updatedAt??'?'}", constraints),
+                            detailContainer("Country Group: ${folder?.countrygroup??'?'}", constraints),
+                            detailContainer("Country Type: ${folder?.countrytype??'?'}", constraints),
+                            detailContainer("Denomination: ${folder?.denomination??'?'}", constraints),
+                            detailContainer("Mintage Year: ${folder?.mintageYear??'?'}", constraints),
+                            detailContainer("Grade: ${folder?.grade??'?'}", constraints),
+                            detailContainer("Serial: ${folder?.serial??'?'}", constraints),
+                            detailContainer("Serial Link: ${folder?.serialLink??'?'}", constraints),
+                            detailContainer("Purchase Price: ${folder?.purchasePrice??'?'}", constraints),
+                            detailContainer("Purchase Date: ${folder?.purchaseDate??'?'}", constraints),
+                            detailContainer("Current Sold Price: ${folder?.currentsoldprice??'?'}", constraints),
+                            detailContainer("Sold Date: ${folder?.solddate??'?'}", constraints),
+                            detailContainer("Status: ${folder?.status??'?'}", constraints),
+                            detailContainer("Storage: ${folder?.storage??'?'}", constraints),
+                            detailContainer("Population Link: ${folder?.populationLink??'?'}", constraints),
+                            detailContainer("Remarks: ${folder?.remarks??'?'}", constraints),
+                            detailContainer("Category: ${folder?.category??'?'}", constraints),
+                            detailContainer("Images: ${folder?.imagelist.length??'?'}", constraints)
+                          ],
+                        ),
+                      )
+                      :
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          detailContainer("Folder: ${folder?.name??'?'} (${folder?.imagelist.length??'0'} image${(folder?.imagelist.length??0)>1?'s':''})", constraints),
+                          detailContainer("Category: ${folder?.category??'?'}", constraints),
+                          detailContainer("Status: ${folder?.status??'?'}", constraints),
+                        ],
+                      )
+                  ),
+                  Container(
+                    height: constraints.maxHeight,
+                    width: constraints.maxWidth*0.1,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child: IconButton(
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.zero,
+                            icon: Icon(Icons.edit_outlined, color: Theme.of(context).colorScheme.inverseSurface, size: detailHeight*0.9),
+                            onPressed: () {
+
+                            },
+                          ),
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              borderRadius: BorderRadius.circular(3.0),
+                              border: Border.all(width: 2.0, color: Theme.of(context).colorScheme.inverseSurface),
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    blurRadius: 15.0,
+                                    offset: const Offset(0.0, 0.75)
+                                )
+                              ]
+                          ),
+                          height: detailHeight,
+                          width: constraints.maxWidth*0.1,
+                        ),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child: IconButton(
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.zero,
+                            icon: Icon(pageStatus.isFolderDropdown?Icons.keyboard_arrow_up_rounded:Icons.keyboard_arrow_down_rounded, color: Theme.of(context).colorScheme.inverseSurface, size: detailHeight),
+                            onPressed: () {
+                              pageStatus.isFolderDropdown = !pageStatus.isFolderDropdown;
+                            },
+                          ),
+                          height: detailHeight,
+                          width: constraints.maxWidth*0.1,
+                        ),
+                      ],
+                    ),
+                  )
                 ],
               ),
             );
@@ -136,7 +256,7 @@ class _FolderPageState extends ConsumerState<FolderPage> {
                     constraints: constraints,
                     icon: Icons.add,
                     onPressed: () {
-                      Navigator.of(context).pushNamed(AppRoutes.addFolderPage);
+                      Navigator.of(context).pushNamed(AppRoutes.addImagePage, arguments: {"folderid":widget.folderid});
                     },
                     text: "Add Image",
                   ),
@@ -204,6 +324,7 @@ class _FolderPageState extends ConsumerState<FolderPage> {
   void initState() {
     super.initState();
     Screen().portrait();
+    _scrollController = ScrollController();
   }
 
   @override
