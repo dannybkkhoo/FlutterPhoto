@@ -256,6 +256,7 @@ class _FolderPageState extends ConsumerState<FolderPage> {
                     constraints: constraints,
                     icon: Icons.add,
                     onPressed: () {
+                      ref.read(pagestatusProvider).imageFile = null;
                       Navigator.of(context).pushNamed(AppRoutes.addImagePage, arguments: {"folderid":widget.folderid});
                     },
                     text: "Add Image",

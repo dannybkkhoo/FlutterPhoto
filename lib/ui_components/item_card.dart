@@ -68,7 +68,7 @@ class ItemCard extends ConsumerWidget {
         name = folder.name;
         if (folder.imagelist.isNotEmpty) {
           Imagedata image = ref.watch(userdataProvider.select((userdata) => userdata.images[folder.imagelist[0]]!),);
-          imagepath = appDocDir + "/" + uid + "/images/" + image.id + "." + image.ext;
+          imagepath = appDocDir + "/" + uid + "/images/" + image.id;
         }
       }
     }
@@ -77,16 +77,16 @@ class ItemCard extends ConsumerWidget {
       Imagedata? image = item as Imagedata?;
       if (image != null) {
         name = image.name;
-        imagepath = appDocDir + "/" + uid + "/images/" + image.id + "." + image.ext;
+        imagepath = appDocDir + "/" + uid + "/images/" + image.id;// + "." + image.ext; no need to add extension to filename/path, when uploaded to firebase, it auto detect the file type, same as local storage through metadata
       }
     }
 
     if (File(imagepath).existsSync()) {
-      cardImage = Image.file(File(imagepath), fit: BoxFit.contain,);
+      cardImage = Image.file(File(imagepath), fit: BoxFit.scaleDown,);
     }
     else {
       imagepath = "assets/images/question_mark.png";
-      cardImage = Image.asset(imagepath,fit: BoxFit.contain,);
+      cardImage = Image.asset(imagepath,fit: BoxFit.scaleDown,);
     }
 
     return AspectRatio(
@@ -145,7 +145,10 @@ class ItemCard extends ConsumerWidget {
                         padding: const EdgeInsets.fromLTRB(3.0, 3.0, 3.0, 0.0),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(13.0),
-                          child: cardImage,
+                          child: ColoredBox(
+                            color: Theme.of(context).colorScheme.surface,
+                            child: cardImage,
+                          ),
                         ),
                       ),
                       Container(

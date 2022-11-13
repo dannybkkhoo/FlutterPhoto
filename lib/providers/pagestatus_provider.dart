@@ -30,6 +30,7 @@ class PagestatusProvider with ChangeNotifier {
   bool get isSelecting => _isSelecting;
   bool get isSearching => _searchKeyword != "";
   bool get isFolderDropdown => _isFolderDropdown;
+  bool get hasImageFile => _imageFile != null;
   String get searchKeyword => _searchKeyword;
   SortType get sortType => _sortType;
   List<String> get selectedFolders => _selectedFolders;

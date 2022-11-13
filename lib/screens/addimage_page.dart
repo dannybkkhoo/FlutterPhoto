@@ -1,3 +1,5 @@
+import 'package:app2/bloc/cloud_storage.dart';
+import 'package:app2/providers/pagestatus_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,7 +26,8 @@ class AddImagePage extends ConsumerStatefulWidget {
 class _AddImagePageState extends ConsumerState<AddImagePage> {
   final _formKey = GlobalKey<FormState>();
   late ScrollController _scrollController;
-  Folderdata tempFolder = Folderdata(id:"",name:"",createdAt:"",updatedAt:"");
+  bool _enableDone = true;
+  Imagedata tempImage = Imagedata(id:"",name:"",createdAt:"",ext:"");
 
   SnackBar imageStatus(String text, {Duration duration = const Duration(seconds:1)}) {
     return SnackBar(
@@ -38,6 +41,7 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
   }
 
   PreferredSizeWidget? appBar(){
+    final foldername = ref.read(userdataProvider).foldername(widget.folderid);
     return PreferredSize(
       preferredSize: Size(
           MediaQuery.of(context).size.width,
@@ -47,7 +51,7 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
           automaticallyImplyLeading: false,
           backgroundColor: Theme.of(context).colorScheme.primary,
           titleSpacing: 10.0, //same as detailTab
-          title: Text("Adding new image...", style: Theme.of(context).textTheme.headline6),
+          title: Text("Adding new image${foldername!=""?' to ${foldername}':''}...", style: Theme.of(context).textTheme.headline6),
           actions: [
             // Padding( //disabled for now, might enable in the future
             //   padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
@@ -66,6 +70,14 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
           ]
       ),
     );
+  }
+
+  Future<void> cancelAndClose() async {
+    if(await confirmationPopUp(context,content: "Stop adding new image?")) {
+      ref.read(pagestatusProvider).imageFile = null;
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(imageStatus("Cancelled adding image..."));
+    };
   }
 
   BottomAppBar bottomAppBar(){
@@ -89,24 +101,40 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
                         ),
                       ),
                       child: Text("Done", style: Theme.of(context).textTheme.headline6),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          ScaffoldMessenger.of(context).showSnackBar(imageStatus("Adding new image...", duration: const Duration(days: 365)));
+                      onPressed: !_enableDone?
+                        null
+                        :
+                        () {
+                          final pageStatus = ref.read(pagestatusProvider);
+                          if (!pageStatus.hasImageFile) {
+                            ScaffoldMessenger.of(context).showSnackBar(imageStatus("Please select an image from Gallery or Camera..."));
+                          }
 
-                          final userdata = ref.watch(userdataProvider);
-                          userdata.addFolderdata(tempFolder).then( (bool addSuccess) {
-                            ScaffoldMessenger.of(context).clearSnackBars();
-                            if(addSuccess) {
-                              Navigator.of(context).pop();
-                              ScaffoldMessenger.of(context).showSnackBar(imageStatus("New image '${tempFolder.name}' added!"));
-                            }
-                            else {
-                              ScaffoldMessenger.of(context).showSnackBar(imageStatus("Failed to add new image, please try again..."));
-                            }
-                          });
-                        }
-                      },
+                          if (_formKey.currentState!.validate() && pageStatus.hasImageFile) {
+                            setState(() {_enableDone = false;});
+
+                            final UserdataProvider userdata = ref.read(userdataProvider);
+                            final CloudStorageProvider cloudStorage = ref.read(cloudStorageProvider);
+
+                            _formKey.currentState!.save();
+                            ScaffoldMessenger.of(context).showSnackBar(imageStatus("Adding new image to ${userdata.foldername(widget.folderid)}...", duration: const Duration(days: 365)));
+
+                            userdata.addImage(cloudStorageProvider: cloudStorage, imageFile: pageStatus.imageFile!, folderid: widget.folderid, name: tempImage.name, description: tempImage.description).then(
+                              (bool addSuccess) {
+                                ScaffoldMessenger.of(context).clearSnackBars();
+                                if(addSuccess) {
+                                  ref.read(pagestatusProvider).imageFile = null;
+                                  Navigator.of(context).pop();
+                                  ScaffoldMessenger.of(context).showSnackBar(imageStatus("New image '${tempImage.name}' added to '${userdata.foldername(widget.folderid)}'!"));
+                                }
+                                else {
+                                  setState(() {_enableDone = true;});
+                                  ScaffoldMessenger.of(context).showSnackBar(imageStatus("Failed to add new image, please try again..."));
+                                }
+                              }
+                            );
+                          }
+                        },
                     ),
                   ),
                   Padding(
@@ -121,10 +149,7 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
                       ),
                       child: Text("Cancel", style: Theme.of(context).textTheme.headline6),
                       onPressed: () async {
-                        if(await confirmationPopUp(context,content: "Stop adding new image?")) {
-                          Navigator.of(context).pop();
-                          ScaffoldMessenger.of(context).showSnackBar(imageStatus("Cancelled adding image..."));
-                        };
+                        await cancelAndClose();
                       },
                     ),
                   )
@@ -141,66 +166,81 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
     super.initState();
     Screen().portrait();
     _scrollController = ScrollController();
+    _enableDone = true;
   }
-
-
 
    //resize when >5mb
   @override
   Widget build(BuildContext context) {
-    final userdata = ref.watch(userdataProvider);
-    final Map<String,String> foldernames = userdata.foldernames;
-
     return WillPopScope(
-        onWillPop: () async {
-          Navigator.of(context).pop(true);
-          return true;
-        },
-        child: Scaffold(
-            appBar: appBar(),
-            bottomNavigationBar: bottomAppBar(),
-            body: SafeArea(
-              child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final tabHeight = constraints.maxHeight*0.1;
-                    return Container(
-                      height: constraints.maxHeight,
-                      width: constraints.maxWidth,
-                      padding: const EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 3.0),
-                      child: Form(
-                        key: _formKey,
-                        child: Scrollbar(
-                            thumbVisibility: true,
-                            controller: _scrollController,
-                            child: ListView(
-                              controller: _scrollController,
-                              children: [
-                                ImageHolder(height: constraints.maxHeight*0.6,),
-                                DropDownButton(
-                                  labelText: "Image Name",
-                                  hintText: "eg. myImage",
-                                  errorText: "This image already exists in this folder!",
-                                  enableDropdown: false,
-                                  required: true,
-                                  buttonHeight: tabHeight,
-                                  inputFormatters: [FilteringTextInputFormatter(RegExp("[a-zA-Z0-9_]"), allow: true)],
-                                ),
-                                DropDownButton(
-                                  labelText: "Description",
-                                  hintText: "eg. first image taken...",
-                                  enableDropdown: false,
-                                  required: false,
-                                  buttonHeight: tabHeight,
-                                ),
-                              ],
-                            )
+      onWillPop: () async {
+        await cancelAndClose();
+        return true;
+      },
+      child: Scaffold(
+        appBar: appBar(),
+        bottomNavigationBar: bottomAppBar(),
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final tabHeight = constraints.maxHeight*0.1;
+              return Container(
+                height: constraints.maxHeight,
+                width: constraints.maxWidth,
+                padding: const EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 3.0),
+                child: Form(
+                  key: _formKey,
+                  child: Scrollbar(
+                    thumbVisibility: true,
+                    controller: _scrollController,
+                    child: ListView(
+                      controller: _scrollController,
+                      children: [
+                        ImageHolder(height: constraints.maxHeight*0.6,),
+                        DropDownButton(
+                          labelText: "Image Name",
+                          hintText: "eg. myImage",
+                          errorText: "This image name already exists in this folder!",
+                          enableDropdown: false,
+                          required: true,
+                          buttonHeight: tabHeight,
+                          inputFormatters: [FilteringTextInputFormatter(RegExp("[a-zA-Z0-9_]"), allow: true)],
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempImage.name = text!;
+                          },
+                          validator: (String text) {
+                            final imageNamesInFolder = ref.read(userdataProvider).imagesNameInFolder(widget.folderid);
+                            if(imageNamesInFolder.containsValue(text)) {
+                              return false;
+                            }
+                            else {
+                              return true;
+                            }
+                          },
                         ),
-                      ),
-                    );
-                  }
-              ),
-            )
-        )
+                        DropDownButton(
+                          labelText: "Description",
+                          hintText: "eg. first image taken... (multiple line, max 300 char)",
+                          enableDropdown: false,
+                          multiline: true,
+                          maxCharacters: 300,
+                          required: false,
+                          buttonHeight: constraints.maxHeight*0.4 - tabHeight - 12.0, //(to take up remaining space, 12.0 = 3.0 padding * 4),
+                          onSaved: (String? text) {
+                            assert(text != null);
+                            tempImage.description = text!;
+                          },
+                        ),
+                      ],
+                    )
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      )
     );
   }
 }

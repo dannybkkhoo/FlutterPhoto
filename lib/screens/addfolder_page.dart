@@ -61,6 +61,13 @@ class _AddFolderPageState extends ConsumerState<AddFolderPage> {
     );
   }
 
+  Future<void> cancelAndClose() async {
+    if(await confirmationPopUp(context,content: "Stop creating new folder?")) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(folderStatus("Cancelled folder creation..."));
+    };
+  }
+
   BottomAppBar bottomAppBar(){
     return BottomAppBar(
       color: Theme.of(context).colorScheme.primary,
@@ -84,10 +91,11 @@ class _AddFolderPageState extends ConsumerState<AddFolderPage> {
                     child: Text("Done", style: Theme.of(context).textTheme.headline6),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+                        final userdata = ref.read(userdataProvider);
+
                         _formKey.currentState!.save();
                         ScaffoldMessenger.of(context).showSnackBar(folderStatus("Creating new folder...", duration: const Duration(days: 365)));
 
-                        final userdata = ref.watch(userdataProvider);
                         userdata.addFolderdata(tempFolder).then( (bool addSuccess) {
                           ScaffoldMessenger.of(context).clearSnackBars();
                           if(addSuccess) {
@@ -114,10 +122,7 @@ class _AddFolderPageState extends ConsumerState<AddFolderPage> {
                     ),
                     child: Text("Cancel", style: Theme.of(context).textTheme.headline6),
                     onPressed: () async {
-                      if(await confirmationPopUp(context,content: "Stop creating new folder?")) {
-                        Navigator.of(context).pop();
-                        ScaffoldMessenger.of(context).showSnackBar(folderStatus("Cancelled folder creation..."));
-                      };
+                      await cancelAndClose();
                     },
                   ),
                 )
@@ -143,7 +148,7 @@ class _AddFolderPageState extends ConsumerState<AddFolderPage> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context).pop(true);
+        await cancelAndClose();
         return true;
       },
       child: Scaffold(

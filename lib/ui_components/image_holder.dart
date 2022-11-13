@@ -8,6 +8,8 @@ import '../ui_components/styled_buttons.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
+//To add feature to allow user zoom into image after tapping image
+
 class ImageHolder extends ConsumerStatefulWidget {
   late double height;
 

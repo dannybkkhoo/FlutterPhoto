@@ -78,7 +78,7 @@ class InitializationProvider with ChangeNotifier {
         _numOfImagesInFolder = folders[foldername]!.imagelist.length;
         _numOfImagesCompletedInFolder = 0;
         for(String imagename in folders[foldername]?.imagelist??[]) {
-          path = uid + "/images/" + imagename + "." + images[imagename]!.ext;
+          path = uid + "/images/" + imagename;  // + "." + images[imagename]!.ext; extension not needed
           print(appDocDir.path + "/" + path);
           if(!File(appDocDir.path + "/" + path).existsSync()){
             await _cloudprovider.downloadImage(path);

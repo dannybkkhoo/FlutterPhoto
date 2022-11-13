@@ -2,6 +2,9 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:app2/providers/top_level_providers.dart';
+import 'package:app2/utils.dart';
+
 import '../bloc/userdata.dart';
 import '../bloc/firestore_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -10,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../constants/strings.dart';
 import 'package:random_string/random_string.dart';
+import '../bloc/cloud_storage.dart';
 
 class UserdataProvider with ChangeNotifier {
   late String? _uid;
@@ -88,6 +92,31 @@ class UserdataProvider with ChangeNotifier {
   }
   Imagedata? imageData(String imageid){
     return images[imageid];
+  }
+  Map<String, Imagedata> imagesInFolder(String folderid) {
+    Map<String, Imagedata> folderimages = {};
+    if(folders.containsKey(folderid) && folders[folderid]!=null) {
+      List<String> imagelist = folders[folderid]!.imagelist;
+      for (String imageid in imagelist) {
+        if(images.containsKey(imageid) && images[imageid]!=null) {
+          folderimages[imageid] = images[imageid]!;
+        }
+      }
+    }
+    return folderimages;
+  }
+  Map<String, String> imagesNameInFolder(String folderid) {
+    Map<String, String> folderimages = {};
+    if(folders.containsKey(folderid) && folders[folderid]!=null) {
+      List<String> imagelist = folders[folderid]!.imagelist;
+      Map<String, String> imageNames = imagenames;
+      for (String imageid in imagelist) {
+        if(imagenames.containsKey(imageid)) {
+          folderimages[imageid] = imageNames[imageid]!;
+        }
+      }
+    }
+    return folderimages;
   }
 
   set hasDownloaded(bool downloaded){
@@ -295,6 +324,7 @@ class UserdataProvider with ChangeNotifier {
     return localUpdated && firestoreUpdated;
   }
 
+  //Originally was supposed to use this function to add folder, but later used addFolderData instead to directly store the whole Folderdata object
   Future<bool> addFolder({
     required String name,
     String countrygroup = "",
@@ -372,9 +402,34 @@ class UserdataProvider with ChangeNotifier {
     return updated;
   }
 
-  Future<bool> addImage({required String name, required String ext, String description = ""}) async {
+  Future<bool> addImage({required CloudStorageProvider cloudStorageProvider, required File imageFile, required String folderid, required String name, String description = ""}) async {
+    bool updated = false;
 
-    return false;
+    //Check if the given folderid is an existing folder
+    if(_userdata!.folders.containsKey(folderid)) {
+      String id = generateUniqueID(images);
+
+      //upload the image file to cloud storage then store local first (at userid/images/imageid)
+      if(_firebasePath != null){
+        final bool uploadSuccess = await cloudStorageProvider.uploadImage("${_firebasePath}/${id}", imageFile, sync: true)??false;
+        if(uploadSuccess) {
+          //store local then upload the image data to firestore if image file successfully stored
+          Imagedata image = Imagedata(
+            id: id,
+            name: name,
+            createdAt: DateTime.now().toString(),
+            ext: getFileExtension(imageFile),
+            description: description,
+          );
+          _userdata!.folders[folderid]!.imagelist.add(id);
+          _userdata!.images[id] = image;
+          updated = await updateLocalandFirestore();
+          notifyListeners();
+          updated = true;
+        }
+      }
+    }
+    return updated;
   }
 
   Future<bool> deleteImage(String id) async {

@@ -10,12 +10,14 @@ class DropDownButton extends StatefulWidget {
   final String hintText;
   final TextStyle? errorStyle;
   final String errorText;
-  final TextInputType keyboardType;       //To define the type of keyboard the user can use       [default: TextInputType.text]
+  final TextInputType? keyboardType;       //To define the type of keyboard the user can use       [default: TextInputType.text]
   final bool enabled;                     //To define if the dropdownfield is enabled or not      [default: true]
   final bool enableDropdown;              //To define if the dropdown button is enabled or not    [default: true]
+  final bool multiline;                   //To define if the dropdown button allows multiple line [default: false]
   final bool required;                    //To define if the dropdownfield is required to fill in [default: false]
   final bool strict;                      //To define if user must only select from dropdownlist  [default: false]
   final int maxItemsVisibleInDropdown;    //Max number of items visible in dropdown               [default: 3]
+  final int maxCharacters;                //Max number of character input accepted                [default: 50]
   final double? buttonHeight;             //Height of dropdownTab when dropdown is not shown      [default: textTheme.bodyText1.fontSize]
   final double? dropdownHeight;           //Height of each row of visible text in dropdown        [default: textTheme.bodyText1.fontSize]
   final List<String> items;               //By default will have empty string list                [default: []]
@@ -34,12 +36,14 @@ class DropDownButton extends StatefulWidget {
       this.hintText = "",
       this.errorStyle,
       this.errorText = "",
-      this.keyboardType = TextInputType.text,
+      this.keyboardType,
       this.enabled = true,
       this.enableDropdown = true,
+      this.multiline = false,
       this.required = false,
       this.strict = false,
       this.maxItemsVisibleInDropdown = 3,
+      this.maxCharacters = 50,
       this.buttonHeight,
       this.dropdownHeight,
       this.items = const <String>[],
@@ -190,7 +194,7 @@ class _DropDownButtonState extends State<DropDownButton> {
                     hintStyle: hintStyle,
                     icon: widget.icon,
                     isDense: false,
-                    labelText: widget.required?widget.labelText+"*":widget.labelText,
+                    labelText: "${widget.labelText}${widget.multiline?' (${widget.maxCharacters-_textController.text.length} characters remaining)':''}${widget.required?'*':''}",
                     labelStyle: labelStyle,
                     suffixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -220,7 +224,11 @@ class _DropDownButtonState extends State<DropDownButton> {
                     ),
                   ),
                   inputFormatters: widget.inputFormatters,
-                  keyboardType: widget.keyboardType,
+                  keyboardType: widget.keyboardType??(widget.multiline?TextInputType.multiline:TextInputType.text), //if no keyboardType provided, then check if multiline or not
+                  maxLength: widget.maxCharacters,
+                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                  maxLines: widget.multiline?null:1,
+                  minLines: 1,
                   onSaved: widget.onSaved,
                   validator: (String? text) {
                     //If user states "Required", check if field is empty or not

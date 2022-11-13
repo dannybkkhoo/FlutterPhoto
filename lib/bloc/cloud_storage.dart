@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import '../utils.dart';
 
 /*
 The CloudStorage class is used to upload or download images to/from firebase
@@ -56,18 +57,19 @@ class CloudStorageProvider with ChangeNotifier{
   Map<String, Map<String, dynamic>> get downloadParam => _downloadParam;
   Map<String, Object?> get downloadException => _downloadException;
 
-  Future<void> uploadImage(String firebasePath, File file) async {  //firebasePath w/o extension, extract extension from file
+  Future<bool?> uploadImage(String firebasePath, File file, {bool sync = false}) async {  //firebasePath w/o extension, extract extension from file
     Directory appDocDir = await getApplicationDocumentsDirectory();
     final String filename = basename(firebasePath); //get filename w/o extension and path
-    final String ext = file.path.split('.').last;   //get extension of file
+    final String ext = getFileExtension(file);   //get extension of file
 
     _isUploading = true;
     _uploadParam.remove(filename);      //reset
     _uploadException.remove(filename);  //reset
     notifyListeners();
 
-    assert(file.existsSync());
-    final UploadTask uploadTask = _cloudStorage.ref().child("$firebasePath").putFile( //eg. uid123/images/testing
+    assert(file.existsSync(), "Provided file must exist already!");
+    print("Uploading image to:" + firebasePath);
+    final UploadTask uploadTask = _cloudStorage.ref().child("$firebasePath").putFile( //eg. 'uid123/images/' + 'imageid'
       file,
       SettableMetadata(
         contentType: 'image/$ext',      //eg. image/jpg
@@ -76,27 +78,51 @@ class CloudStorageProvider with ChangeNotifier{
     _uploadMap[filename] = uploadTask;  //eg. {"testing":uploadTask}
     notifyListeners();
 
-    uploadTask
-      .catchError((Object e){
-      _uploadParam[filename] = {"firebasePath":firebasePath,"file":file};  //to retry if needed, also indicates error occurred
-      _uploadException[filename] = e;   //to indicate failure and to check exception
-      notifyListeners();
-    })
-      .whenComplete((){
-      if(!_uploadParam.containsKey(filename)){        //if filename(key) is not in _uploadParam, this means that no error occurred when uploading this file
-        _uploadMap.remove(filename);                  //then safe to remove task from list
-        File("${appDocDir.path}/${firebasePath}").createSync(recursive:true); //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image
-        file.copy("${appDocDir.path}/${firebasePath}"); //then move the uploaded file(original) to appDocDir for app safekeeping (same as download path)
-      }
-      if(_uploadMap.isEmpty){_isUploading = false;}   //if all upload tasks are done, then trigger _isUploading = false
-      notifyListeners();
-    });
+    if(sync) {
+      bool uploadSuccess = false;
+      await uploadTask
+          .catchError((Object e){
+        _uploadParam[filename] = {"firebasePath":firebasePath,"file":file};  //to retry if needed, also indicates error occurred
+        _uploadException[filename] = e;   //to indicate failure and to check exception
+        notifyListeners();
+      })
+          .whenComplete((){
+        if(!_uploadParam.containsKey(filename)){          //if filename(key) is not in _uploadParam, this means that no error occurred when uploading this file
+          _uploadMap.remove(filename);                    //then safe to remove task from list
+          File("${appDocDir.path}/${firebasePath}").createSync(recursive:true); //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image
+          file.copy("${appDocDir.path}/${firebasePath}"); //then move the uploaded file(original) to appDocDir for app safekeeping (same as download path)
+        }
+        if(_uploadMap.isEmpty){_isUploading = false;} //if all upload tasks are done, then trigger _isUploading = false
+        notifyListeners();
+        uploadSuccess = true;
+      });
+      return uploadSuccess;
+    }
+    else {
+      unawaited(
+        uploadTask
+            .catchError((Object e){
+          _uploadParam[filename] = {"firebasePath":firebasePath,"file":file};  //to retry if needed, also indicates error occurred
+          _uploadException[filename] = e;   //to indicate failure and to check exception
+          notifyListeners();
+        })
+            .whenComplete((){
+          if(!_uploadParam.containsKey(filename)){        //if filename(key) is not in _uploadParam, this means that no error occurred when uploading this file
+            _uploadMap.remove(filename);                  //then safe to remove task from list
+            File("${appDocDir.path}/${firebasePath}").createSync(recursive:true); //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image
+            file.copy("${appDocDir.path}/${firebasePath}"); //then move the uploaded file(original) to appDocDir for app safekeeping (same as download path)
+          }
+          if(_uploadMap.isEmpty){_isUploading = false;}   //if all upload tasks are done, then trigger _isUploading = false
+          notifyListeners();
+        }),
+      );
+    }
   }
 
-  Future<void> downloadImage(String firebasePath) async {           //firebasePath w/o extension, eg. user123/images/cat_image
+  Future<bool?> downloadImage(String firebasePath, {bool sync = false}) async {           //firebasePath w/o extension, eg. user123/images/cat_image
     Directory appDocDir = await getApplicationDocumentsDirectory();
     final String filename = basename(firebasePath);                 //cat_image
-    File downloadToFile = File("${appDocDir.path}/${firebasePath}");  //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image
+    File downloadToFile = File("${appDocDir.path}/${firebasePath}");  //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image (no extension needed)
     downloadToFile.createSync(recursive:true);
 
     _isDownloading = true;
@@ -108,21 +134,42 @@ class CloudStorageProvider with ChangeNotifier{
     _downloadMap[filename] = downloadTask;
     notifyListeners();
 
-    downloadTask//.then((_) => throw(Exception("lol")))
-      .catchError((Object e){
-      _downloadParam[filename] = {"firebasePath":firebasePath};  //to retry if needed, indicates error occurred
-      _downloadException[filename] = e;       //to indicate failure and to check exception
-      downloadToFile.deleteSync();
-      notifyListeners();
-    })
-      .whenComplete((){
-      if(!_downloadParam.containsKey(filename)){_downloadMap.remove(filename);}
-      if(_downloadMap.isEmpty){_isDownloading = false;}
-      notifyListeners();
-    });
+    if(sync) {
+      bool downloadSuccess = false;
+      await downloadTask//.then((_) => throw(Exception("lol")))
+          .catchError((Object e){
+        _downloadParam[filename] = {"firebasePath":firebasePath};  //to retry if needed, indicates error occurred
+        _downloadException[filename] = e;       //to indicate failure and to check exception
+        downloadToFile.deleteSync();
+        notifyListeners();
+      })
+          .whenComplete((){
+        if(!_downloadParam.containsKey(filename)){_downloadMap.remove(filename);}
+        if(_downloadMap.isEmpty){_isDownloading = false;}
+        notifyListeners();
+        downloadSuccess = true;
+      });
+      return downloadSuccess;
+    }
+    else {
+      unawaited(
+        downloadTask//.then((_) => throw(Exception("lol")))
+            .catchError((Object e){
+          _downloadParam[filename] = {"firebasePath":firebasePath};  //to retry if needed, indicates error occurred
+          _downloadException[filename] = e;       //to indicate failure and to check exception
+          downloadToFile.deleteSync();
+          notifyListeners();
+        })
+            .whenComplete((){
+          if(!_downloadParam.containsKey(filename)){_downloadMap.remove(filename);}
+          if(_downloadMap.isEmpty){_isDownloading = false;}
+          notifyListeners();
+        }),
+      );
+    }
   }
 
-  void cancelUpload(String filename){
+  bool cancelUpload(String filename){
     if(_uploadMap.containsKey(filename)){
       if(_uploadParam.containsKey(filename))
         _uploadParam.remove(filename);
@@ -131,10 +178,12 @@ class CloudStorageProvider with ChangeNotifier{
       _uploadMap.remove(filename);
       if(_uploadMap.isEmpty){_isUploading = false;}
       notifyListeners();
+      return true;
     }
+    return false;
   }
 
-  void cancelDownload(String filename){
+  bool cancelDownload(String filename){
     if(_downloadMap.containsKey(filename)){
       if(_downloadParam.containsKey(filename))
         _downloadParam.remove(filename);
@@ -143,7 +192,9 @@ class CloudStorageProvider with ChangeNotifier{
       _downloadMap.remove(filename);
       if(_downloadMap.isEmpty){_isDownloading = false;}
       notifyListeners();
+      return true;
     }
+    return false;
   }
 }
 
