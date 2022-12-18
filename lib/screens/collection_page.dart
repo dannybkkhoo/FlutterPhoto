@@ -14,6 +14,8 @@ import '../ui_components/confirmation_popup.dart';
 import '../ui_components/searchBar.dart';
 import '../ui_components/item_card.dart';
 import '../ui_components/styled_buttons.dart';
+import '../ui_components/loading_popup.dart';
+import '../bloc/cloud_storage.dart';
 
 class CollectionPage extends ConsumerStatefulWidget {
   @override
@@ -56,7 +58,7 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
     listOfFolders = list;
   }
 
-  SnackBar sortStatus(String text, {Duration duration = const Duration(seconds:1)}) {
+  SnackBar statusPopup(String text, {Duration duration = const Duration(seconds:1)}) {
     return SnackBar(
       backgroundColor: Theme.of(context).colorScheme.secondary,
       content: Text(text, style: Theme.of(context).textTheme.subtitle1,),
@@ -154,7 +156,7 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
                     onPressed: () {
                       FocusManager.instance.primaryFocus?.unfocus();
                       pageStatus.sortType = pageStatus.sortType != SortType.AtoZ? SortType.AtoZ: SortType.ZtoA;
-                      ScaffoldMessenger.of(context).showSnackBar(sortStatus("Sort folders by '${pageStatus.sortType == SortType.AtoZ?'A-Z':'Z-A'}'", duration: const Duration(milliseconds:500)));
+                      ScaffoldMessenger.of(context).showSnackBar(statusPopup("Sort folders by '${pageStatus.sortType == SortType.AtoZ?'A-Z':'Z-A'}'", duration: const Duration(milliseconds:500)));
                     },
                     text: "Sort",
                   ),
@@ -179,8 +181,20 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
                     icon: Icons.delete,
                     onPressed: () async {
                       FocusManager.instance.primaryFocus?.unfocus();
-                      if(await confirmationPopUp(context, content: "Are you sure you want to remove ${pageStatus.selectedFolders.length} folder${pageStatus.selectedFolders.length>1?'s':''}?")){
-                        unawaited(userdata.deleteFolders(pageStatus.selectedFolders));
+                      if(await confirmationPopUp(context, content: "Are you sure you want to remove ${pageStatus.selectedFolders.length} folder${pageStatus.selectedFolders.length>1?'s':''} and all its contents inside?")){
+                        bool deletedSuccessfully = false;
+                        ScaffoldMessenger.of(context).showSnackBar(statusPopup("Deleting ${pageStatus.selectedFolders.length} folder${pageStatus.selectedFolders.length>1?'s':''}", duration: const Duration(milliseconds:500)));
+                        unawaited(loadingPopUp(context, title: "Deleting ${pageStatus.selectedFolders.length} folder${pageStatus.selectedFolders.length>1?'s':''}"));
+                        final CloudStorageProvider cloudStorage = ref.read(cloudStorageProvider);
+                        deletedSuccessfully = await userdata.deleteFolders(cloudStorageProvider:cloudStorage, folderids:pageStatus.selectedFolders);
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        if(deletedSuccessfully) {
+                          ScaffoldMessenger.of(context).showSnackBar(statusPopup("Done deleting ${pageStatus.selectedFolders.length} folder${pageStatus.selectedFolders.length>1?'s':''}", duration: const Duration(milliseconds:500)));
+                        }
+                        else {
+                          ScaffoldMessenger.of(context).showSnackBar(statusPopup("Failed to delete ${pageStatus.selectedFolders.length} folder${pageStatus.selectedFolders.length>1?'s':''}", duration: const Duration(milliseconds:500)));
+                        }
                         pageStatus.removeAllFolder();
                         pageStatus.isSelecting = false;
                       }

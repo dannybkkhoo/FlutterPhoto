@@ -36,10 +36,13 @@ Note:
   simpler and cheaper than write/delete in cloud storage.
 */
 
+
+// Reminder to check if thumbnail needed, check the performance/memory if using full image, compare how well it works
 class CloudStorageProvider with ChangeNotifier{
   final _cloudStorage = FirebaseStorage.instance;
   bool _isUploading = false;
   bool _isDownloading = false;
+  bool _isDeleting = false;
   Map<String, UploadTask> _uploadMap = {};
   Map<String, Map<String, dynamic>> _uploadParam = {};
   Map<String, Object?> _uploadException = {};
@@ -50,6 +53,7 @@ class CloudStorageProvider with ChangeNotifier{
   FirebaseStorage get cloudStorage => _cloudStorage;
   bool get isUploading => _isUploading;
   bool get isDownloading => _isDownloading;
+  bool get isDeleting => _isDeleting;
   Map<String, UploadTask> get uploadMap => _uploadMap;
   Map<String, Map<String, dynamic>> get uploadParam => _uploadParam;
   Map<String, Object?> get uploadException => _uploadException;
@@ -86,11 +90,12 @@ class CloudStorageProvider with ChangeNotifier{
         _uploadException[filename] = e;   //to indicate failure and to check exception
         notifyListeners();
       })
-          .whenComplete((){
+          .whenComplete(() async {
         if(!_uploadParam.containsKey(filename)){          //if filename(key) is not in _uploadParam, this means that no error occurred when uploading this file
           _uploadMap.remove(filename);                    //then safe to remove task from list
           File("${appDocDir.path}/${firebasePath}").createSync(recursive:true); //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image
-          file.copy("${appDocDir.path}/${firebasePath}"); //then move the uploaded file(original) to appDocDir for app safekeeping (same as download path)
+          await file.copy("${appDocDir.path}/${firebasePath}"); //then move the uploaded file(original) to appDocDir for app safekeeping (same as download path)
+          print("done copy");
         }
         if(_uploadMap.isEmpty){_isUploading = false;} //if all upload tasks are done, then trigger _isUploading = false
         notifyListeners();
@@ -106,11 +111,11 @@ class CloudStorageProvider with ChangeNotifier{
           _uploadException[filename] = e;   //to indicate failure and to check exception
           notifyListeners();
         })
-            .whenComplete((){
+            .whenComplete(() async {
           if(!_uploadParam.containsKey(filename)){        //if filename(key) is not in _uploadParam, this means that no error occurred when uploading this file
             _uploadMap.remove(filename);                  //then safe to remove task from list
             File("${appDocDir.path}/${firebasePath}").createSync(recursive:true); //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image
-            file.copy("${appDocDir.path}/${firebasePath}"); //then move the uploaded file(original) to appDocDir for app safekeeping (same as download path)
+            unawaited(file.copy("${appDocDir.path}/${firebasePath}")); //then move the uploaded file(original) to appDocDir for app safekeeping (same as download path)
           }
           if(_uploadMap.isEmpty){_isUploading = false;}   //if all upload tasks are done, then trigger _isUploading = false
           notifyListeners();
@@ -122,7 +127,7 @@ class CloudStorageProvider with ChangeNotifier{
   Future<bool?> downloadImage(String firebasePath, {bool sync = false}) async {           //firebasePath w/o extension, eg. user123/images/cat_image
     Directory appDocDir = await getApplicationDocumentsDirectory();
     final String filename = basename(firebasePath);                 //cat_image
-    File downloadToFile = File("${appDocDir.path}/${firebasePath}");  //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image (no extension needed)
+    final File downloadToFile = File("${appDocDir.path}/${firebasePath}");  //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image (no extension needed)
     downloadToFile.createSync(recursive:true);
 
     _isDownloading = true;
@@ -166,6 +171,38 @@ class CloudStorageProvider with ChangeNotifier{
           notifyListeners();
         }),
       );
+    }
+  }
+
+  Future<bool?> deleteImage(String firebasePath, {bool sync = false}) async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    final String filename = basename(firebasePath);                     //cat_image
+    final File pathToFile = File("${appDocDir.path}/${firebasePath}");  //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image (no extension needed)
+
+    _isDeleting = true;
+    notifyListeners();
+
+    if(sync) {
+      bool deleteSuccess = false;
+      try {
+        if(pathToFile.existsSync()) {
+          pathToFile.deleteSync();
+        }
+        await _cloudStorage.ref("${firebasePath}").delete();
+        deleteSuccess = true;
+      } on Exception catch (e) {
+        print("Failed to delete image: ${e}");
+      }
+      _isDeleting = false;
+      notifyListeners();
+      return deleteSuccess;
+    }
+    else {
+      unawaited(pathToFile.delete());
+      unawaited(_cloudStorage.ref("$firebasePath").delete().whenComplete(() {
+       _isDeleting = false;
+        notifyListeners();
+      }),);
     }
   }
 

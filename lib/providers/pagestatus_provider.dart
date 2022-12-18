@@ -99,6 +99,11 @@ class PagestatusProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void removeAllImage(){
+    _selectedImages.clear();
+    notifyListeners();
+  }
+
   List<String> sortAZ(List<String> nameList) {
     nameList.sort((a,b) => a.toString().toLowerCase().compareTo(b.toString().toLowerCase()));
     return nameList;

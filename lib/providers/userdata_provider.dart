@@ -384,21 +384,56 @@ class UserdataProvider with ChangeNotifier {
     return updated;
   }
 
-  Future<bool> deleteFolder(String id) async {
+  Future<bool> replaceFolderdata(Folderdata newFolder) async {
     bool updated = false;
-    _userdata!.folders.removeWhere((key, value) => key == id);
+    _userdata!.folders[newFolder.id] = newFolder;
     updated = await updateLocalandFirestore();
     notifyListeners();
     return updated;
   }
 
-  Future<bool> deleteFolders(List<String> ids ) async {
+  Future<bool> deleteFolder({required CloudStorageProvider cloudStorageProvider, required String folderid}) async {
     bool updated = false;
-    for (String id in ids) {
-      _userdata!.folders.removeWhere((key, value) => key == id);
+
+    if(_userdata!.folders.containsKey(folderid)) {  //check if folder exists
+      List<String> imageids = _userdata!.folders[folderid]!.imagelist;  //get list of images in the folder
+      if(imageids.isNotEmpty) {
+        if(!await deleteImages(cloudStorageProvider: cloudStorageProvider, folderid: folderid, imageids: imageids)) { //delete the images in the folder first
+          return updated; //if failed to delete all images, then won't delete the folder, and return false
+        }
+      }
+      _userdata!.folders.removeWhere((key, value) => key == folderid);  //delete the folder data
+      updated = await updateLocalandFirestore();
+      notifyListeners();
     }
-    updated = await updateLocalandFirestore();
-    notifyListeners();
+    return updated;
+  }
+
+  Future<bool> deleteFolders({required CloudStorageProvider cloudStorageProvider, required List<String> folderids}) async {
+    bool updated = false;
+    int deleted = 0;
+
+    for (String folderid in folderids) {
+      if(_userdata!.folders.containsKey(folderid)) {  //check if folder exists
+        List<String> imageids = _userdata!.folders[folderid]!.imagelist;  //get list of images in the folder
+        List<String> tempid = List.from(imageids);
+        if(imageids.isNotEmpty) {
+          if(!await deleteImages(cloudStorageProvider: cloudStorageProvider, folderid: folderid, imageids: tempid)) { //delete the images in the folder first
+            continue; //if failed to delete all images in the folder, then skip this folder and continue next folder
+          }
+        }
+        _userdata!.folders.removeWhere((key, value) => key == folderid);  //delete the folder data
+        deleted++;
+      }
+    }
+
+    //update the local and firestore userdata and check if all given folderids are deleted
+    if(deleted > 0) {
+      if(await updateLocalandFirestore() && deleted == folderids.length) {
+        updated = true;
+      }
+      notifyListeners();
+    }
     return updated;
   }
 
@@ -432,8 +467,58 @@ class UserdataProvider with ChangeNotifier {
     return updated;
   }
 
-  Future<bool> deleteImage(String id) async {
+  Future<bool> deleteImage({required CloudStorageProvider cloudStorageProvider, required String folderid, required String imageid}) async {
+    bool updated = false;
 
-    return false;
+    //Check if the given folderid is an existing folder
+    if(_userdata!.folders.containsKey(folderid)) {
+
+      //remove/delete the image file from cloud storage then delete from local storage first (at userid/images/imageid)
+      if(_firebasePath != null) {
+        final bool deleteSuccess = await cloudStorageProvider.deleteImage("${_firebasePath}/${imageid}", sync: true)??false;
+        if(deleteSuccess) {
+          //delete local and firestore data of the image if successfully deleted image file
+          _userdata!.folders[folderid]!.imagelist.remove(imageid);
+          _userdata!.images.removeWhere((key, value) => key == imageid);
+          updated = await updateLocalandFirestore();
+          notifyListeners();
+        }
+      }
+    }
+    return updated;
+  }
+
+  Future<bool> deleteImages({required CloudStorageProvider cloudStorageProvider, required String folderid, required List<String> imageids}) async {
+    bool updated = false;
+    int deleted = 0;
+
+    //Check if the given folderid is an existing folder
+    if(_userdata!.folders.containsKey(folderid)) {
+
+      //remove/delete the image file from cloud storage then delete from local storage first (at userid/images/imageid)
+      if(_firebasePath != null) {
+
+        //remove each image one by one
+        for (final String imageid in imageids) {
+          //delete the image file on local and cloud firebase first
+          final bool deleteSuccess = await cloudStorageProvider.deleteImage("${_firebasePath}/${imageid}", sync: true)??false;
+          //delete local and firestore data of the image if successfully deleted image file
+          if(deleteSuccess) {
+            _userdata!.folders[folderid]!.imagelist.remove(imageid);
+            _userdata!.images.removeWhere((key, value) => key == imageid);
+            deleted++;
+          }
+        }
+
+        //update the local and firestore userdata, and check if all given imageids are deleted
+        if(deleted > 0) {
+          if(await updateLocalandFirestore() && deleted == imageids.length) {
+            updated = true;
+          }
+          notifyListeners();
+        }
+      }
+    }
+    return updated;
   }
 }

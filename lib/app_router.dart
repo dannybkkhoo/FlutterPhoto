@@ -41,7 +41,7 @@ class AppRouter {
       case AppRoutes.collectionsPage:
         screen = CollectionPage(); break;
       case AppRoutes.addFolderPage:
-        screen = AddFolderPage(); break;
+        screen = AddFolderPage(args?['folderid']??""); break;
       case AppRoutes.folderPage:
         screen = FolderPage(args?['folderid']??""); break;
       case AppRoutes.addImagePage:

@@ -15,6 +15,8 @@ import '../ui_components/searchBar.dart';
 import '../ui_components/item_card.dart';
 import '../app_router.dart';
 import '../ui_components/styled_buttons.dart';
+import '../bloc/cloud_storage.dart';
+import '../ui_components/loading_popup.dart';
 
 class FolderPage extends ConsumerStatefulWidget {
   late String folderid;
@@ -28,7 +30,7 @@ class FolderPage extends ConsumerStatefulWidget {
 class _FolderPageState extends ConsumerState<FolderPage> {
   String foldername = "?";
   List<Widget> listOfImages = [];
-  Map<String,String> imageNames = {};
+  Map<String,String> imageNames = {}; //keep a map of imageid:imagename existing in this folder to ease development
   Map<String,String> imageIds = {};
   late ScrollController _scrollController;
 
@@ -45,7 +47,7 @@ class _FolderPageState extends ConsumerState<FolderPage> {
       if(images.containsKey(imageid)){
         listOfImages.add(ItemCard(id: imageid, type: ItemType.image,));
         imageNames[imageid] = images[imageid]?.name??"?"; //imageid:imagename
-        imageIds[imageNames[imageid]!] = imageid;          //imagename:imageid
+        imageIds[imageNames[imageid]!] = imageid;         //imagename:imageid
       }
     }
 
@@ -74,7 +76,7 @@ class _FolderPageState extends ConsumerState<FolderPage> {
     listOfImages = list;
   }
 
-  SnackBar sortStatus(String text, {Duration duration = const Duration(seconds:1)}) {
+  SnackBar statusPopup(String text, {Duration duration = const Duration(seconds:1)}) {
     return SnackBar(
       backgroundColor: Theme.of(context).colorScheme.secondary,
       content: Text(text, style: Theme.of(context).textTheme.subtitle1,),
@@ -185,7 +187,7 @@ class _FolderPageState extends ConsumerState<FolderPage> {
                             padding: EdgeInsets.zero,
                             icon: Icon(Icons.edit_outlined, color: Theme.of(context).colorScheme.inverseSurface, size: detailHeight*0.9),
                             onPressed: () {
-
+                              Navigator.of(context).pushNamed(AppRoutes.addFolderPage, arguments: {"folderid":widget.folderid});
                             },
                           ),
                           decoration: BoxDecoration(
@@ -268,7 +270,7 @@ class _FolderPageState extends ConsumerState<FolderPage> {
                     onPressed: () {
                       FocusManager.instance.primaryFocus?.unfocus();
                       pageStatus.sortType = pageStatus.sortType != SortType.AtoZ? SortType.AtoZ: SortType.ZtoA;
-                      ScaffoldMessenger.of(context).showSnackBar(sortStatus("Sort folders by '${pageStatus.sortType == SortType.AtoZ?'A-Z':'Z-A'}'", duration: const Duration(milliseconds:500)));
+                      ScaffoldMessenger.of(context).showSnackBar(statusPopup("Sort folders by '${pageStatus.sortType == SortType.AtoZ?'A-Z':'Z-A'}'", duration: const Duration(milliseconds:500)));
                     },
                     text: "Sort",
                   ),
@@ -280,9 +282,9 @@ class _FolderPageState extends ConsumerState<FolderPage> {
                     icon: Icons.storage,
                     onPressed: () {
                       FocusManager.instance.primaryFocus?.unfocus();
-                      pageStatus.removeAllFolder();
-                      for (String folderId in userdata.folders.keys) {
-                        pageStatus.addSelectedFolder(folderId);
+                      pageStatus.removeAllImage();
+                      for (String imageId in imageNames.keys) {
+                        pageStatus.addSelectedImage(imageId);
                       }
                     },
                     text: "Select All",
@@ -293,9 +295,21 @@ class _FolderPageState extends ConsumerState<FolderPage> {
                     icon: Icons.delete,
                     onPressed: () async {
                       FocusManager.instance.primaryFocus?.unfocus();
-                      if(await confirmationPopUp(context, content: "Are you sure you want to remove ${pageStatus.selectedFolders.length} folder${pageStatus.selectedFolders.length>1?'s':''}?")){
-                        unawaited(userdata.deleteFolders(pageStatus.selectedFolders));
-                        pageStatus.removeAllFolder();
+                      if(await confirmationPopUp(context, content: "Are you sure you want to remove ${pageStatus.selectedImages.length} image${pageStatus.selectedImages.length>1?'s':''}?")){
+                        bool deletedSuccessfully = false;
+                        ScaffoldMessenger.of(context).showSnackBar(statusPopup("Deleting ${pageStatus.selectedImages.length} image${pageStatus.selectedImages.length>1?'s':''}", duration: const Duration(milliseconds:500)));
+                        unawaited(loadingPopUp(context, title: "Deleting ${pageStatus.selectedImages.length} image${pageStatus.selectedImages.length>1?'s':''}"));
+                        final CloudStorageProvider cloudStorage = ref.read(cloudStorageProvider);
+                        deletedSuccessfully = await userdata.deleteImages(cloudStorageProvider: cloudStorage, folderid: widget.folderid, imageids: pageStatus.selectedImages);
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        if(deletedSuccessfully) {
+                          ScaffoldMessenger.of(context).showSnackBar(statusPopup("Done deleting ${pageStatus.selectedImages.length} image${pageStatus.selectedImages.length>1?'s':''}", duration: const Duration(milliseconds:500)));
+                        }
+                        else {
+                          ScaffoldMessenger.of(context).showSnackBar(statusPopup("Failed to delete ${pageStatus.selectedImages.length} image${pageStatus.selectedImages.length>1?'s':''}", duration: const Duration(milliseconds:500)));
+                        }
+                        pageStatus.removeAllImage();
                         pageStatus.isSelecting = false;
                       }
                     },
@@ -307,7 +321,7 @@ class _FolderPageState extends ConsumerState<FolderPage> {
                     icon: Icons.cancel,
                     onPressed: () {
                       FocusManager.instance.primaryFocus?.unfocus();
-                      pageStatus.removeAllFolder();
+                      pageStatus.removeAllImage();
                       pageStatus.isSelecting = false;
                     },
                     text: "Cancel",
