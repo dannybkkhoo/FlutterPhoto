@@ -12,8 +12,10 @@ import 'package:image_picker/image_picker.dart';
 
 class ImageHolder extends ConsumerStatefulWidget {
   late double height;
+  late String imagePath;
+  late bool removeable;
 
-  ImageHolder({required this.height});
+  ImageHolder({required this.height, this.imagePath = "", this.removeable = true});
 
   @override
   _ImageHolderState createState() => _ImageHolderState();
@@ -25,6 +27,14 @@ class _ImageHolderState extends ConsumerState<ImageHolder> {
 
   @override
   Widget build(BuildContext context) {
+    if(widget.imagePath != "") {
+      File imageFile = File(widget.imagePath);
+      if(imageFile.existsSync()) {
+        setState(() {
+          _imageFile = File(widget.imagePath);
+        });
+      }
+    }
     final pageStatus = ref.watch(pagestatusProvider);
     return Container(
       width: double.infinity,
@@ -92,30 +102,32 @@ class _ImageHolderState extends ConsumerState<ImageHolder> {
                       child: Image.file(_imageFile!, fit: BoxFit.scaleDown,), //not sure which is best
                     ),
                   ),
-                  Container(
-                    height: constraints.maxHeight*0.1,
-                    width: constraints.maxWidth,
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.vertical(
-                        bottom: Radius.circular(13.0),
-                      ),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: Size.fromWidth(constraints.maxWidth),
+                  if(widget.removeable) ... [
+                    Container(
+                      height: constraints.maxHeight*0.1,
+                      width: constraints.maxWidth,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          bottom: Radius.circular(13.0),
                         ),
-                        child: Text("Remove Image (${(_imageSize<1000000?_imageSize/1024:_imageSize/1024/1024).ceilToDouble()} ${_imageSize<1000000?'kb':'mb'})", style: Theme.of(context).textTheme.headline6,),
-                        onPressed: () async {
-                          if(await confirmationPopUp(context,content: "Remove image?")) {
-                            setState(() {
-                              _imageFile = null;
-                              _imageSize = 0;
-                            });
-                            pageStatus.imageFile = null;
-                          };
-                        },
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size.fromWidth(constraints.maxWidth),
+                          ),
+                          child: Text("Remove Image (${(_imageSize<1000000?_imageSize/1024:_imageSize/1024/1024).ceilToDouble()} ${_imageSize<1000000?'kb':'mb'})", style: Theme.of(context).textTheme.headline6,),
+                          onPressed: () async {
+                            if(await confirmationPopUp(context,content: "Remove image?")) {
+                              setState(() {
+                                _imageFile = null;
+                                _imageSize = 0;
+                              });
+                              pageStatus.imageFile = null;
+                            };
+                          },
+                        ),
                       ),
                     ),
-                  ),
+                  ]
                 ],
               ],
             );

@@ -456,7 +456,9 @@ class UserdataProvider with ChangeNotifier {
             ext: getFileExtension(imageFile),
             description: description,
           );
-          _userdata!.folders[folderid]!.imagelist.add(id);
+          List<String> tempImageList = _userdata!.folders[folderid]!.imagelist.toList();
+          tempImageList.add(id);
+          _userdata!.folders[folderid]!.imagelist = tempImageList;
           _userdata!.images[id] = image;
           updated = await updateLocalandFirestore();
           notifyListeners();

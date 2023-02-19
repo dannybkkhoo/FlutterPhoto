@@ -71,7 +71,7 @@ class _FolderPageState extends ConsumerState<FolderPage> {
 
     //Load and display all leftover folders
     for(String imageName in nameList) {
-      list.add(ItemCard(id: imageIds[imageName]!, type: ItemType.image,));
+      list.add(ItemCard(id: imageIds[imageName]!, type: ItemType.image, folderid: widget.folderid,));
     }
     listOfImages = list;
   }
@@ -84,19 +84,6 @@ class _FolderPageState extends ConsumerState<FolderPage> {
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(13.0))
       ),
-    );
-  }
-
-  Widget detailContainer(String text, BoxConstraints constraints) {
-    return Container(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.headline6,
-        textAlign: TextAlign.start,
-      ),
-      height: constraints.maxHeight*0.31,
-      width: constraints.maxWidth * 0.87,
     );
   }
 

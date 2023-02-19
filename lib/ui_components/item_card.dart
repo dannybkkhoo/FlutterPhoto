@@ -14,6 +14,7 @@ enum ItemType {
 
 class ItemCard extends ConsumerWidget {
   late String _id;
+  late String _folderid;  //only used when ItemCard is an image
   late ItemType _type;
   bool _isSelecting = false;
   bool _isSelected = false;
@@ -45,9 +46,11 @@ class ItemCard extends ConsumerWidget {
     Key? key,
     required String id,
     required ItemType type,
+    String folderid = "",
   }):super(key:key){
     this._id = id;
     this._type = type;
+    this._folderid = folderid;  //only used when ItemCard is an image
   }
 
   @override
@@ -130,7 +133,7 @@ class ItemCard extends ConsumerWidget {
                       Navigator.of(context).popAndPushNamed(AppRoutes.folderPage, arguments: {"folderid":_id});
                     }
                     else {
-
+                      Navigator.of(context).popAndPushNamed(AppRoutes.imagePage, arguments: {"folderid":_folderid, "initial_imageid":_id});
                     }
                   }
                 },

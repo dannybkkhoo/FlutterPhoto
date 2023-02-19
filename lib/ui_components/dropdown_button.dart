@@ -13,6 +13,7 @@ class DropDownButton extends StatefulWidget {
   final TextInputType? keyboardType;       //To define the type of keyboard the user can use       [default: TextInputType.text]
   final bool enabled;                     //To define if the dropdownfield is enabled or not      [default: true]
   final bool enableDropdown;              //To define if the dropdown button is enabled or not    [default: true]
+  final bool hideReset;                   //To define if the clear/reset button is enabled or not [default: false]
   final bool multiline;                   //To define if the dropdown button allows multiple line [default: false]
   final bool required;                    //To define if the dropdownfield is required to fill in [default: false]
   final bool strict;                      //To define if user must only select from dropdownlist  [default: false]
@@ -39,6 +40,7 @@ class DropDownButton extends StatefulWidget {
       this.keyboardType,
       this.enabled = true,
       this.enableDropdown = true,
+      this.hideReset = false,
       this.multiline = false,
       this.required = false,
       this.strict = false,
@@ -210,18 +212,20 @@ class _DropDownButtonState extends State<DropDownButton> {
                             },
                           )
                         ],
-                        IconButton(
-                          color: Theme.of(context).colorScheme.inverseSurface,
-                          icon: const Icon(Icons.close, size: 30.0),
-                          onPressed: () {
-                            FocusManager.instance.primaryFocus?.unfocus();
-                            setState(() {
-                              _textController.text = "";
-                            });
-                          },
-                        ),
+                        if(!widget.hideReset) ... [
+                          IconButton(
+                            color: Theme.of(context).colorScheme.inverseSurface,
+                            icon: const Icon(Icons.close, size: 30.0),
+                            onPressed: () {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                              setState(() {
+                                _textController.text = "";
+                              });
+                            },
+                          ),
+                        ]
                       ],
-                    ),
+                    )
                   ),
                   inputFormatters: widget.inputFormatters,
                   keyboardType: widget.keyboardType??(widget.multiline?TextInputType.multiline:TextInputType.text), //if no keyboardType provided, then check if multiline or not

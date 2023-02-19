@@ -9,6 +9,7 @@ import 'screens/root_page.dart';
 import 'screens/collection_page.dart';
 import 'screens/folder_page.dart';
 import 'screens/addimage_page.dart';
+import 'screens/image_page.dart';
 import 'debug.dart';
 
 class AppRoutes {
@@ -20,6 +21,7 @@ class AppRoutes {
   static const addFolderPage = '/add-folder-page';
   static const folderPage = '/folder-page';
   static const addImagePage = '/add-image-page';
+  static const imagePage = '/image-page';
   static const splashPage = '/splash-page';
   static const errorPage = '/error-page';
   static const debugPage = '/debug-page';
@@ -45,7 +47,9 @@ class AppRouter {
       case AppRoutes.folderPage:
         screen = FolderPage(args?['folderid']??""); break;
       case AppRoutes.addImagePage:
-        screen = AddImagePage(args?['folderid']??""); break;
+        screen = AddImagePage(args?['folderid']??"",args?['imageid']??""); break;
+      case AppRoutes.imagePage:
+        screen =  ImagePage(args?['folderid']??"",args?['initial_imageid']??""); break;
       case AppRoutes.debugPage:
         screen = DebugPage(); break;
       default:

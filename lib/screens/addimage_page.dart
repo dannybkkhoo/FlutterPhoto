@@ -13,11 +13,12 @@ import '../ui_components/dropdown_button.dart';
 import '../ui_components/confirmation_popup.dart';
 import '../ui_components/image_holder.dart';
 
-//create addfolder page with tabs (for each detail for user to fill)
+//create addimage page with tabs (for each detail for user to fill)
 class AddImagePage extends ConsumerStatefulWidget {
   late String folderid;
+  late String imageid;
 
-  AddImagePage(this.folderid);
+  AddImagePage(this.folderid, this.imageid);
 
   @override
   _AddImagePageState createState() => _AddImagePageState();
@@ -44,30 +45,30 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
     final foldername = ref.read(userdataProvider).foldername(widget.folderid);
     return PreferredSize(
       preferredSize: Size(
-          MediaQuery.of(context).size.width,
-          MediaQuery.of(context).size.height*0.07 //same as bottom appbar (also same as constraints.maxHeight*0.07)
-      ),
+        MediaQuery.of(context).size.width,
+        MediaQuery.of(context).size.height*0.07 //same as bottom appbar (also same as constraints.maxHeight*0.07)
+    ),
       child: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          titleSpacing: 10.0, //same as detailTab
-          title: Text("Adding new image${foldername!=""?' to ${foldername}':''}...", style: Theme.of(context).textTheme.headline6),
-          actions: [
-            // Padding( //disabled for now, might enable in the future
-            //   padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
-            //   child: ElevatedButton(
-            //     style: ElevatedButton.styleFrom(
-            //       primary: Theme.of(context).colorScheme.tertiary,
-            //       elevation: 10.0,
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.all(Radius.circular(3.0)),
-            //       )
-            //     ),
-            //     child: Text("Reset", style: Theme.of(context).textTheme.headline6),
-            //     onPressed: () => print("Hello"),
-            //   ),
-            // )
-          ]
+        automaticallyImplyLeading: false,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        titleSpacing: 10.0, //same as detailTab
+        title: Text("Adding new image${foldername!=""?' to ${foldername}':''}...", style: Theme.of(context).textTheme.headline6),
+        actions: [
+          // Padding( //disabled for now, might enable in the future
+          //   padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
+          //   child: ElevatedButton(
+          //     style: ElevatedButton.styleFrom(
+          //       primary: Theme.of(context).colorScheme.tertiary,
+          //       elevation: 10.0,
+          //       shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.all(Radius.circular(3.0)),
+          //       )
+          //     ),
+          //     child: Text("Reset", style: Theme.of(context).textTheme.headline6),
+          //     onPressed: () => print("Hello"),
+          //   ),
+          // )
+        ]
       ),
     );
   }
@@ -84,79 +85,79 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
     return BottomAppBar(
       color: Theme.of(context).colorScheme.primary,
       child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Container(
-              height: constraints.maxHeight*0.07,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),  //make button slightly smaller than appbar
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.tertiary,
-                        elevation: 10.0,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(3.0)),
-                        ),
+        builder: (context, constraints) {
+          return Container(
+            height: constraints.maxHeight*0.07,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10.0),  //make button slightly smaller than appbar
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                      elevation: 10.0,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(3.0)),
                       ),
-                      child: Text("Done", style: Theme.of(context).textTheme.headline6),
-                      onPressed: !_enableDone?
-                        null
-                        :
-                        () {
-                          final pageStatus = ref.read(pagestatusProvider);
-                          if (!pageStatus.hasImageFile) {
-                            ScaffoldMessenger.of(context).showSnackBar(imageStatus("Please select an image from Gallery or Camera..."));
-                          }
+                    ),
+                    child: Text("Done", style: Theme.of(context).textTheme.headline6),
+                    onPressed: !_enableDone?
+                      null
+                      :
+                      () {
+                        final pageStatus = ref.read(pagestatusProvider);
+                        if (!pageStatus.hasImageFile) {
+                          ScaffoldMessenger.of(context).showSnackBar(imageStatus("Please select an image from Gallery or Camera..."));
+                        }
 
-                          if (_formKey.currentState!.validate() && pageStatus.hasImageFile) {
-                            setState(() {_enableDone = false;});
+                        if (_formKey.currentState!.validate() && pageStatus.hasImageFile) {
+                          setState(() {_enableDone = false;});
 
-                            final UserdataProvider userdata = ref.read(userdataProvider);
-                            final CloudStorageProvider cloudStorage = ref.read(cloudStorageProvider);
+                          final UserdataProvider userdata = ref.read(userdataProvider);
+                          final CloudStorageProvider cloudStorage = ref.read(cloudStorageProvider);
 
-                            _formKey.currentState!.save();
-                            ScaffoldMessenger.of(context).showSnackBar(imageStatus("Adding new image to ${userdata.foldername(widget.folderid)}...", duration: const Duration(days: 365)));
+                          _formKey.currentState!.save();
+                          ScaffoldMessenger.of(context).showSnackBar(imageStatus("Adding new image to ${userdata.foldername(widget.folderid)}...", duration: const Duration(days: 365)));
 
-                            userdata.addImage(cloudStorageProvider: cloudStorage, imageFile: pageStatus.imageFile!, folderid: widget.folderid, name: tempImage.name, description: tempImage.description).then(
-                              (bool addSuccess) {
-                                ScaffoldMessenger.of(context).clearSnackBars();
-                                if(addSuccess) {
-                                  ref.read(pagestatusProvider).imageFile = null;
-                                  Navigator.of(context).pop();
-                                  ScaffoldMessenger.of(context).showSnackBar(imageStatus("New image '${tempImage.name}' added to '${userdata.foldername(widget.folderid)}'!"));
-                                }
-                                else {
-                                  setState(() {_enableDone = true;});
-                                  ScaffoldMessenger.of(context).showSnackBar(imageStatus("Failed to add new image, please try again..."));
-                                }
+                          userdata.addImage(cloudStorageProvider: cloudStorage, imageFile: pageStatus.imageFile!, folderid: widget.folderid, name: tempImage.name, description: tempImage.description).then(
+                            (bool addSuccess) {
+                              ScaffoldMessenger.of(context).clearSnackBars();
+                              if(addSuccess) {
+                                ref.read(pagestatusProvider).imageFile = null;
+                                Navigator.of(context).pop();
+                                ScaffoldMessenger.of(context).showSnackBar(imageStatus("New image '${tempImage.name}' added to '${userdata.foldername(widget.folderid)}'!"));
                               }
-                            );
-                          }
-                        },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),  //make button slightly smaller than appbar
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.tertiary,
-                        elevation: 10.0,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(3.0)),
-                        ),
-                      ),
-                      child: Text("Cancel", style: Theme.of(context).textTheme.headline6),
-                      onPressed: () async {
-                        await cancelAndClose();
+                              else {
+                                setState(() {_enableDone = true;});
+                                ScaffoldMessenger.of(context).showSnackBar(imageStatus("Failed to add new image, please try again..."));
+                              }
+                            }
+                          );
+                        }
                       },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),  //make button slightly smaller than appbar
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                      elevation: 10.0,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(3.0)),
+                      ),
                     ),
-                  )
-                ],
-              ),
-            );
-          }
+                    child: Text("Cancel", style: Theme.of(context).textTheme.headline6),
+                    onPressed: () async {
+                      await cancelAndClose();
+                    },
+                  ),
+                )
+              ],
+            ),
+          );
+        }
       ),
     );
   }
