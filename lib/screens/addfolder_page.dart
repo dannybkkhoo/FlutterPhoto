@@ -21,6 +21,7 @@ class AddFolderPage extends ConsumerStatefulWidget {
 class _AddFolderPageState extends ConsumerState<AddFolderPage> {
   final _formKey = GlobalKey<FormState>();
   late ScrollController _scrollController;
+  bool _editMode = false;
   Folderdata tempFolder = Folderdata(id:"",name:"",createdAt:"",updatedAt:"");
 
   SnackBar folderStatus(String text, {Duration duration = const Duration(seconds:1)}) {
@@ -44,7 +45,7 @@ class _AddFolderPageState extends ConsumerState<AddFolderPage> {
           automaticallyImplyLeading: false,
           backgroundColor: Theme.of(context).colorScheme.primary,
           titleSpacing: 10.0, //same as detailTab
-          title: Text(widget.folderid != ""?"Editing folder...":"Create new folder...", style: Theme.of(context).textTheme.headline6),
+          title: Text(_editMode?"Editing folder...":"Create new folder...", style: Theme.of(context).textTheme.headline6),
           actions: [
             // Padding( //disabled for now, might enable in the future
             //   padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
@@ -66,9 +67,9 @@ class _AddFolderPageState extends ConsumerState<AddFolderPage> {
   }
 
   Future<void> cancelAndClose() async {
-    if(await confirmationPopUp(context,content: widget.folderid != ""?"Stop editing folder?":"Stop creating new folder?")) {
+    if(await confirmationPopUp(context,content: _editMode?"Stop editing folder?":"Stop creating new folder?")) {
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(folderStatus(widget.folderid != ""?"Cancelled editing folder...":"Cancelled folder creation..."));
+      ScaffoldMessenger.of(context).showSnackBar(folderStatus(_editMode?"Cancelled editing folder...":"Cancelled folder creation..."));
     };
   }
 
@@ -98,9 +99,10 @@ class _AddFolderPageState extends ConsumerState<AddFolderPage> {
                           final userdata = ref.read(userdataProvider);
 
                           _formKey.currentState!.save();
-                          ScaffoldMessenger.of(context).showSnackBar(folderStatus("Creating new folder...", duration: const Duration(days: 365)));
+                          ScaffoldMessenger.of(context).showSnackBar(folderStatus(_editMode?"Updating folder...":"Creating new folder...", duration: const Duration(days: 365)));
 
-                          if (widget.folderid != "") {
+                          //to upgrade to shorter code
+                          if (_editMode) {
                             userdata.replaceFolderdata(tempFolder).then( (bool addSuccess) {
                               ScaffoldMessenger.of(context).clearSnackBars();
                               if(addSuccess) {
@@ -159,6 +161,7 @@ class _AddFolderPageState extends ConsumerState<AddFolderPage> {
     _scrollController = ScrollController();
 
     if(widget.folderid != "") {
+      _editMode = true;
       final userdata = ref.read(userdataProvider);
       if(userdata.folders.containsKey(widget.folderid)) {
         tempFolder = userdata.folders[widget.folderid]!;
@@ -171,7 +174,7 @@ class _AddFolderPageState extends ConsumerState<AddFolderPage> {
     final userdata = ref.watch(userdataProvider);
     final Map<String,String> foldernames = userdata.foldernames;
 
-    if (widget.folderid != "") {
+    if (_editMode) {
       foldernames.removeWhere((key, value) => key == widget.folderid);
     }
 

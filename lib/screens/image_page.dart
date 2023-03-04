@@ -79,7 +79,7 @@ class _ImagePageState extends ConsumerState<ImagePage> {
                   constraints: constraints,
                   icon: Icons.arrow_back,
                   onPressed: () {
-                    //to fill in, return to home
+                    unawaited(Navigator.of(context).popAndPushNamed(AppRoutes.folderPage, arguments: {"folderid":widget.folderid}));
                   },
                   text: "Back",
                 ),
@@ -89,7 +89,7 @@ class _ImagePageState extends ConsumerState<ImagePage> {
                   icon: Icons.edit,
                   onPressed: () {
                     ref.read(pagestatusProvider).imageFile = null;
-                    Navigator.of(context).pushNamed(AppRoutes.addImagePage, arguments: {"folderid":widget.folderid});
+                    Navigator.of(context).pushNamed(AppRoutes.addImagePage, arguments: {"folderid":widget.folderid, "imageid":tempImage.id});
                   },
                   text: "Edit Photo",
                 ),
@@ -100,21 +100,33 @@ class _ImagePageState extends ConsumerState<ImagePage> {
                   onPressed: () async {
                     FocusManager.instance.primaryFocus?.unfocus();
                     if(await confirmationPopUp(context, content: "Are you sure you want to remove this image?")){
-                    bool deletedSuccessfully = false;
-                    ScaffoldMessenger.of(context).showSnackBar(statusPopup("Deleting ${tempImage.name}", duration: const Duration(milliseconds:500)));
-                    unawaited(loadingPopUp(context, title: "Deleting ${tempImage.name}"));
-                    final CloudStorageProvider cloudStorage = ref.read(cloudStorageProvider);
-                    deletedSuccessfully = await userdata.deleteImages(cloudStorageProvider: cloudStorage, folderid: widget.folderid, imageids: pageStatus.selectedImages);
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).clearSnackBars();
-                    if(deletedSuccessfully) {
-                    ScaffoldMessenger.of(context).showSnackBar(statusPopup("Done deleting ${pageStatus.selectedImages.length} image${pageStatus.selectedImages.length>1?'s':''}", duration: const Duration(milliseconds:500)));
-                    }
-                    else {
-                    ScaffoldMessenger.of(context).showSnackBar(statusPopup("Failed to delete ${pageStatus.selectedImages.length} image${pageStatus.selectedImages.length>1?'s':''}", duration: const Duration(milliseconds:500)));
-                    }
-                    pageStatus.removeAllImage();
-                    pageStatus.isSelecting = false;
+                      String deleteImageid = _cursorImageid;
+
+                      //Need to fix here, when deleting, image not found, have to pop first or go to another image, but will lead to another problem
+                      if(_imageList.length == 1) {
+                        unawaited(Navigator.of(context).popAndPushNamed(AppRoutes.folderPage, arguments: {"folderid":widget.folderid}));
+                      }
+                      else {
+                        final currentImageIndex = _imageList.indexOf(deleteImageid);
+                        _imageList.remove(deleteImageid);
+                        setState(() {
+                          _cursorImageid = _imageList[currentImageIndex - (_imageList.length > currentImageIndex?0:1)];
+                        });
+                      }
+
+                      bool deletedSuccessfully = false;
+                      ScaffoldMessenger.of(context).showSnackBar(statusPopup("Deleting ${tempImage.name}", duration: const Duration(milliseconds:500)));
+                      unawaited(loadingPopUp(context, title: "Deleting ${tempImage.name}"));
+                      final CloudStorageProvider cloudStorage = ref.read(cloudStorageProvider);
+                      deletedSuccessfully = await userdata.deleteImage(cloudStorageProvider: cloudStorage, folderid: widget.folderid, imageid: deleteImageid);
+                      // Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                      if(deletedSuccessfully) {
+                        ScaffoldMessenger.of(context).showSnackBar(statusPopup("Done deleting ${tempImage.name}", duration: const Duration(milliseconds:500)));
+                      }
+                      else {
+                        ScaffoldMessenger.of(context).showSnackBar(statusPopup("Failed to delete ${tempImage.name}", duration: const Duration(milliseconds:500)));
+                      }
                     }
                   },
                   text: "Delete Photo",
@@ -185,7 +197,12 @@ class _ImagePageState extends ConsumerState<ImagePage> {
     final pageStatus = ref.watch(pagestatusProvider);
     final String uid = userdata.uid??"";
     final String appDocDir = userdata.appDocDir??"";
-    final imageSize = File(appDocDir + "/" + uid + "/images/" + _cursorImageid).readAsBytesSync().lengthInBytes;
+    final String imagePath = "${appDocDir}/${uid}/images/${_cursorImageid}";
+    int imageSize = 0;
+
+    if(File(imagePath).existsSync()) {
+      imageSize = File(imagePath).readAsBytesSync().lengthInBytes;
+    };
 
     loadImage(userdata, pageStatus);
     return WillPopScope(
@@ -209,7 +226,7 @@ class _ImagePageState extends ConsumerState<ImagePage> {
                       width: constraints.maxWidth,
                       child: Stack(
                         children: [
-                          ImageHolder(height: constraints.maxHeight*0.6, imagePath: appDocDir + "/" + uid + "/images/" + _cursorImageid, removeable: false,),
+                          ImageHolder(height: constraints.maxHeight*0.6, imagePath: imagePath, removeable: false,),
                           if(_imageList.indexOf(_cursorImageid) != 0) ...[  //if not the first image in this folder
                             Positioned(
                               height: constraints.maxWidth*0.09,
@@ -319,9 +336,9 @@ class _ImagePageState extends ConsumerState<ImagePage> {
                               alignment: Alignment.centerLeft,
                               height: constraints.maxHeight*0.4 - constraints.maxHeight*0.06*(showDetails?4:2) - 2,
                               width: (constraints.maxWidth - 3.0*2 - constraints.maxWidth*0.03*2),
+                              padding: EdgeInsets.only(left: constraints.maxWidth*0.03),
                               child: Scrollbar(
                                 controller: _scrollController,
-                                // child: Text("Description:\n${tempImage.description}", style: Theme.of(context).textTheme.headline6)
                                 child: ListView(
                                   cacheExtent: 0.0,
                                   children: [

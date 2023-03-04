@@ -28,6 +28,8 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
   final _formKey = GlobalKey<FormState>();
   late ScrollController _scrollController;
   bool _enableDone = true;
+  bool _editMode = false;
+  Folderdata tempFolder = Folderdata(id:"",name:"",createdAt:"",updatedAt:"");
   Imagedata tempImage = Imagedata(id:"",name:"",createdAt:"",ext:"");
 
   SnackBar imageStatus(String text, {Duration duration = const Duration(seconds:1)}) {
@@ -52,7 +54,7 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
         titleSpacing: 10.0, //same as detailTab
-        title: Text("Adding new image${foldername!=""?' to ${foldername}':''}...", style: Theme.of(context).textTheme.headline6),
+        title: Text(_editMode?"Editing image...":"Adding new image${foldername!=""?' to ${foldername}':''}...", style: Theme.of(context).textTheme.headline6),
         actions: [
           // Padding( //disabled for now, might enable in the future
           //   padding: EdgeInsets.all(10.0),  //make button slightly smaller than appbar
@@ -74,10 +76,10 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
   }
 
   Future<void> cancelAndClose() async {
-    if(await confirmationPopUp(context,content: "Stop adding new image?")) {
+    if(await confirmationPopUp(context,content: _editMode?"Stop editing image?":"Stop adding new image?")) {
       ref.read(pagestatusProvider).imageFile = null;
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(imageStatus("Cancelled adding image..."));
+      ScaffoldMessenger.of(context).showSnackBar(imageStatus(_editMode?"Cancelled editing image...":"Cancelled adding image..."));
     };
   }
 
@@ -111,17 +113,32 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
                           ScaffoldMessenger.of(context).showSnackBar(imageStatus("Please select an image from Gallery or Camera..."));
                         }
 
-                        if (_formKey.currentState!.validate() && pageStatus.hasImageFile) {
+                        if (_formKey.currentState!.validate() && pageStatus.hasImageFile || _editMode) {
                           setState(() {_enableDone = false;});
 
                           final UserdataProvider userdata = ref.read(userdataProvider);
                           final CloudStorageProvider cloudStorage = ref.read(cloudStorageProvider);
 
                           _formKey.currentState!.save();
-                          ScaffoldMessenger.of(context).showSnackBar(imageStatus("Adding new image to ${userdata.foldername(widget.folderid)}...", duration: const Duration(days: 365)));
+                          ScaffoldMessenger.of(context).showSnackBar(imageStatus(_editMode?"Updating image...":"Adding new image to ${userdata.foldername(widget.folderid)}...", duration: const Duration(days: 365)));
 
-                          userdata.addImage(cloudStorageProvider: cloudStorage, imageFile: pageStatus.imageFile!, folderid: widget.folderid, name: tempImage.name, description: tempImage.description).then(
-                            (bool addSuccess) {
+                          //to upgrade to shorter code
+                          if (_editMode) {
+                            userdata.replaceImagedata(tempImage, widget.folderid).then( (bool addSuccess) {
+                              ScaffoldMessenger.of(context).clearSnackBars();
+                              if(addSuccess) {
+                                ref.read(pagestatusProvider).imageFile = null;
+                                Navigator.of(context).pop();
+                                ScaffoldMessenger.of(context).showSnackBar(imageStatus("Updated '${tempImage.name}'!"));
+                              }
+                              else {
+                                setState(() {_enableDone = true;});
+                                ScaffoldMessenger.of(context).showSnackBar(imageStatus("Failed to edit image, please try again..."));
+                              }
+                            });
+                          }
+                          else {
+                            userdata.addImage(cloudStorageProvider: cloudStorage, imageFile: pageStatus.imageFile!, folderid: widget.folderid, name: tempImage.name, description: tempImage.description).then( (bool addSuccess) {
                               ScaffoldMessenger.of(context).clearSnackBars();
                               if(addSuccess) {
                                 ref.read(pagestatusProvider).imageFile = null;
@@ -133,7 +150,8 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
                                 ScaffoldMessenger.of(context).showSnackBar(imageStatus("Failed to add new image, please try again..."));
                               }
                             }
-                          );
+                            );
+                          }
                         }
                       },
                   ),
@@ -168,11 +186,27 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
     Screen().portrait();
     _scrollController = ScrollController();
     _enableDone = true;
+
+    if(widget.imageid != "") {
+      _editMode = true;
+      final userdata = ref.read(userdataProvider);
+      if(userdata.folders.containsKey(widget.folderid) && userdata.images.containsKey(widget.imageid)) {
+        tempFolder = userdata.folders[widget.folderid]!;
+        tempImage = userdata.images[widget.imageid]!;
+      }
+    }
   }
 
    //resize when >5mb
   @override
   Widget build(BuildContext context) {
+    final userdata = ref.watch(userdataProvider);
+    final Map<String,String> imageNamesInFolder = userdata.imagesNameInFolder(widget.folderid);
+
+    if (_editMode) {
+      imageNamesInFolder.removeWhere((key, value) => key == widget.imageid);
+    }
+
     return WillPopScope(
       onWillPop: () async {
         await cancelAndClose();
@@ -197,7 +231,11 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
                     child: ListView(
                       controller: _scrollController,
                       children: [
-                        ImageHolder(height: constraints.maxHeight*0.6,),
+                        ImageHolder(
+                          height: constraints.maxHeight*0.6,
+                          imagePath: _editMode?userdata.getFilePath(widget.imageid):"",
+                          removeable: _editMode?false:true,
+                        ),
                         DropDownButton(
                           labelText: "Image Name",
                           hintText: "eg. myImage",
@@ -205,13 +243,13 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
                           enableDropdown: false,
                           required: true,
                           buttonHeight: tabHeight,
+                          initialValue: tempImage.name,
                           inputFormatters: [FilteringTextInputFormatter(RegExp("[a-zA-Z0-9_]"), allow: true)],
                           onSaved: (String? text) {
                             assert(text != null);
                             tempImage.name = text!;
                           },
                           validator: (String text) {
-                            final imageNamesInFolder = ref.read(userdataProvider).imagesNameInFolder(widget.folderid);
                             if(imageNamesInFolder.containsValue(text)) {
                               return false;
                             }
@@ -228,6 +266,7 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
                           maxCharacters: 300,
                           required: false,
                           buttonHeight: constraints.maxHeight*0.4 - tabHeight - 12.0, //(to take up remaining space, 12.0 = 3.0 padding * 4),
+                          initialValue: tempImage.description,
                           onSaved: (String? text) {
                             assert(text != null);
                             tempImage.description = text!;

@@ -469,6 +469,29 @@ class UserdataProvider with ChangeNotifier {
     return updated;
   }
 
+  //to upgrade to work without folderid
+  Future<bool> replaceImagedata(Imagedata newImage, String folderid) async {
+    bool updated = false;
+
+    //Check if the given folderid is an existing folder
+    if(_userdata!.folders.containsKey(folderid)) {
+      String id = newImage.id;
+
+      //store local then upload the image data to firestore if image file successfully stored
+      Imagedata image = newImage.copyWith(createdAt: DateTime.now().toString());
+      List<String> tempImageList = _userdata!.folders[folderid]!.imagelist.toList();
+      if (!tempImageList.contains(id)) { //double check if imageid is in folder's list already (supposed not needed to add)
+        tempImageList.add(id);
+        _userdata!.folders[folderid]!.imagelist = tempImageList;
+      }
+      _userdata!.images[id] = image;
+      updated = await updateLocalandFirestore();
+      notifyListeners();
+      updated = true;
+    }
+    return updated;
+  }
+
   Future<bool> deleteImage({required CloudStorageProvider cloudStorageProvider, required String folderid, required String imageid}) async {
     bool updated = false;
 
@@ -522,5 +545,9 @@ class UserdataProvider with ChangeNotifier {
       }
     }
     return updated;
+  }
+
+  String getFilePath(String imageid) {
+    return "${appDocDir!}/$uid/images/$imageid";
   }
 }

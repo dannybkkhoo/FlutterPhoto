@@ -26,12 +26,22 @@ class _ImageHolderState extends ConsumerState<ImageHolder> {
   int _imageSize = 0; //in bytes
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if(widget.imagePath != "") {
       File imageFile = File(widget.imagePath);
       if(imageFile.existsSync()) {
         setState(() {
           _imageFile = File(widget.imagePath);
+        });
+      }
+      else {
+        setState(() {
+          _imageFile = File("assets/images/question_mark.png");
         });
       }
     }
