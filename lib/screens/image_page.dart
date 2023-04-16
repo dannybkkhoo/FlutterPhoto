@@ -101,31 +101,31 @@ class _ImagePageState extends ConsumerState<ImagePage> {
                     FocusManager.instance.primaryFocus?.unfocus();
                     if(await confirmationPopUp(context, content: "Are you sure you want to remove this image?")){
                       String deleteImageid = _cursorImageid;
+                      String deleteImagename = tempImage.name;
 
                       //Need to fix here, when deleting, image not found, have to pop first or go to another image, but will lead to another problem
-                      if(_imageList.length == 1) {
+                      if(_imageList.length == 1) {  //if only 1 image exists in folder, then pop out 1 level to folder page before deleting
                         unawaited(Navigator.of(context).popAndPushNamed(AppRoutes.folderPage, arguments: {"folderid":widget.folderid}));
                       }
                       else {
                         final currentImageIndex = _imageList.indexOf(deleteImageid);
-                        _imageList.remove(deleteImageid);
                         setState(() {
-                          _cursorImageid = _imageList[currentImageIndex - (_imageList.length > currentImageIndex?0:1)];
+                          _cursorImageid = _imageList[currentImageIndex - (currentImageIndex!=0?1:-1)]; //index-1 if not first image, index+1 if first image
                         });
                       }
 
                       bool deletedSuccessfully = false;
-                      ScaffoldMessenger.of(context).showSnackBar(statusPopup("Deleting ${tempImage.name}", duration: const Duration(milliseconds:500)));
-                      unawaited(loadingPopUp(context, title: "Deleting ${tempImage.name}"));
+                      ScaffoldMessenger.of(context).showSnackBar(statusPopup("Deleting ${deleteImagename}", duration: const Duration(milliseconds:500)));
+                      unawaited(loadingPopUp(context, title: "Deleting ${deleteImagename}"));
                       final CloudStorageProvider cloudStorage = ref.read(cloudStorageProvider);
                       deletedSuccessfully = await userdata.deleteImage(cloudStorageProvider: cloudStorage, folderid: widget.folderid, imageid: deleteImageid);
-                      // Navigator.of(context).pop();
+                      Navigator.of(context).pop();
                       ScaffoldMessenger.of(context).clearSnackBars();
                       if(deletedSuccessfully) {
-                        ScaffoldMessenger.of(context).showSnackBar(statusPopup("Done deleting ${tempImage.name}", duration: const Duration(milliseconds:500)));
+                        ScaffoldMessenger.of(context).showSnackBar(statusPopup("Done deleting ${deleteImagename}", duration: const Duration(milliseconds:500)));
                       }
                       else {
-                        ScaffoldMessenger.of(context).showSnackBar(statusPopup("Failed to delete ${tempImage.name}", duration: const Duration(milliseconds:500)));
+                        ScaffoldMessenger.of(context).showSnackBar(statusPopup("Failed to delete ${deleteImagename}", duration: const Duration(milliseconds:500)));
                       }
                     }
                   },

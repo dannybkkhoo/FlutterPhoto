@@ -244,7 +244,7 @@ class _AddImagePageState extends ConsumerState<AddImagePage> {
                           required: true,
                           buttonHeight: tabHeight,
                           initialValue: tempImage.name,
-                          inputFormatters: [FilteringTextInputFormatter(RegExp("[a-zA-Z0-9_]"), allow: true)],
+                          inputFormatters: [FilteringTextInputFormatter(RegExp("[a-zA-Z0-9_ -]"), allow: true)],
                           onSaved: (String? text) {
                             assert(text != null);
                             tempImage.name = text!;

@@ -504,7 +504,8 @@ class UserdataProvider with ChangeNotifier {
         if(deleteSuccess) {
           //delete local and firestore data of the image if successfully deleted image file
           _userdata!.folders[folderid]!.imagelist.remove(imageid);
-          _userdata!.images.removeWhere((key, value) => key == imageid);
+          //_userdata!.images.removeWhere((key, value) => key == imageid);
+          _userdata!.images.remove(imageid);
           updated = await updateLocalandFirestore();
           notifyListeners();
         }

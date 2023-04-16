@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:app2/screens/imageviewer_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +10,7 @@ import '../ui_components/confirmation_popup.dart';
 import '../ui_components/styled_buttons.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import '../app_router.dart';
 
 //To add feature to allow user zoom into image after tapping image
 
@@ -102,15 +106,20 @@ class _ImageHolderState extends ConsumerState<ImageHolder> {
                   )
                 ],
                 if(_imageFile != null) ... [
-                  Container(
-                    height: constraints.maxHeight*0.9,
-                    width: constraints.maxWidth,
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(13.0),
+                  GestureDetector(
+                    child: Container(
+                      height: constraints.maxHeight*0.9,
+                      width: constraints.maxWidth,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(13.0),
+                        ),
+                        child: Image.file(_imageFile!, fit: BoxFit.scaleDown,), //not sure which is best
                       ),
-                      child: Image.file(_imageFile!, fit: BoxFit.scaleDown,), //not sure which is best
                     ),
+                    onTap: () {
+                      Navigator.of(context).pushNamed(AppRoutes.imageViewerPage, arguments: {'imagePath':_imageFile!.path});
+                    }
                   ),
                   if(widget.removeable) ... [
                     Container(

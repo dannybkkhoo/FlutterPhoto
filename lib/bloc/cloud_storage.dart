@@ -95,7 +95,6 @@ class CloudStorageProvider with ChangeNotifier{
           _uploadMap.remove(filename);                    //then safe to remove task from list
           File("${appDocDir.path}/${firebasePath}").createSync(recursive:true); //eg. /data/user/0/com.fiftee.app2/app_flutter/user123/images/cat_image
           await file.copy("${appDocDir.path}/${firebasePath}"); //then move the uploaded file(original) to appDocDir for app safekeeping (same as download path)
-          print("done copy");
         }
         if(_uploadMap.isEmpty){_isUploading = false;} //if all upload tasks are done, then trigger _isUploading = false
         notifyListeners();

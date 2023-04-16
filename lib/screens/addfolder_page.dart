@@ -210,7 +210,7 @@ class _AddFolderPageState extends ConsumerState<AddFolderPage> {
                                   required: true,
                                   buttonHeight: tabHeight,
                                   initialValue: tempFolder.name,
-                                  inputFormatters: [FilteringTextInputFormatter(RegExp("[a-zA-Z0-9_ ]"), allow: true)],
+                                  inputFormatters: [FilteringTextInputFormatter(RegExp("[a-zA-Z0-9_ -]"), allow: true)],
                                   onSaved: (String? text) {
                                     assert(text != null);
                                     tempFolder.name = text!;

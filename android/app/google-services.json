@@ -15,11 +15,51 @@
       },
       "oauth_client": [
         {
+          "client_id": "1020752057132-b2bvusvkb0d05d337obmej8f2941ka4d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fiftee.app2",
+            "certificate_hash": "d7c3391708060783011a11657a220ae30181b36a"
+          }
+        },
+        {
           "client_id": "1020752057132-eolv41rabtphmj1bnb887r1idsaugu56.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.fiftee.app2",
             "certificate_hash": "cf8ee22203ffa735cb1acefc8bf420ad9ddf9af4"
+          }
+        },
+        {
+          "client_id": "1020752057132-k5ibqqojg7fn0gdikflesvkrqne76bau.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fiftee.app2",
+            "certificate_hash": "d78819019d81fc41c99b4241528586709441ff1e"
+          }
+        },
+        {
+          "client_id": "1020752057132-kr3avn7ih6c1lir878ho3a65ptuq1228.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fiftee.app2",
+            "certificate_hash": "e1c8580de100d32d08e19032ed67da930d90b206"
+          }
+        },
+        {
+          "client_id": "1020752057132-r8rbvi3grqmn5fhi0s18mu5ifv546ir8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fiftee.app2",
+            "certificate_hash": "895793406a9b4e29e53473df85298d10cd303012"
+          }
+        },
+        {
+          "client_id": "1020752057132-ram43aqq7kompbubnf5lpoes19afjs6p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fiftee.app2",
+            "certificate_hash": "34bacc2d8d25a6d5e77c212c16ea7d8dbf2140e2"
           }
         },
         {
@@ -38,6 +78,13 @@
             {
               "client_id": "1020752057132-16msa46998m9dp891eu484jm62j0pt5l.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "1020752057132-r3j222dtfnklcl9v8843cp3gu6cd2eco.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fiftee.app2"
+              }
             }
           ]
         }
