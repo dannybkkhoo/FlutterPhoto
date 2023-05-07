@@ -446,7 +446,9 @@ class UserdataProvider with ChangeNotifier {
 
       //upload the image file to cloud storage then store local first (at userid/images/imageid)
       if(_firebasePath != null){
-        final bool uploadSuccess = await cloudStorageProvider.uploadImage("${_firebasePath}/${id}", imageFile, sync: true)??false;
+        //final bool uploadSuccess = await cloudStorageProvider.uploadImage("${_firebasePath}/${id}", imageFile, sync: true)??false;
+        final bool uploadSuccess = await cloudStorageProvider.uploadImage("${_firebasePath}/${id}", imageFile, sync: true)
+        .timeout(const Duration(seconds: 5), onTimeout: () => false)??false;
         if(uploadSuccess) {
           //store local then upload the image data to firestore if image file successfully stored
           Imagedata image = Imagedata(

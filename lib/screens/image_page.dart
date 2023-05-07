@@ -181,6 +181,24 @@ class _ImagePageState extends ConsumerState<ImagePage> {
     tempImage = images[_cursorImageid]!;
   }
 
+  void previousImage() {
+    final prevImageIndex = _imageList.indexOf(_cursorImageid) - 1;
+    if(prevImageIndex >=0) {
+      setState(() {
+        _cursorImageid = _imageList[prevImageIndex];
+      });
+    }
+  }
+
+  void nextImage() {
+    final nextImageIndex = _imageList.indexOf(_cursorImageid) + 1;
+    if(nextImageIndex < _imageList.length){
+      setState(() {
+        _cursorImageid = _imageList[nextImageIndex];
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -224,54 +242,57 @@ class _ImagePageState extends ConsumerState<ImagePage> {
                     Container(
                       height: constraints.maxHeight*0.6 - 3 - 3 - 1 - 1,
                       width: constraints.maxWidth,
-                      child: Stack(
-                        children: [
-                          ImageHolder(height: constraints.maxHeight*0.6, imagePath: imagePath, removeable: false,),
-                          if(_imageList.indexOf(_cursorImageid) != 0) ...[  //if not the first image in this folder
-                            Positioned(
-                              height: constraints.maxWidth*0.09,
-                              width: constraints.maxWidth*0.03,
-                              left: constraints.maxWidth*0.05,
-                              top: constraints.maxHeight*0.3 - constraints.maxWidth*0.03, //to position it at the center of imageholder, centerposition - height
-                              child: ClipPath(
-                                clipper: LeftTriangleButton(),
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    final prevImageIndex = _imageList.indexOf(_cursorImageid) - 1;
-                                    if(prevImageIndex >=0) {
-                                      setState(() {
-                                        _cursorImageid = _imageList[prevImageIndex];
-                                      });
-                                    }
-                                  },
-                                  child: null,
-                                )
-                              ),
-                            ),
-                          ],
-                          if(_imageList.indexOf(_cursorImageid) != (_imageList.length - 1)) ...[  //if not the last image in this folder
-                            Positioned(
-                              height: constraints.maxWidth*0.09,
-                              width: constraints.maxWidth*0.03,
-                              left: constraints.maxWidth*0.95 - constraints.maxWidth*0.03,
-                              top: constraints.maxHeight*0.3 - constraints.maxWidth*0.03, //to position it at the center of imageholder, centerposition - height
-                              child: ClipPath(
-                                clipper: RightTriangleButton(),
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    final nextImageIndex = _imageList.indexOf(_cursorImageid) + 1;
-                                    if(nextImageIndex < _imageList.length){
-                                      setState(() {
-                                        _cursorImageid = _imageList[nextImageIndex];
-                                      });
-                                    }
-                                  },
-                                  child: null,
+                      child: GestureDetector(
+                        onHorizontalDragEnd: (dragDetail) {
+                          if(dragDetail.velocity.pixelsPerSecond.dx < 1) {  //swipe right to left
+                            if(_imageList.indexOf(_cursorImageid) != (_imageList.length - 1)) {
+                              nextImage();
+                            }
+                          } else {
+                            if(_imageList.indexOf(_cursorImageid) != 0) { //swipe left to right
+                              previousImage();
+                            }
+                          }
+                        },
+                        child: Stack(
+                          children: [
+                            ImageHolder(height: constraints.maxHeight*0.6, imagePath: imagePath, removeable: false,),
+                            if(_imageList.indexOf(_cursorImageid) != 0) ...[  //if not the first image in this folder
+                              Positioned(
+                                height: constraints.maxWidth*0.09,
+                                width: constraints.maxWidth*0.03,
+                                left: constraints.maxWidth*0.05,
+                                top: constraints.maxHeight*0.3 - constraints.maxWidth*0.03, //to position it at the center of imageholder, centerposition - height
+                                child: ClipPath(
+                                  clipper: LeftTriangleButton(),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      previousImage();
+                                    },
+                                    child: null,
                                   )
+                                ),
                               ),
-                            ),
+                            ],
+                            if(_imageList.indexOf(_cursorImageid) != (_imageList.length - 1)) ...[  //if not the last image in this folder
+                              Positioned(
+                                height: constraints.maxWidth*0.09,
+                                width: constraints.maxWidth*0.03,
+                                left: constraints.maxWidth*0.95 - constraints.maxWidth*0.03,
+                                top: constraints.maxHeight*0.3 - constraints.maxWidth*0.03, //to position it at the center of imageholder, centerposition - height
+                                child: ClipPath(
+                                  clipper: RightTriangleButton(),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      nextImage();
+                                    },
+                                    child: null,
+                                    )
+                                ),
+                              ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
                     ),
                     Container(
